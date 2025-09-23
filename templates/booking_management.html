@@ -131,6 +131,11 @@
                                 Bookings
                             </button>
                         </div>
+                        <div class="mt-2">
+                            <button onclick="deleteService({{ service.id }}, '{{ service.name }}')" class="w-full bg-red-100 text-red-700 py-2 rounded-lg hover:bg-red-200 transition duration-300">
+                                <i class="fas fa-trash mr-2"></i>Delete Service
+                            </button>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
@@ -183,6 +188,9 @@
                                     <div class="flex space-x-2">
                                         <button onclick="viewBooking({{ booking.id }})" class="text-primary hover:text-secondary">View</button>
                                         <button onclick="editBooking({{ booking.id }})" class="text-gray-600 hover:text-gray-800">Edit</button>
+                                        <button onclick="deleteBooking({{ booking.id }}, '{{ booking.client_name }}')" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -497,6 +505,11 @@
                         Bookings
                     </button>
                 </div>
+                <div class="mt-2">
+                    <button onclick="deleteService(${service.id}, '${service.name}')" class="w-full bg-red-100 text-red-700 py-2 rounded-lg hover:bg-red-200 transition duration-300">
+                        <i class="fas fa-trash mr-2"></i>Delete Service
+                    </button>
+                </div>
             `;
             servicesList.appendChild(serviceCard);
         }
@@ -563,6 +576,105 @@
 
         function viewServiceBookings(id) {
             alert(`View bookings for service ${id} - coming soon!`);
+        }
+
+        async function deleteService(id, serviceName) {
+            if (confirm(`Are you sure you want to delete "${serviceName}"?\n\nThis will permanently remove the service and cannot be undone.`)) {
+                try {
+                    // Send DELETE request to the backend
+                    const response = await fetch(`/club/{{ club.slug }}/services/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Find and remove the service card from the DOM
+                        const serviceCards = document.querySelectorAll('.border.border-gray-200.rounded-lg.p-4');
+                        serviceCards.forEach(card => {
+                            const deleteButton = card.querySelector(`button[onclick*="deleteService(${id}"]`);
+                            if (deleteButton) {
+                                card.style.transition = 'all 0.3s ease';
+                                card.style.transform = 'scale(0.8)';
+                                card.style.opacity = '0';
+                                setTimeout(() => {
+                                    card.remove();
+                                    showNotification(`Service "${serviceName}" has been deleted.`, 'success');
+                                }, 300);
+                            }
+                        });
+                    } else {
+                        throw new Error('Failed to delete service');
+                    }
+                } catch (error) {
+                    console.error('Error deleting service:', error);
+                    showNotification(`Failed to delete service "${serviceName}". Please try again.`, 'error');
+                }
+            }
+        }
+
+        async function deleteBooking(id, clientName) {
+            if (confirm(`Are you sure you want to delete the booking for "${clientName}"?\n\nThis will permanently remove the booking and cannot be undone.`)) {
+                try {
+                    // Send DELETE request to the backend
+                    const response = await fetch(`/club/{{ club.slug }}/bookings/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Find and remove the booking row from the table
+                        const bookingRows = document.querySelectorAll('tbody tr');
+                        bookingRows.forEach(row => {
+                            const deleteButton = row.querySelector(`button[onclick*="deleteBooking(${id}"]`);
+                            if (deleteButton) {
+                                row.style.transition = 'all 0.3s ease';
+                                row.style.transform = 'scale(0.95)';
+                                row.style.opacity = '0';
+                                setTimeout(() => {
+                                    row.remove();
+                                    showNotification(`Booking for "${clientName}" has been deleted.`, 'success');
+                                }, 300);
+                            }
+                        });
+                    } else {
+                        throw new Error('Failed to delete booking');
+                    }
+                } catch (error) {
+                    console.error('Error deleting booking:', error);
+                    showNotification(`Failed to delete booking for "${clientName}". Please try again.`, 'error');
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
         }
 
         function viewBooking(id) {

@@ -261,6 +261,7 @@ async def booking_management(request: Request, club_slug: str):
     }
     
     # Mock booking services - in production, this would come from database
+    # For now, we'll use a simple in-memory list that can be modified
     booking_services = [
         {
             "id": 1,
@@ -300,8 +301,15 @@ async def booking_management(request: Request, club_slug: str):
         }
     ]
     
+    # Filter out deleted services (in production, this would query the database)
+    # For demo purposes, we'll use a simple approach
+    deleted_service_ids = request.cookies.get('deleted_services', '')
+    if deleted_service_ids:
+        deleted_ids = [int(x) for x in deleted_service_ids.split(',') if x.isdigit()]
+        booking_services = [s for s in booking_services if s['id'] not in deleted_ids]
+    
     # Mock recent bookings
-    recent_bookings = [
+    all_recent_bookings = [
         {
             "id": 1,
             "client_name": "Alice Johnson",
@@ -337,12 +345,66 @@ async def booking_management(request: Request, club_slug: str):
         }
     ]
     
+    # Filter out deleted bookings (similar to services)
+    deleted_booking_ids = request.cookies.get('deleted_bookings', '')
+    if deleted_booking_ids:
+        deleted_ids = [int(x) for x in deleted_booking_ids.split(',') if x.isdigit()]
+        recent_bookings = [b for b in all_recent_bookings if b['id'] not in deleted_ids]
+    else:
+        recent_bookings = all_recent_bookings
+    
     return templates.TemplateResponse("booking_management.html", {
         "request": request,
         "club": club_data,
         "booking_services": booking_services,
         "recent_bookings": recent_bookings
     })
+
+@router.delete("/club/{club_slug}/services/{service_id}")
+async def delete_booking_service(request: Request, club_slug: str, service_id: int):
+    """Delete a booking service"""
+    # In production, this would delete from database
+    # For demo, we'll use cookies to track deleted services
+    
+    # Get current deleted services from cookies
+    deleted_services = request.cookies.get('deleted_services', '')
+    deleted_ids = [int(x) for x in deleted_services.split(',') if x.isdigit()]
+    
+    # Add the new service ID to deleted list
+    if service_id not in deleted_ids:
+        deleted_ids.append(service_id)
+    
+    # Convert back to cookie string
+    deleted_services_str = ','.join(map(str, deleted_ids))
+    
+    # Return response with updated cookie
+    from fastapi.responses import JSONResponse
+    response = JSONResponse({"success": True, "message": "Service deleted successfully"})
+    response.set_cookie("deleted_services", deleted_services_str)
+    return response
+
+@router.delete("/club/{club_slug}/bookings/{booking_id}")
+async def delete_booking(request: Request, club_slug: str, booking_id: int):
+    """Delete a booking"""
+    # In production, this would delete from database
+    # For demo, we'll use cookies to track deleted bookings
+    
+    # Get current deleted bookings from cookies
+    deleted_bookings = request.cookies.get('deleted_bookings', '')
+    deleted_ids = [int(x) for x in deleted_bookings.split(',') if x.isdigit()]
+    
+    # Add the new booking ID to deleted list
+    if booking_id not in deleted_ids:
+        deleted_ids.append(booking_id)
+    
+    # Convert back to cookie string
+    deleted_bookings_str = ','.join(map(str, deleted_ids))
+    
+    # Return response with updated cookie
+    from fastapi.responses import JSONResponse
+    response = JSONResponse({"success": True, "message": "Booking deleted successfully"})
+    response.set_cookie("deleted_bookings", deleted_bookings_str)
+    return response
 
 @router.get("/club/{club_slug}/calendar", response_class=HTMLResponse)
 async def calendar_view(request: Request, club_slug: str):
