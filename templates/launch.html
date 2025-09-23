@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Your Platform - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Progress Bar -->
+    <div class="bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Plan Selected</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-primary mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Platform Setup</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-primary mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Stripe Connect</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-primary mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-bold">4</span>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Launch Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Success Header -->
+        <div class="text-center mb-12">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-rocket text-green-500 text-4xl"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                🎉 Your Platform is Live!
+            </h1>
+            <p class="text-xl text-gray-600">
+                Congratulations! Your community platform has been successfully created and is ready to use.
+            </p>
+        </div>
+
+        <!-- Platform Details -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                <i class="fas fa-info-circle text-primary mr-3"></i>
+                Your Platform Details
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6" id="platformDetails">
+                <!-- Details will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                <i class="fas fa-bolt text-primary mr-3"></i>
+                Quick Actions
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-6 border border-gray-200 rounded-lg hover:border-primary transition duration-300">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-external-link-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Visit Your Platform</h3>
+                    <p class="text-sm text-gray-600 mb-4">Check out your live community platform</p>
+                    <button onclick="visitPlatform()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition duration-300">
+                        Visit Now
+                    </button>
+                </div>
+
+                <div class="text-center p-6 border border-gray-200 rounded-lg hover:border-primary transition duration-300">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Invite Members</h3>
+                    <p class="text-sm text-gray-600 mb-4">Share your platform with your community</p>
+                    <button onclick="inviteMembers()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition duration-300">
+                        Invite Now
+                    </button>
+                </div>
+
+                <div class="text-center p-6 border border-gray-200 rounded-lg hover:border-primary transition duration-300">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-cog text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Customize Settings</h3>
+                    <p class="text-sm text-gray-600 mb-4">Fine-tune your platform settings</p>
+                    <button onclick="customizePlatform()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition duration-300">
+                        Customize
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                <i class="fas fa-list-check text-primary mr-3"></i>
+                Next Steps
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-start p-4 bg-blue-50 rounded-lg">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span class="text-white text-sm font-bold">1</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Customize Your Branding</h4>
+                        <p class="text-gray-600 text-sm">Upload your logo, adjust colors, and personalize your platform to match your brand.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start p-4 bg-green-50 rounded-lg">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span class="text-white text-sm font-bold">2</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Set Up Your Services</h4>
+                        <p class="text-gray-600 text-sm">Create booking services, set up chat channels, and configure your community features.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start p-4 bg-yellow-50 rounded-lg">
+                    <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span class="text-white text-sm font-bold">3</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Invite Your First Members</h4>
+                        <p class="text-gray-600 text-sm">Share your platform URL with your community and start building your member base.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start p-4 bg-purple-50 rounded-lg">
+                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span class="text-white text-sm font-bold">4</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Start Accepting Payments</h4>
+                        <p class="text-gray-600 text-sm">Set up membership tiers, booking prices, and start monetizing your community.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg p-8 text-white">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-headset mr-3"></i>
+                    Need Help Getting Started?
+                </h2>
+                <p class="text-blue-100 mb-6">
+                    Our support team is here to help you make the most of your new platform.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="openSupport()" class="bg-white text-primary px-6 py-3 rounded-lg hover:bg-gray-100 transition duration-300 font-semibold">
+                        <i class="fas fa-comments mr-2"></i>Contact Support
+                    </button>
+                    <button onclick="openDocs()" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-primary transition duration-300 font-semibold">
+                        <i class="fas fa-book mr-2"></i>View Documentation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="text-center mt-12">
+            <button onclick="visitPlatform()" class="bg-primary hover:bg-secondary text-white px-8 py-4 rounded-lg font-semibold text-lg transition duration-300 shadow-lg">
+                <i class="fas fa-rocket mr-3"></i>
+                Launch Your Platform Now
+            </button>
+            <p class="text-gray-600 mt-4">
+                Your 14-day free trial has started. No charges until your trial ends.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">🚀 ClubLaunch</h3>
+                    <p class="text-gray-400 mb-4">
+                        Your community platform is now live and ready to grow.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-white">Settings</a></li>
+                        <li><a href="#" class="hover:text-white">Analytics</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Best Practices</a></li>
+                        <li><a href="#" class="hover:text-white">API Reference</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ClubLaunch. Welcome to your new community platform!</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check if user completed the setup
+        if (!sessionStorage.getItem('platformData')) {
+            window.location.href = '/signup';
+        }
+
+        // Populate platform details
+        function populatePlatformDetails() {
+            const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+            const selectedPlan = sessionStorage.getItem('selectedPlan') || 'starter';
+            const stripeConnected = sessionStorage.getItem('stripeConnected') === 'true';
+            
+            const detailsContainer = document.getElementById('platformDetails');
+            detailsContainer.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Platform Name:</span>
+                        <span class="text-gray-900">${platformData.clubName || 'My Club'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Platform URL:</span>
+                        <span class="text-primary">${platformData.clubSlug || 'myclub'}.clublaunch.com</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Selected Plan:</span>
+                        <span class="text-gray-900 capitalize">${selectedPlan}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Trial Status:</span>
+                        <span class="text-green-600 font-semibold">14 days remaining</span>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Stripe Status:</span>
+                        <span class="${stripeConnected ? 'text-green-600' : 'text-yellow-600'}">
+                            <i class="fas fa-${stripeConnected ? 'check' : 'exclamation-triangle'} mr-1"></i>
+                            ${stripeConnected ? 'Connected' : 'Not Connected'}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Features Enabled:</span>
+                        <div class="text-sm">
+                            ${platformData.enableBookings === 'on' ? '<i class="fas fa-check text-green-500 mr-1"></i>Bookings' : ''}
+                            ${platformData.enableChat === 'on' ? '<i class="fas fa-check text-green-500 mr-1"></i>Chat' : ''}
+                            ${platformData.enableAI === 'on' ? '<i class="fas fa-check text-green-500 mr-1"></i>AI' : ''}
+                            ${platformData.enableDonations === 'on' ? '<i class="fas fa-check text-green-500 mr-1"></i>Donations' : ''}
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Primary Color:</span>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full mr-2" style="background-color: ${platformData.primaryColor || '#3B82F6'}"></div>
+                            <span class="text-gray-900">${platformData.primaryColor || '#3B82F6'}</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Status:</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-circle text-green-500 mr-1"></i>Live
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function visitPlatform() {
+            const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+            const url = `https://${platformData.clubSlug || 'myclub'}.clublaunch.com`;
+            window.open(url, '_blank');
+        }
+
+        function inviteMembers() {
+            const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+            const url = `https://${platformData.clubSlug || 'myclub'}.clublaunch.com`;
+            const shareText = `Join my community on ${platformData.clubName || 'My Club'}! Visit: ${url}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Join ${platformData.clubName || 'My Club'}`,
+                    text: shareText,
+                    url: url
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Invite link copied to clipboard!');
+                });
+            }
+        }
+
+        function customizePlatform() {
+            // In a real implementation, this would redirect to the admin dashboard
+            alert('Redirecting to your platform settings...');
+            visitPlatform();
+        }
+
+        function openSupport() {
+            window.open('mailto:support@clublaunch.com?subject=New Platform Setup Support', '_blank');
+        }
+
+        function openDocs() {
+            window.open('https://docs.clublaunch.com', '_blank');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            populatePlatformDetails();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Your Free Trial - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="/" class="text-2xl font-bold text-primary">🚀 ClubLaunch</a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/features" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="/#pricing" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Start Your
+                <span class="text-primary">Free Trial</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Launch your own branded community platform in minutes. No credit card required for your 14-day free trial.
+            </p>
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-clock text-primary text-2xl mr-3"></i>
+                    <span class="text-lg font-semibold text-gray-900">14-Day Free Trial</span>
+                </div>
+                <p class="text-gray-600">Full access to all features, no setup fees</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Plans Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Choose Your Plan
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Start with any plan and change anytime. All plans include the 14-day free trial.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200 hover:border-primary transition duration-300">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$67<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">Perfect for getting started</p>
+                        <div class="mt-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>1 Club/Community</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Unlimited Members</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Booking System</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Real-time Chat</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Stripe Payments</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Subdomain</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('starter', 67)" class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition duration-300">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-primary p-8 rounded-xl border-2 border-primary relative transform scale-105">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-secondary text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
+                        <div class="text-4xl font-bold text-white mb-2">$97<span class="text-lg text-blue-200">/month</span></div>
+                        <p class="text-blue-200">For growing communities</p>
+                        <div class="mt-4 bg-green-400 text-white px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Everything in Starter</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Custom Domain</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">AI Assistant</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Media Library</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Advanced Analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Priority Support</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('pro', 97)" class="w-full bg-white text-primary py-3 rounded-lg hover:bg-gray-100 transition duration-300 font-semibold">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200 hover:border-primary transition duration-300">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$197<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">For established businesses</p>
+                        <div class="mt-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Everything in Pro</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Multiple Clubs</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Advanced AI Features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Integrations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Dedicated Support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>SLA Guarantee</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('enterprise', 197)" class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition duration-300">
+                        Start Free Trial
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <p class="text-gray-600 mb-4">
+                    <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                    All plans include 14-day free trial, no setup fees, and cancel anytime
+                </p>
+                <p class="text-sm text-gray-500">
+                    * Optional 3% platform fee on bookings and donations (can be disabled)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What's Included Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    What's Included in Your Free Trial
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Everything you need to build and launch your community platform.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-rocket text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Instant Setup</h3>
+                    <p class="text-gray-600">Get your platform running in under 15 minutes with our guided onboarding.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-palette text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Custom Branding</h3>
+                    <p class="text-gray-600">Add your logo, colors, and domain to make it look like your own product.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-credit-card text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Payment Setup</h3>
+                    <p class="text-gray-600">Connect Stripe in minutes and start accepting payments from day one.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-headset text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Full Support</h3>
+                    <p class="text-gray-600">Get help from our team throughout your trial and beyond.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Onboarding Flow Preview -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Get Started in 4 Easy Steps
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Our guided onboarding makes it simple to launch your community.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Create Account</h3>
+                    <p class="text-gray-600">Sign up with your email and choose your plan. No credit card required for trial.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Brand Your Platform</h3>
+                    <p class="text-gray-600">Add your logo, choose colors, and set up your custom subdomain or domain.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Connect Stripe</h3>
+                    <p class="text-gray-600">Link your Stripe account to start accepting payments and donations.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">4</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Launch & Invite</h3>
+                    <p class="text-gray-600">Share your platform with members and start building your community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Selected Plan Modal -->
+    <div id="planModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Plan Selected!</h3>
+                    <p class="text-gray-600">You've chosen the <span id="selectedPlanName" class="font-semibold text-primary"></span> plan.</p>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Monthly Price:</span>
+                        <span class="font-semibold" id="selectedPlanPrice"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Free Trial:</span>
+                        <span class="text-green-600 font-semibold">14 days</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="proceedToOnboarding()" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
+                        <i class="fas fa-arrow-right mr-2"></i>Continue to Setup
+                    </button>
+                    <button onclick="closeModal()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition duration-300">
+                        Choose Different Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">🚀 ClubLaunch</h3>
+                    <p class="text-gray-400 mb-4">
+                        The easiest way to launch your own branded community platform.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/features" class="hover:text-white">Features</a></li>
+                        <li><a href="/#pricing" class="hover:text-white">Pricing</a></li>
+                        <li><a href="/#demo" class="hover:text-white">Demo</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Status</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">About</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ClubLaunch. All rights reserved. Built for entrepreneurs who want to build communities.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let selectedPlan = null;
+        let selectedPrice = null;
+
+        function selectPlan(plan, price) {
+            selectedPlan = plan;
+            selectedPrice = price;
+            
+            // Update modal content
+            document.getElementById('selectedPlanName').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+            document.getElementById('selectedPlanPrice').textContent = `$${price}/month`;
+            
+            // Show modal
+            document.getElementById('planModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('planModal').classList.add('hidden');
+        }
+
+        function proceedToOnboarding() {
+            // Close modal
+            closeModal();
+            
+            // Store selected plan in sessionStorage
+            sessionStorage.setItem('selectedPlan', selectedPlan);
+            sessionStorage.setItem('selectedPrice', selectedPrice);
+            
+            // Redirect to onboarding page
+            window.location.href = '/onboarding';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('planModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

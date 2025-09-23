@@ -1,0 +1,37 @@
+# Copy this to .env and update the values
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost/white_label_club
+
+# Security
+SECRET_KEY=your-secret-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+ENCRYPTION_KEY=your-32-byte-base64-encryption-key-here
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+
+# DigitalOcean Spaces
+DO_SPACES_KEY=...
+DO_SPACES_SECRET=...
+DO_SPACES_ENDPOINT=https://white-label-club.sfo3.digitaloceanspaces.com
+DO_SPACES_REGION=sfo3
+DO_SPACES_BUCKET=white-label-club
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# Environment
+ENVIRONMENT=development
+DEBUG=true
+
+# Platform Settings
+PLATFORM_DOMAIN=yourplatform.com
+PLATFORM_NAME=White Label Club Platform

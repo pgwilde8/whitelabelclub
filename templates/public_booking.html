@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book with {{ club.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color or "#3B82F6" }}',
+                        secondary: '{{ club.secondary_color or "#1E40AF" }}',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="{{ club.logo_url or '/static/default-logo.png' }}" alt="{{ club.name }}" class="h-8 w-auto mr-3" onerror="this.style.display='none'">
+                    <h1 class="text-2xl font-bold text-primary">{{ club.name }}</h1>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <i class="fas fa-calendar-check mr-2"></i>
+                    Book Your Appointment
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Book Your Service</h2>
+            <p class="text-xl text-gray-600 mb-6">{{ club.description or "Choose from our available services and book your appointment" }}</p>
+            
+            <div class="bg-primary text-white rounded-lg p-6 mb-8">
+                <div class="flex items-center justify-center space-x-6">
+                    <div class="text-center">
+                        <i class="fas fa-clock text-3xl mb-2"></i>
+                        <p class="text-sm">Quick Booking</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-shield-alt text-3xl mb-2"></i>
+                        <p class="text-sm">Secure Payment</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-mobile-alt text-3xl mb-2"></i>
+                        <p class="text-sm">Mobile Friendly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Steps -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Step 1: Select Service -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">
+                        <span class="bg-primary text-white rounded-full w-8 h-8 inline-flex items-center justify-center mr-3">1</span>
+                        Choose Your Service
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="servicesList">
+                        <!-- Services will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Date & Time -->
+                <div id="datetimeSection" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">
+                        <span class="bg-primary text-white rounded-full w-8 h-8 inline-flex items-center justify-center mr-3">2</span>
+                        Select Date & Time
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Available Dates</label>
+                            <div id="datePicker" class="border border-gray-300 rounded-lg p-4 min-h-64">
+                                <!-- Date picker will be generated here -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Available Times</label>
+                            <div id="timeSlots" class="border border-gray-300 rounded-lg p-4 min-h-64">
+                                <p class="text-gray-500 text-center">Select a date first</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Contact Information -->
+                <div id="contactSection" class="bg-white rounded-lg shadow p-6 hidden">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">
+                        <span class="bg-primary text-white rounded-full w-8 h-8 inline-flex items-center justify-center mr-3">3</span>
+                        Your Information
+                    </h3>
+                    
+                    <form id="bookingForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Special Requests or Notes</label>
+                            <textarea id="notes" name="notes" rows="3"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="Any special requirements or notes..."></textarea>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required class="mr-2">
+                            <label for="agreeTerms" class="text-sm text-gray-700">
+                                I agree to the <a href="#" class="text-primary hover:underline">terms and conditions</a> and <a href="#" class="text-primary hover:underline">privacy policy</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" id="bookNowBtn" disabled
+                            class="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:bg-secondary transition duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                            Complete Booking
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Booking Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow p-6 sticky top-8">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Booking Summary</h3>
+                    
+                    <div id="bookingSummary" class="space-y-4">
+                        <div class="text-center text-gray-500 py-8">
+                            <i class="fas fa-calendar-plus text-4xl mb-4"></i>
+                            <p>Select a service to get started</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Club Info -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h4 class="font-semibold text-gray-900 mb-3">About {{ club.name }}</h4>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                                <span>123 Main St, City, State</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-primary mr-2"></i>
+                                <span>Mon-Fri: 6AM-10PM</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-primary mr-2"></i>
+                                <span>(555) 123-4567</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-500 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
+                <p class="text-gray-600 mb-6">Your appointment has been successfully booked.</p>
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                    <div id="confirmationDetails">
+                        <!-- Confirmation details will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <button onclick="printConfirmation()" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300">
+                        <i class="fas fa-print mr-2"></i>Print Confirmation
+                    </button>
+                    <button onclick="closeSuccessModal()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition duration-300">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedService = null;
+        let selectedDateTime = null;
+        let currentStep = 1;
+
+        // Mock services data
+        const services = [
+            {
+                id: 1,
+                name: "Personal Training",
+                price: 75,
+                duration: 60,
+                description: "One-on-one personal training session with certified trainer",
+                available: true
+            },
+            {
+                id: 2,
+                name: "Nutrition Consultation",
+                price: 120,
+                duration: 90,
+                description: "Comprehensive nutrition planning and meal prep guidance",
+                available: true
+            },
+            {
+                id: 3,
+                name: "Group Yoga Class",
+                price: 35,
+                duration: 60,
+                description: "Relaxing yoga class for all skill levels",
+                available: true
+            },
+            {
+                id: 4,
+                name: "Massage Therapy",
+                price: 95,
+                duration: 60,
+                description: "Professional therapeutic massage session",
+                available: false
+            }
+        ];
+
+        // Load services on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServices();
+            generateDatePicker();
+        });
+
+        function loadServices() {
+            const servicesList = document.getElementById('servicesList');
+            servicesList.innerHTML = services.map(service => `
+                <div class="border border-gray-200 rounded-lg p-6 hover:border-primary transition duration-300 cursor-pointer ${!service.available ? 'opacity-50' : ''}"
+                     onclick="${service.available ? `selectService(${service.id})` : ''}">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="font-semibold text-gray-900">${service.name}</h4>
+                        ${!service.available ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Unavailable</span>' : ''}
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">${service.description}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-primary">$${service.price}</span>
+                        <span class="text-sm text-gray-500">${service.duration} minutes</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectService(serviceId) {
+            selectedService = services.find(s => s.id === serviceId);
+            updateBookingSummary();
+            showDateTimeSection();
+            currentStep = 2;
+        }
+
+        function showDateTimeSection() {
+            document.getElementById('datetimeSection').classList.remove('hidden');
+            document.getElementById('datetimeSection').scrollIntoView({ behavior: 'smooth' });
+            generateTimeSlots();
+        }
+
+        function generateDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            const today = new Date();
+            const dates = [];
+            
+            // Generate next 30 days
+            for (let i = 1; i <= 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                dates.push(date);
+            }
+            
+            datePicker.innerHTML = dates.map(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                const displayDate = date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                return `
+                    <button onclick="selectDate('${dateStr}')" 
+                            class="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition duration-300 mb-2">
+                        <div class="font-medium text-gray-900">${displayDate}</div>
+                        <div class="text-sm text-gray-500">${getAvailableSlots(date)} slots available</div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function getAvailableSlots(date) {
+            // Mock availability - in production, this would check actual availability
+            const day = date.getDay();
+            return day === 0 || day === 6 ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 8) + 4;
+        }
+
+        function selectDate(dateStr) {
+            selectedDateTime = { date: dateStr };
+            generateTimeSlots(dateStr);
+            updateBookingSummary();
+        }
+
+        function generateTimeSlots(dateStr = null) {
+            const timeSlots = document.getElementById('timeSlots');
+            
+            if (!dateStr) {
+                timeSlots.innerHTML = '<p class="text-gray-500 text-center">Select a date first</p>';
+                return;
+            }
+            
+            // Mock time slots - in production, this would check actual availability
+            const slots = [
+                '09:00', '10:30', '12:00', '14:00', '15:30', '17:00', '18:30'
+            ];
+            
+            timeSlots.innerHTML = slots.map(time => `
+                <button onclick="selectTimeSlot('${time}')" 
+                        class="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition duration-300 mb-2">
+                    <div class="font-medium text-gray-900">${formatTime(time)}</div>
+                    <div class="text-sm text-gray-500">Available</div>
+                </button>
+            `).join('');
+        }
+
+        function selectTimeSlot(time) {
+            selectedDateTime.time = time;
+            updateBookingSummary();
+            showContactSection();
+            currentStep = 3;
+        }
+
+        function showContactSection() {
+            document.getElementById('contactSection').classList.remove('hidden');
+            document.getElementById('contactSection').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('bookNowBtn').disabled = false;
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function updateBookingSummary() {
+            const summary = document.getElementById('bookingSummary');
+            
+            if (!selectedService) {
+                summary.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-calendar-plus text-4xl mb-4"></i>
+                        <p>Select a service to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let summaryHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-900">Service:</span>
+                        <span class="text-gray-900">${selectedService.name}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-900">Duration:</span>
+                        <span class="text-gray-900">${selectedService.duration} minutes</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-900">Price:</span>
+                        <span class="text-xl font-bold text-primary">$${selectedService.price}</span>
+                    </div>
+            `;
+            
+            if (selectedDateTime && selectedDateTime.date) {
+                const date = new Date(selectedDateTime.date);
+                const displayDate = date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                summaryHTML += `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-900">Date:</span>
+                        <span class="text-gray-900">${displayDate}</span>
+                    </div>
+                `;
+            }
+            
+            if (selectedDateTime && selectedDateTime.time) {
+                summaryHTML += `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-900">Time:</span>
+                        <span class="text-gray-900">${formatTime(selectedDateTime.time)}</span>
+                    </div>
+                `;
+            }
+            
+            summaryHTML += '</div>';
+            summary.innerHTML = summaryHTML;
+        }
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const bookingData = {
+                service: selectedService,
+                datetime: selectedDateTime,
+                contact: Object.fromEntries(formData)
+            };
+            
+            // Simulate booking submission
+            submitBooking(bookingData);
+        });
+
+        function submitBooking(bookingData) {
+            // Show loading state
+            const submitBtn = document.getElementById('bookNowBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                showSuccessModal(bookingData);
+                submitBtn.innerHTML = 'Complete Booking';
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        function showSuccessModal(bookingData) {
+            const confirmationDetails = document.getElementById('confirmationDetails');
+            const date = new Date(bookingData.datetime.date);
+            const displayDate = date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            confirmationDetails.innerHTML = `
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="font-medium">Service:</span>
+                        <span>${bookingData.service.name}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Date:</span>
+                        <span>${displayDate}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Time:</span>
+                        <span>${formatTime(bookingData.datetime.time)}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Duration:</span>
+                        <span>${bookingData.service.duration} minutes</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Total:</span>
+                        <span class="font-bold text-primary">$${bookingData.service.price}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Confirmation:</span>
+                        <span class="font-mono text-sm">#BK${Math.random().toString(36).substr(2, 8).toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            // Reset form
+            document.getElementById('bookingForm').reset();
+            selectedService = null;
+            selectedDateTime = null;
+            currentStep = 1;
+            updateBookingSummary();
+        }
+
+        function printConfirmation() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

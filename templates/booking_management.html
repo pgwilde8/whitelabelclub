@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ club.name }} - Booking Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color or "#3B82F6" }}',
+                        secondary: '{{ club.secondary_color or "#1E40AF" }}',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{{ club.logo_url or '/static/default-logo.png' }}" alt="{{ club.name }}" class="h-8 w-auto mr-3" onerror="this.style.display='none'">
+                        <span class="text-2xl font-bold text-primary">{{ club.name }}</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/club/{{ club.slug }}/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="/club/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        <a href="/club/{{ club.slug }}/bookings" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        <a href="/club/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        <a href="/club/{{ club.slug }}/settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Booking Management</h1>
+            <p class="text-gray-600">Manage your booking services and appointments</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-plus text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Add New Service</h3>
+                        <p class="text-sm text-gray-600">Create a new bookable service</p>
+                    </div>
+                </div>
+                <button onclick="openAddServiceModal()" class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300">
+                    Add Service
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-link text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Public Booking URL</h3>
+                        <p class="text-sm text-gray-600">Share booking link with non-members</p>
+                    </div>
+                </div>
+                <button onclick="openPublicUrlModal()" class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                    Get Public URL
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-calendar-alt text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">View Calendar</h3>
+                        <p class="text-sm text-gray-600">See all upcoming bookings</p>
+                    </div>
+                </div>
+                <button onclick="viewCalendar()" class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                    Open Calendar
+                </button>
+            </div>
+        </div>
+
+        <!-- Services Management -->
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Your Booking Services</h2>
+                <p class="text-gray-600 mt-1">Manage and customize your bookable services</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="servicesList">
+                    <!-- Services will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Recent Bookings</h2>
+                <p class="text-gray-600 mt-1">Latest appointments and requests</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="bookingsTable">
+                            <!-- Bookings will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div id="addServiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Add New Booking Service</h3>
+                    <button onclick="closeAddServiceModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="addServiceForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-2">
+                                Service Name *
+                            </label>
+                            <input type="text" id="serviceName" name="serviceName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="e.g., Personal Training Session">
+                        </div>
+                        
+                        <div>
+                            <label for="servicePrice" class="block text-sm font-medium text-gray-700 mb-2">
+                                Price *
+                            </label>
+                            <input type="number" id="servicePrice" name="servicePrice" required min="0" step="0.01"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="75.00">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                            Description
+                        </label>
+                        <textarea id="serviceDescription" name="serviceDescription" rows="3"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            placeholder="Describe what this service includes..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="serviceDuration" class="block text-sm font-medium text-gray-700 mb-2">
+                                Duration (minutes) *
+                            </label>
+                            <input type="number" id="serviceDuration" name="serviceDuration" required min="15" step="15"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="60">
+                        </div>
+                        
+                        <div>
+                            <label for="serviceCapacity" class="block text-sm font-medium text-gray-700 mb-2">
+                                Max Participants
+                            </label>
+                            <input type="number" id="serviceCapacity" name="serviceCapacity" min="1" value="1"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="1">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Availability
+                        </label>
+                        <div class="grid grid-cols-7 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="monday" class="mr-2">
+                                <span class="text-sm">Mon</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="tuesday" class="mr-2">
+                                <span class="text-sm">Tue</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="wednesday" class="mr-2">
+                                <span class="text-sm">Wed</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="thursday" class="mr-2">
+                                <span class="text-sm">Thu</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="friday" class="mr-2">
+                                <span class="text-sm">Fri</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="saturday" class="mr-2">
+                                <span class="text-sm">Sat</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="availableDays" value="sunday" class="mr-2">
+                                <span class="text-sm">Sun</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="startTime" class="block text-sm font-medium text-gray-700 mb-2">
+                                Start Time
+                            </label>
+                            <input type="time" id="startTime" name="startTime" value="09:00"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="endTime" class="block text-sm font-medium text-gray-700 mb-2">
+                                End Time
+                            </label>
+                            <input type="time" id="endTime" name="endTime" value="17:00"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" id="allowNonMembers" name="allowNonMembers" class="mr-2">
+                        <label for="allowNonMembers" class="text-sm text-gray-700">
+                            Allow non-members to book this service
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <button type="button" onclick="closeAddServiceModal()" 
+                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
+                            Create Service
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public URL Modal -->
+    <div id="publicUrlModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Public Booking URL</h3>
+                    <button onclick="closePublicUrlModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            <h4 class="font-semibold text-blue-900">Share Your Booking Page</h4>
+                        </div>
+                        <p class="text-blue-800 text-sm">
+                            This URL allows anyone to book your services without being a member. 
+                            Perfect for promoting on social media, websites, or marketing materials.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Public Booking URL
+                        </label>
+                        <div class="flex">
+                            <input type="text" id="publicBookingUrl" readonly
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900"
+                                value="https://{{ club.slug }}.clublaunch.com/book">
+                            <button onclick="copyPublicUrl()" 
+                                class="ml-3 px-4 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
+                                <i class="fas fa-copy mr-2"></i>Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2">QR Code</h4>
+                            <div class="text-center">
+                                <div id="qrCode" class="w-32 h-32 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                    <i class="fas fa-qrcode text-4xl text-gray-400"></i>
+                                </div>
+                                <p class="text-xs text-gray-600">Scan to book</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2">Social Share</h4>
+                            <div class="space-y-2">
+                                <button onclick="shareToSocial('facebook')" 
+                                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                                    <i class="fab fa-facebook mr-2"></i>Share on Facebook
+                                </button>
+                                <button onclick="shareToSocial('twitter')" 
+                                    class="w-full bg-blue-400 text-white py-2 rounded-lg hover:bg-blue-500 transition duration-300">
+                                    <i class="fab fa-twitter mr-2"></i>Share on Twitter
+                                </button>
+                                <button onclick="shareToSocial('linkedin')" 
+                                    class="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition duration-300">
+                                    <i class="fab fa-linkedin mr-2"></i>Share on LinkedIn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-green-900 mb-2">Pro Tips for Promotion</h4>
+                        <ul class="text-green-800 text-sm space-y-1">
+                            <li>• Add this URL to your email signature</li>
+                            <li>• Include it in your social media bio</li>
+                            <li>• Print QR codes for your physical location</li>
+                            <li>• Share in local community groups</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="closePublicUrlModal()" 
+                            class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
+                            Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data - in production, this would come from API
+        const mockServices = [
+            {
+                id: 1,
+                name: "Personal Training",
+                price: 75,
+                duration: 60,
+                description: "One-on-one personal training session",
+                bookings: 23,
+                revenue: 1725,
+                status: "active"
+            },
+            {
+                id: 2,
+                name: "Nutrition Consultation",
+                price: 120,
+                duration: 90,
+                description: "Comprehensive nutrition planning session",
+                bookings: 8,
+                revenue: 960,
+                status: "active"
+            },
+            {
+                id: 3,
+                name: "Group Yoga Class",
+                price: 35,
+                duration: 60,
+                description: "Relaxing yoga class for all levels",
+                bookings: 45,
+                revenue: 1575,
+                status: "active"
+            }
+        ];
+
+        const mockBookings = [
+            {
+                id: 1,
+                client: "Alice Johnson",
+                service: "Personal Training",
+                dateTime: "Today 2:00 PM",
+                status: "confirmed",
+                amount: 75,
+                isMember: true
+            },
+            {
+                id: 2,
+                client: "Bob Smith",
+                service: "Nutrition Consultation",
+                dateTime: "Tomorrow 10:00 AM",
+                status: "pending",
+                amount: 120,
+                isMember: false
+            },
+            {
+                id: 3,
+                client: "Carol Davis",
+                service: "Group Yoga Class",
+                dateTime: "Tomorrow 6:00 PM",
+                status: "confirmed",
+                amount: 35,
+                isMember: true
+            }
+        ];
+
+        // Load services and bookings
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServices();
+            loadBookings();
+        });
+
+        function loadServices() {
+            const servicesList = document.getElementById('servicesList');
+            servicesList.innerHTML = mockServices.map(service => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold text-gray-900">${service.name}</h3>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">${service.status}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">${service.description}</p>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-lg font-bold text-primary">$${service.price}</span>
+                        <span class="text-sm text-gray-500">${service.duration} min</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-gray-600">${service.bookings} bookings</span>
+                        <span class="text-sm font-medium text-green-600">$${service.revenue} revenue</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="editService(${service.id})" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition duration-300">
+                            Edit
+                        </button>
+                        <button onclick="viewServiceBookings(${service.id})" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition duration-300">
+                            Bookings
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadBookings() {
+            const bookingsTable = document.getElementById('bookingsTable');
+            bookingsTable.innerHTML = mockBookings.map(booking => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-gray-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${booking.client}</div>
+                                <div class="text-sm text-gray-500">${booking.isMember ? 'Member' : 'Non-member'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.service}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.dateTime}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(booking.status)}">
+                            ${booking.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">$${booking.amount}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewBooking(${booking.id})" class="text-primary hover:text-secondary">View</button>
+                            <button onclick="editBooking(${booking.id})" class="text-gray-600 hover:text-gray-800">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'confirmed': 'bg-green-100 text-green-800',
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'cancelled': 'bg-red-100 text-red-800',
+                'completed': 'bg-blue-100 text-blue-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Modal functions
+        function openAddServiceModal() {
+            document.getElementById('addServiceModal').classList.remove('hidden');
+        }
+
+        function closeAddServiceModal() {
+            document.getElementById('addServiceModal').classList.add('hidden');
+            document.getElementById('addServiceForm').reset();
+        }
+
+        function openPublicUrlModal() {
+            document.getElementById('publicUrlModal').classList.remove('hidden');
+        }
+
+        function closePublicUrlModal() {
+            document.getElementById('publicUrlModal').classList.add('hidden');
+        }
+
+        // Form submission
+        document.getElementById('addServiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const serviceData = Object.fromEntries(formData);
+            
+            // In production, this would send to API
+            console.log('Creating service:', serviceData);
+            alert('Service created successfully!');
+            closeAddServiceModal();
+            loadServices(); // Refresh services list
+        });
+
+        // Utility functions
+        function copyPublicUrl() {
+            const urlInput = document.getElementById('publicBookingUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            alert('URL copied to clipboard!');
+        }
+
+        function shareToSocial(platform) {
+            const url = document.getElementById('publicBookingUrl').value;
+            const text = `Book services at {{ club.name }}! Check out our available appointments:`;
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+            }
+            
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+
+        function viewCalendar() {
+            alert('Calendar view coming soon!');
+        }
+
+        function editService(id) {
+            alert(`Edit service ${id} - coming soon!`);
+        }
+
+        function viewServiceBookings(id) {
+            alert(`View bookings for service ${id} - coming soon!`);
+        }
+
+        function viewBooking(id) {
+            alert(`View booking ${id} - coming soon!`);
+        }
+
+        function editBooking(id) {
+            alert(`Edit booking ${id} - coming soon!`);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed')) {
+                closeAddServiceModal();
+                closePublicUrlModal();
+            }
+        });
+    </script>
+</body>
+</html>

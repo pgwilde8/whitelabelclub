@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClubLaunch - Launch Your Own Branded Community Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-primary">🚀 ClubLaunch</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/features" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="#pricing" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                        <a href="#demo" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Demo</a>
+                        <a href="#contact" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Launch Your Own
+                    <span class="text-primary">Branded Club</span>
+                    in Minutes
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Create your own private community platform with booking system, AI chat, payments, and more. 
+                    White-label solution that looks like your own product.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/signup" class="bg-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-secondary transition duration-300 shadow-lg">
+                        <i class="fas fa-rocket mr-2"></i>Start Free Trial
+                    </a>
+                    <a href="#features" class="border-2 border-primary text-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary hover:text-white transition duration-300">
+                        <i class="fas fa-play mr-2"></i>Watch Demo
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">
+                    <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                    No credit card required • 14-day free trial • Cancel anytime
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Everything You Need to Build Your Community
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    From booking systems to AI assistants, we provide all the tools to create a professional club platform.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-calendar-check text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Booking System</h3>
+                    <p class="text-gray-600">Calendar view, rescheduling, payments, and automated confirmations. Perfect for coaching, consulting, or service-based businesses.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-comments text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Real-time Chat</h3>
+                    <p class="text-gray-600">Built-in chat rooms with moderation, file sharing, and tier-based access. Keep your community engaged and connected.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-robot text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">AI Assistant</h3>
+                    <p class="text-gray-600">Connect your OpenAI API key for club-specific AI chat, Q&A bots, and personalized recommendations.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-credit-card text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Stripe Payments</h3>
+                    <p class="text-gray-600">Collect membership fees, booking payments, and donations through Stripe Express. You keep the money, we handle the tech.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-palette text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">White-Label Branding</h3>
+                    <p class="text-gray-600">Custom domain, logo, colors, and branding. Your members will think you built this platform yourself.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Member Management</h3>
+                    <p class="text-gray-600">Free, Premium, and VIP tiers with different access levels. Easy member onboarding and subscription management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Get Started in 3 Simple Steps
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Sign Up & Brand</h3>
+                    <p class="text-gray-600">Create your account, add your branding, and set up your Stripe account for payments.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Configure Features</h3>
+                    <p class="text-gray-600">Set up your booking services, membership tiers, and connect your OpenAI API key for AI features.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Launch & Grow</h3>
+                    <p class="text-gray-600">Share your custom domain with members and start collecting payments immediately.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Simple, Transparent Pricing
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Start free, scale as you grow. No hidden fees, no surprises.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$67<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">Perfect for getting started</p>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>1 Club/Community</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Unlimited Members</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Booking System</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Real-time Chat</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Stripe Payments</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Subdomain</span>
+                        </li>
+                    </ul>
+                    <button onclick="startCheckout('starter')" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-primary p-8 rounded-xl border-2 border-primary relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-secondary text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
+                        <div class="text-4xl font-bold text-white mb-2">$97<span class="text-lg text-blue-200">/month</span></div>
+                        <p class="text-blue-200">For growing communities</p>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Everything in Starter</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Custom Domain</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">AI Assistant</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Media Library</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Advanced Analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Priority Support</span>
+                        </li>
+                    </ul>
+                    <button onclick="startCheckout('pro')" class="w-full bg-white text-primary py-3 rounded-lg text-center block hover:bg-gray-100 transition duration-300 font-semibold">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$197<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">For established businesses</p>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Everything in Pro</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Multiple Clubs</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Advanced AI Features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Integrations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Dedicated Support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>SLA Guarantee</span>
+                        </li>
+                    </ul>
+                    <button onclick="startCheckout('enterprise')" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
+                        Start Free Trial
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <p class="text-gray-600 mb-4">
+                    <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                    All plans include 14-day free trial, no setup fees, and cancel anytime
+                </p>
+                <p class="text-sm text-gray-500">
+                    * Optional 3% platform fee on bookings and donations (can be disabled)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    See ClubLaunch in Action
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Watch how easy it is to create your own branded community platform
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-xl p-8 max-w-4xl mx-auto">
+                <div class="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-8">
+                    <div class="text-center">
+                        <i class="fas fa-play-circle text-primary text-6xl mb-4"></i>
+                        <p class="text-gray-600">Demo Video Coming Soon</p>
+                        <p class="text-sm text-gray-500">Interactive walkthrough of the platform</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-magic text-primary mr-2"></i>
+                            What You'll See:
+                        </h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Complete onboarding wizard</li>
+                            <li>• Custom branding setup</li>
+                            <li>• Booking system configuration</li>
+                            <li>• Member management dashboard</li>
+                            <li>• AI assistant integration</li>
+                            <li>• Payment processing setup</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-rocket text-primary mr-2"></i>
+                            Live Demo:
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Try our live demo with a sample club to see exactly how your members will experience your platform.
+                        </p>
+                        <a href="#" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition duration-300">
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            Try Live Demo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                Ready to Launch Your Community?
+            </h2>
+            <p class="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">
+                Join hundreds of entrepreneurs who are already building successful communities with ClubLaunch.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/signup" class="bg-white text-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300 shadow-lg">
+                    <i class="fas fa-rocket mr-2"></i>Start Free Trial
+                </a>
+                <a href="#contact" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary transition duration-300">
+                    <i class="fas fa-calendar mr-2"></i>Schedule Demo
+                </a>
+            </div>
+            <p class="text-blue-200 text-sm mt-6">
+                <i class="fas fa-clock mr-1"></i>
+                Average setup time: 15 minutes
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">🚀 ClubLaunch</h3>
+                    <p class="text-gray-400 mb-4">
+                        The easiest way to launch your own branded community platform.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/features" class="hover:text-white">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+                        <li><a href="#demo" class="hover:text-white">Demo</a></li>
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Status</a></li>
+                        <li><a href="#" class="hover:text-white">API Docs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">About</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ClubLaunch. All rights reserved. Built for entrepreneurs who want to build communities.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth scrolling script -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.classList.add('bg-white', 'shadow-lg');
+            } else {
+                nav.classList.remove('bg-white', 'shadow-lg');
+            }
+        });
+
+        // Stripe Checkout Function
+        async function startCheckout(plan) {
+            try {
+                // Show loading state
+                const buttons = document.querySelectorAll(`button[onclick="startCheckout('${plan}')"]`);
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+                });
+
+                // Call your FastAPI endpoint to create checkout session
+                const response = await fetch(`/create-checkout-session/${plan}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const data = await response.json();
+                
+                // Redirect to Stripe Checkout
+                window.location.href = data.checkout_url;
+
+            } catch (error) {
+                console.error('Error starting checkout:', error);
+                alert('There was an error starting the checkout process. Please try again.');
+                
+                // Reset button states
+                const buttons = document.querySelectorAll(`button[onclick="startCheckout('${plan}')"]`);
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Start Free Trial';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ club.name }} - Club Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color or "#3B82F6" }}',
+                        secondary: '{{ club.secondary_color or "#1E40AF" }}',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{{ club.logo_url or '/static/default-logo.png' }}" alt="{{ club.name }}" class="h-8 w-auto mr-3" onerror="this.style.display='none'">
+                        <span class="text-2xl font-bold text-primary">{{ club.name }}</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#dashboard" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="#members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        {% if club.enable_bookings %}
+                        <a href="#bookings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        {% endif %}
+                        {% if club.enable_chat %}
+                        <a href="#chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        {% endif %}
+                        <a href="#settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 text-gray-400 hover:text-primary relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            {% if unread_notifications > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ unread_notifications }}</span>
+                            {% endif %}
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-primary">
+                            <img src="{{ owner.avatar_url or '/static/default-avatar.png' }}" alt="Profile" class="h-8 w-8 rounded-full" onerror="this.src='/static/default-avatar.png'">
+                            <span class="hidden md:block">{{ owner.username }}</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <!-- User Dropdown -->
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#billing" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Billing</a>
+                            <a href="#support" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+                            <hr class="my-1">
+                            <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg p-8 text-white mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Welcome back, {{ owner.username }}!</h1>
+                    <p class="text-blue-100 mb-4">{{ club.description or "Your community is growing strong!" }}</p>
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">{{ total_members }}</div>
+                            <div class="text-blue-200 text-sm">Total Members</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">{{ active_members }}</div>
+                            <div class="text-blue-200 text-sm">Active This Week</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">${{ total_revenue }}</div>
+                            <div class="text-blue-200 text-sm">Total Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-4xl text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-user-plus text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Invite Members</h3>
+                        <p class="text-sm text-gray-600">Share your community</p>
+                    </div>
+                </div>
+                <button onclick="inviteMembers()" class="w-full mt-4 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition duration-300">
+                    Send Invites
+                </button>
+            </div>
+
+            {% if club.enable_bookings %}
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-calendar-plus text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">New Booking</h3>
+                        <p class="text-sm text-gray-600">Add a service</p>
+                    </div>
+                </div>
+                <a href="/club/{{ club.slug }}/bookings" class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300 block text-center">
+                    Add Service
+                </a>
+            </div>
+            {% endif %}
+
+            {% if club.enable_chat %}
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-comments text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Chat Activity</h3>
+                        <p class="text-sm text-gray-600">{{ recent_messages }} new messages</p>
+                    </div>
+                </div>
+                <button onclick="viewChat()" class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                    View Chat
+                </button>
+            </div>
+            {% endif %}
+
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-cog text-orange-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Customize</h3>
+                        <p class="text-sm text-gray-600">Update settings</p>
+                    </div>
+                </div>
+                <button onclick="openSettings()" class="w-full mt-4 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition duration-300">
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- AI Suggestions Widget -->
+                {% include 'ai_suggestions_widget.html' %}
+                
+                <!-- Revenue Chart -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Revenue Overview</h2>
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                    <div class="space-y-4">
+                        {% for activity in recent_activities %}
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                <i class="fas {{ activity.icon }} text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">{{ activity.description }}</p>
+                                <p class="text-xs text-gray-500">{{ activity.timestamp }}</p>
+                            </div>
+                            {% if activity.amount %}
+                            <div class="text-sm font-semibold text-green-600">+${{ activity.amount }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Upcoming Bookings -->
+                {% if club.enable_bookings %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming Bookings</h2>
+                    <div class="space-y-3">
+                        {% for booking in upcoming_bookings %}
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ booking.member_name }}</p>
+                                    <p class="text-sm text-gray-600">{{ booking.service_name }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-900">{{ booking.date_time }}</p>
+                                <p class="text-xs text-gray-500">${{ booking.amount }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Membership Stats -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Membership Overview</h2>
+                    <div class="space-y-4">
+                        {% for tier in membership_tiers %}
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ tier.name }}</p>
+                                <p class="text-sm text-gray-600">{{ tier.member_count }} members</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-primary">${{ tier.price }}/{{ tier.interval }}</p>
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-2 bg-primary rounded-full" style="width: {{ tier.percentage }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Stats</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Platform Uptime</span>
+                            <span class="font-semibold text-green-600">99.9%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Avg. Session</span>
+                            <span class="font-semibold text-primary">{{ avg_session_time }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">New Members</span>
+                            <span class="font-semibold text-blue-600">+{{ new_members_this_month }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Conversion Rate</span>
+                            <span class="font-semibold text-purple-600">{{ conversion_rate }}%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Members -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Members</h2>
+                    <div class="space-y-3">
+                        {% for member in recent_members %}
+                        <div class="flex items-center space-x-3">
+                            <img src="{{ member.avatar_url or '/static/default-avatar.png' }}" alt="{{ member.name }}" class="w-8 h-8 rounded-full" onerror="this.src='/static/default-avatar.png'">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ member.name }}</p>
+                                <p class="text-xs text-gray-500">{{ member.joined_date }}</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ member.tier }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Support Widget -->
+                <div class="bg-gradient-to-r from-primary to-secondary rounded-lg shadow p-6 text-white">
+                    <h3 class="font-semibold mb-2">Need Help?</h3>
+                    <p class="text-blue-100 text-sm mb-4">Our support team is here to help you succeed.</p>
+                    <div class="space-y-2">
+                        <button onclick="openSupport()" class="w-full bg-white bg-opacity-20 text-white py-2 rounded-lg hover:bg-opacity-30 transition duration-300">
+                            <i class="fas fa-comments mr-2"></i>Live Chat
+                        </button>
+                        <button onclick="openDocs()" class="w-full bg-white bg-opacity-20 text-white py-2 rounded-lg hover:bg-opacity-30 transition duration-300">
+                            <i class="fas fa-book mr-2"></i>Documentation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="hidden fixed right-4 top-20 w-80 bg-white rounded-lg shadow-lg z-50">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900">Notifications</h3>
+        </div>
+        <div class="max-h-96 overflow-y-auto">
+            {% for notification in notifications %}
+            <div class="p-4 border-b border-gray-100 hover:bg-gray-50">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <i class="fas {{ notification.icon }} text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-900">{{ notification.message }}</p>
+                        <p class="text-xs text-gray-500">{{ notification.timestamp }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Include AI Chat Widget -->
+    {% include 'ai_chat_widget.html' %}
+
+    <script>
+        // Initialize Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ revenue_chart_labels | safe }},
+                datasets: [{
+                    label: 'Revenue',
+                    data: {{ revenue_chart_data | safe }},
+                    borderColor: '{{ club.primary_color or "#3B82F6" }}',
+                    backgroundColor: '{{ club.primary_color or "#3B82F6" }}20',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Toggle functions
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function inviteMembers() {
+            // Implementation for member invitation
+            alert('Member invitation feature - coming soon!');
+        }
+
+        function addBookingService() {
+            // Implementation for adding booking service
+            alert('Add booking service feature - coming soon!');
+        }
+
+        function viewChat() {
+            // Implementation for viewing chat
+            alert('Chat feature - coming soon!');
+        }
+
+        function openSettings() {
+            // Implementation for opening settings
+            alert('Settings feature - coming soon!');
+        }
+
+        function openSupport() {
+            window.open('mailto:support@clublaunch.com', '_blank');
+        }
+
+        function openDocs() {
+            window.open('https://docs.clublaunch.com', '_blank');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const notificationPanel = document.getElementById('notificationPanel');
+            
+            if (!event.target.closest('.relative')) {
+                userMenu.classList.add('hidden');
+                notificationPanel.classList.add('hidden');
+            }
+        });
+
+        // Auto-refresh data every 30 seconds
+        setInterval(function() {
+            // In a real implementation, this would fetch updated data
+            console.log('Refreshing dashboard data...');
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Stripe - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Progress Bar -->
+    <div class="bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Plan Selected</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-primary mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Platform Setup</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-primary mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-bold">3</span>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-primary">Stripe Connect</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-300 mx-4"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span class="text-gray-600 text-sm font-bold">4</span>
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Launch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Connect Your Stripe Account
+            </h1>
+            <p class="text-xl text-gray-600">
+                Set up payments so you can start collecting money from your community members.
+            </p>
+        </div>
+
+        <!-- Stripe Setup Content -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <!-- Why Stripe Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-shield-alt text-primary mr-3"></i>
+                    Why Stripe?
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gray-50 rounded-lg">
+                        <i class="fas fa-lock text-primary text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-gray-900 mb-2">Secure Payments</h3>
+                        <p class="text-sm text-gray-600">Industry-leading security with PCI compliance</p>
+                    </div>
+                    <div class="text-center p-6 bg-gray-50 rounded-lg">
+                        <i class="fas fa-globe text-primary text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-gray-900 mb-2">Global Support</h3>
+                        <p class="text-sm text-gray-600">Accept payments from around the world</p>
+                    </div>
+                    <div class="text-center p-6 bg-gray-50 rounded-lg">
+                        <i class="fas fa-mobile-alt text-primary text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-gray-900 mb-2">Mobile Ready</h3>
+                        <p class="text-sm text-gray-600">Optimized for mobile payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stripe Connect Button -->
+            <div class="text-center mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                    Ready to connect your Stripe account?
+                </h3>
+                <p class="text-gray-600 mb-6">
+                    This will open Stripe Connect where you can set up your account in just a few minutes.
+                </p>
+                
+                <button id="connectStripeBtn" onclick="connectStripe()" 
+                    class="bg-[#635BFF] hover:bg-[#5A52FF] text-white px-8 py-4 rounded-lg font-semibold transition duration-300 shadow-lg">
+                    <i class="fab fa-stripe mr-3"></i>
+                    Connect with Stripe
+                </button>
+                
+                <p class="text-sm text-gray-500 mt-4">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    You'll be redirected back here after setup
+                </p>
+            </div>
+
+            <!-- What Happens Next -->
+            <div class="border-t border-gray-200 pt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">
+                    What happens next?
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-4 mt-1">
+                            <span class="text-white text-sm font-bold">1</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Stripe Account Setup</h4>
+                            <p class="text-gray-600 text-sm">You'll create or log into your Stripe account and provide basic business information.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-4 mt-1">
+                            <span class="text-white text-sm font-bold">2</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Bank Account Connection</h4>
+                            <p class="text-gray-600 text-sm">Connect your bank account where you want to receive payments.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-4 mt-1">
+                            <span class="text-white text-sm font-bold">3</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Platform Integration</h4>
+                            <p class="text-gray-600 text-sm">We'll automatically connect your Stripe account to your ClubLaunch platform.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-4 mt-1">
+                            <span class="text-white text-sm font-bold">4</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Ready to Launch</h4>
+                            <p class="text-gray-600 text-sm">Start accepting payments from your community members immediately.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alternative Options -->
+            <div class="border-t border-gray-200 pt-8 mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                    Don't have a Stripe account yet?
+                </h3>
+                <p class="text-gray-600 mb-6">
+                    No problem! You can set one up during the connection process. Stripe accounts are free to create.
+                </p>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-blue-500 text-xl mr-3 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-900 mb-2">Pro Tip</h4>
+                            <p class="text-blue-800 text-sm">
+                                You can skip Stripe setup for now and add it later. Your platform will work without payments, 
+                                but you won't be able to collect membership fees or donations until you connect Stripe.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between pt-8 border-t border-gray-200 mt-8">
+                <button onclick="goBack()" 
+                    class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Setup
+                </button>
+                
+                <button onclick="skipStripe()" 
+                    class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                    Skip for Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-green-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Stripe Connected!</h3>
+                    <p class="text-gray-600 mb-6">Your Stripe account has been successfully connected to your platform.</p>
+                    
+                    <button onclick="proceedToLaunch()" 
+                        class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
+                        Launch Your Platform
+                        <i class="fas fa-rocket ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user came from onboarding page (disabled for testing)
+        // if (!sessionStorage.getItem('platformData')) {
+        //     window.location.href = '/onboarding';
+        // }
+
+        function connectStripe() {
+            // In a real implementation, this would:
+            // 1. Create a Stripe Connect account link
+            // 2. Redirect to Stripe's onboarding flow
+            // 3. Handle the callback when user returns
+            
+            // For demo purposes, we'll simulate the connection
+            const button = document.getElementById('connectStripeBtn');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Connecting...';
+            button.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Store that Stripe is connected
+                sessionStorage.setItem('stripeConnected', 'true');
+                
+                // Show success modal
+                document.getElementById('successModal').classList.remove('hidden');
+            }, 2000);
+        }
+
+        function skipStripe() {
+            // Store that Stripe was skipped
+            sessionStorage.setItem('stripeConnected', 'false');
+            proceedToLaunch();
+        }
+
+        function proceedToLaunch() {
+            // Hide modal
+            document.getElementById('successModal').classList.add('hidden');
+            
+            // Redirect to launch page
+            window.location.href = '/launch';
+        }
+
+        function goBack() {
+            window.location.href = '/onboarding';
+        }
+
+        // Check URL parameters for Stripe callback
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('stripe_connected') === 'true') {
+            sessionStorage.setItem('stripeConnected', 'true');
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
