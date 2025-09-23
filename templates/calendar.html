@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ club.name }} - Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color or "#3B82F6" }}',
+                        secondary: '{{ club.secondary_color or "#1E40AF" }}',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{{ club.logo_url or '/static/default-logo.png' }}" alt="{{ club.name }}" class="h-8 w-auto mr-3" onerror="this.style.display='none'">
+                        <span class="text-2xl font-bold text-primary">{{ club.name }}</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/club/{{ club.slug }}/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="/club/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        <a href="/club/{{ club.slug }}/bookings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        <a href="/club/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        <a href="/club/{{ club.slug }}/settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="window.close()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition duration-300">
+                        <i class="fas fa-times mr-2"></i>Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Booking Calendar</h1>
+                    <p class="text-gray-600">View and manage all your appointments</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="previousMonth()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-300">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2 id="currentMonth" class="text-xl font-semibold text-gray-900 min-w-[200px] text-center">January 2025</h2>
+                    <button onclick="nextMonth()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-300">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="bg-white rounded-lg shadow">
+            <!-- Days of Week Header -->
+            <div class="grid grid-cols-7 border-b border-gray-200">
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Sunday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Monday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Tuesday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Wednesday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Thursday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Friday</div>
+                <div class="p-4 text-center text-sm font-medium text-gray-500 bg-gray-50">Saturday</div>
+            </div>
+            
+            <!-- Calendar Days -->
+            <div id="calendarGrid" class="grid grid-cols-7">
+                <!-- Calendar days will be generated here -->
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="mt-6 bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Legend</h3>
+            <div class="flex flex-wrap gap-4">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-blue-100 border border-blue-300 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Personal Training</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-green-100 border border-green-300 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Nutrition Consultation</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Group Yoga Class</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Pending</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Booking Details</h3>
+                    <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div id="bookingDetails" class="space-y-4">
+                    <!-- Booking details will be populated here -->
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button onclick="closeBookingModal()" 
+                        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock booking data - in production, this would come from API
+        const mockBookings = [
+            {
+                id: 1,
+                client_name: "Alice Johnson",
+                service_name: "Personal Training",
+                date: "2025-01-27",
+                time: "14:00",
+                status: "confirmed",
+                amount: 75.00,
+                duration: 60,
+                phone: "+1 (555) 123-4567",
+                email: "alice@example.com"
+            },
+            {
+                id: 2,
+                client_name: "Bob Smith",
+                service_name: "Nutrition Consultation",
+                date: "2025-01-28",
+                time: "10:00",
+                status: "pending",
+                amount: 120.00,
+                duration: 90,
+                phone: "+1 (555) 987-6543",
+                email: "bob@example.com"
+            },
+            {
+                id: 3,
+                client_name: "Carol Davis",
+                service_name: "Group Yoga Class",
+                date: "2025-01-28",
+                time: "18:00",
+                status: "confirmed",
+                amount: 35.00,
+                duration: 60,
+                phone: "+1 (555) 456-7890",
+                email: "carol@example.com"
+            },
+            {
+                id: 4,
+                client_name: "David Wilson",
+                service_name: "Personal Training",
+                date: "2025-01-30",
+                time: "09:00",
+                status: "confirmed",
+                amount: 75.00,
+                duration: 60,
+                phone: "+1 (555) 321-0987",
+                email: "david@example.com"
+            },
+            {
+                id: 5,
+                client_name: "Emma Brown",
+                service_name: "Nutrition Consultation",
+                date: "2025-02-01",
+                time: "15:30",
+                status: "pending",
+                amount: 120.00,
+                duration: 90,
+                phone: "+1 (555) 654-3210",
+                email: "emma@example.com"
+            }
+        ];
+
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // Initialize calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCalendar();
+        });
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonthElement = document.getElementById('currentMonth');
+            
+            // Update month display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Clear previous calendar
+            calendarGrid.innerHTML = '';
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const dayElement = createDayElement(daysInPrevMonth - firstDay + i + 1, true);
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Add days of current month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = createDayElement(day, false);
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Fill remaining cells
+            const totalCells = calendarGrid.children.length;
+            const remainingCells = 42 - totalCells; // 6 weeks * 7 days
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = createDayElement(day, true);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function createDayElement(day, isOtherMonth) {
+            const dayElement = document.createElement('div');
+            dayElement.className = `p-2 min-h-[120px] border-r border-b border-gray-200 ${isOtherMonth ? 'bg-gray-50 text-gray-400' : 'bg-white hover:bg-gray-50'}`;
+            
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'text-sm font-medium mb-2';
+            dayNumber.textContent = day;
+            dayElement.appendChild(dayNumber);
+            
+            // Add bookings for this day
+            if (!isOtherMonth) {
+                const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayBookings = mockBookings.filter(booking => booking.date === dateString);
+                
+                dayBookings.forEach(booking => {
+                    const bookingElement = createBookingElement(booking);
+                    dayElement.appendChild(bookingElement);
+                });
+            }
+            
+            return dayElement;
+        }
+
+        function createBookingElement(booking) {
+            const bookingElement = document.createElement('div');
+            bookingElement.className = `text-xs p-1 mb-1 rounded cursor-pointer transition duration-200 ${
+                booking.service_name === 'Personal Training' ? 'bg-blue-100 border border-blue-300 text-blue-800' :
+                booking.service_name === 'Nutrition Consultation' ? 'bg-green-100 border border-green-300 text-green-800' :
+                booking.service_name === 'Group Yoga Class' ? 'bg-purple-100 border border-purple-300 text-purple-800' :
+                'bg-yellow-100 border border-yellow-300 text-yellow-800'
+            }`;
+            
+            bookingElement.innerHTML = `
+                <div class="font-medium">${booking.time}</div>
+                <div class="truncate">${booking.client_name}</div>
+                <div class="text-xs opacity-75">${booking.service_name}</div>
+            `;
+            
+            bookingElement.onclick = () => showBookingDetails(booking);
+            return bookingElement;
+        }
+
+        function showBookingDetails(booking) {
+            const modal = document.getElementById('bookingModal');
+            const details = document.getElementById('bookingDetails');
+            
+            details.innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Client</label>
+                    <p class="text-gray-900">${booking.client_name}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Service</label>
+                    <p class="text-gray-900">${booking.service_name}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date & Time</label>
+                    <p class="text-gray-900">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Duration</label>
+                    <p class="text-gray-900">${booking.duration} minutes</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <span class="px-2 py-1 text-xs rounded-full ${
+                        booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                    }">${booking.status}</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Amount</label>
+                    <p class="text-gray-900">$${booking.amount.toFixed(2)}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Phone</label>
+                    <p class="text-gray-900">${booking.phone}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <p class="text-gray-900">${booking.email}</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed')) {
+                closeBookingModal();
+            }
+        });
+    </script>
+</body>
+</html>

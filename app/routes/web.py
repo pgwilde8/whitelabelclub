@@ -344,6 +344,24 @@ async def booking_management(request: Request, club_slug: str):
         "recent_bookings": recent_bookings
     })
 
+@router.get("/club/{club_slug}/calendar", response_class=HTMLResponse)
+async def calendar_view(request: Request, club_slug: str):
+    """Calendar view for club bookings"""
+    # Mock club data
+    club_data = {
+        "name": f"Club {club_slug.title()}",
+        "slug": club_slug,
+        "description": "View all your bookings in calendar format",
+        "primary_color": "#3B82F6",
+        "secondary_color": "#1E40AF",
+        "logo_url": None
+    }
+    
+    return templates.TemplateResponse("calendar.html", {
+        "request": request,
+        "club": club_data
+    })
+
 @router.get("/club/{club_slug}/book", response_class=HTMLResponse)
 async def public_booking(request: Request, club_slug: str):
     """Public booking page for non-members"""
