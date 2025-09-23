@@ -260,9 +260,88 @@ async def booking_management(request: Request, club_slug: str):
         "logo_url": None
     }
     
+    # Mock booking services - in production, this would come from database
+    booking_services = [
+        {
+            "id": 1,
+            "name": "Personal Training",
+            "price": 75.00,
+            "duration": 60,
+            "description": "One-on-one personal training session",
+            "bookings_count": 23,
+            "revenue": 1725.00,
+            "status": "active",
+            "max_participants": 1,
+            "allow_non_members": True
+        },
+        {
+            "id": 2,
+            "name": "Nutrition Consultation", 
+            "price": 120.00,
+            "duration": 90,
+            "description": "Comprehensive nutrition planning session",
+            "bookings_count": 8,
+            "revenue": 960.00,
+            "status": "active",
+            "max_participants": 1,
+            "allow_non_members": True
+        },
+        {
+            "id": 3,
+            "name": "Group Yoga Class",
+            "price": 35.00,
+            "duration": 60,
+            "description": "Relaxing yoga class for all levels",
+            "bookings_count": 45,
+            "revenue": 1575.00,
+            "status": "active",
+            "max_participants": 12,
+            "allow_non_members": False
+        }
+    ]
+    
+    # Mock recent bookings
+    recent_bookings = [
+        {
+            "id": 1,
+            "client_name": "Alice Johnson",
+            "client_email": "alice@example.com",
+            "service_name": "Personal Training",
+            "date_time": "Today 2:00 PM",
+            "status": "confirmed",
+            "amount": 75.00,
+            "is_member": True,
+            "phone": "+1 (555) 123-4567"
+        },
+        {
+            "id": 2,
+            "client_name": "Bob Smith",
+            "client_email": "bob@example.com", 
+            "service_name": "Nutrition Consultation",
+            "date_time": "Tomorrow 10:00 AM",
+            "status": "pending",
+            "amount": 120.00,
+            "is_member": False,
+            "phone": "+1 (555) 987-6543"
+        },
+        {
+            "id": 3,
+            "client_name": "Carol Davis",
+            "client_email": "carol@example.com",
+            "service_name": "Group Yoga Class", 
+            "date_time": "Tomorrow 6:00 PM",
+            "status": "confirmed",
+            "amount": 35.00,
+            "is_member": True,
+            "phone": "+1 (555) 456-7890"
+        }
+    ]
+    
     return templates.TemplateResponse("booking_management.html", {
         "request": request,
-        "club": club_data
+        "club": club_data,
+        "booking_services": booking_services,
+        "recent_bookings": recent_bookings
     })
 
 @router.get("/club/{club_slug}/book", response_class=HTMLResponse)

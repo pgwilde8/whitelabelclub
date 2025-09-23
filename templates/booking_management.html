@@ -108,7 +108,31 @@
             
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="servicesList">
-                    <!-- Services will be loaded here -->
+                    {% for service in booking_services %}
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold text-gray-900">{{ service.name }}</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ service.status }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">{{ service.description }}</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lg font-bold text-primary">${{ "%.2f"|format(service.price) }}</span>
+                            <span class="text-sm text-gray-500">{{ service.duration }} min</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm text-gray-600">{{ service.bookings_count }} bookings</span>
+                            <span class="text-sm font-medium text-green-600">${{ "%.2f"|format(service.revenue) }} revenue</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="editService({{ service.id }})" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition duration-300">
+                                Edit
+                            </button>
+                            <button onclick="viewServiceBookings({{ service.id }})" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition duration-300">
+                                Bookings
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -134,7 +158,35 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="bookingsTable">
-                            <!-- Bookings will be loaded here -->
+                            {% for booking in recent_bookings %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-user text-gray-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">{{ booking.client_name }}</div>
+                                            <div class="text-sm text-gray-500">{{ booking.client_email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.service_name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.date_time }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs rounded-full {% if booking.status == 'confirmed' %}bg-green-100 text-green-800{% elif booking.status == 'pending' %}bg-yellow-100 text-yellow-800{% elif booking.status == 'cancelled' %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ booking.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">${{ "%.2f"|format(booking.amount) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewBooking({{ booking.id }})" class="text-primary hover:text-secondary">View</button>
+                                        <button onclick="editBooking({{ booking.id }})" class="text-gray-600 hover:text-gray-800">Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -369,147 +421,8 @@
     </div>
 
     <script>
-        // Mock data - in production, this would come from API
-        const mockServices = [
-            {
-                id: 1,
-                name: "Personal Training",
-                price: 75,
-                duration: 60,
-                description: "One-on-one personal training session",
-                bookings: 23,
-                revenue: 1725,
-                status: "active"
-            },
-            {
-                id: 2,
-                name: "Nutrition Consultation",
-                price: 120,
-                duration: 90,
-                description: "Comprehensive nutrition planning session",
-                bookings: 8,
-                revenue: 960,
-                status: "active"
-            },
-            {
-                id: 3,
-                name: "Group Yoga Class",
-                price: 35,
-                duration: 60,
-                description: "Relaxing yoga class for all levels",
-                bookings: 45,
-                revenue: 1575,
-                status: "active"
-            }
-        ];
-
-        const mockBookings = [
-            {
-                id: 1,
-                client: "Alice Johnson",
-                service: "Personal Training",
-                dateTime: "Today 2:00 PM",
-                status: "confirmed",
-                amount: 75,
-                isMember: true
-            },
-            {
-                id: 2,
-                client: "Bob Smith",
-                service: "Nutrition Consultation",
-                dateTime: "Tomorrow 10:00 AM",
-                status: "pending",
-                amount: 120,
-                isMember: false
-            },
-            {
-                id: 3,
-                client: "Carol Davis",
-                service: "Group Yoga Class",
-                dateTime: "Tomorrow 6:00 PM",
-                status: "confirmed",
-                amount: 35,
-                isMember: true
-            }
-        ];
-
-        // Load services and bookings
-        document.addEventListener('DOMContentLoaded', function() {
-            loadServices();
-            loadBookings();
-        });
-
-        function loadServices() {
-            const servicesList = document.getElementById('servicesList');
-            servicesList.innerHTML = mockServices.map(service => `
-                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-semibold text-gray-900">${service.name}</h3>
-                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">${service.status}</span>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-3">${service.description}</p>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-lg font-bold text-primary">$${service.price}</span>
-                        <span class="text-sm text-gray-500">${service.duration} min</span>
-                    </div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-sm text-gray-600">${service.bookings} bookings</span>
-                        <span class="text-sm font-medium text-green-600">$${service.revenue} revenue</span>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button onclick="editService(${service.id})" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition duration-300">
-                            Edit
-                        </button>
-                        <button onclick="viewServiceBookings(${service.id})" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition duration-300">
-                            Bookings
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadBookings() {
-            const bookingsTable = document.getElementById('bookingsTable');
-            bookingsTable.innerHTML = mockBookings.map(booking => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">${booking.client}</div>
-                                <div class="text-sm text-gray-500">${booking.isMember ? 'Member' : 'Non-member'}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.service}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.dateTime}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(booking.status)}">
-                            ${booking.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">$${booking.amount}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex space-x-2">
-                            <button onclick="viewBooking(${booking.id})" class="text-primary hover:text-secondary">View</button>
-                            <button onclick="editBooking(${booking.id})" class="text-gray-600 hover:text-gray-800">Edit</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function getStatusColor(status) {
-            const colors = {
-                'confirmed': 'bg-green-100 text-green-800',
-                'pending': 'bg-yellow-100 text-yellow-800',
-                'cancelled': 'bg-red-100 text-red-800',
-                'completed': 'bg-blue-100 text-blue-800'
-            };
-            return colors[status] || 'bg-gray-100 text-gray-800';
-        }
+        // Services and bookings are now loaded server-side
+        // No need for mock data or load functions
 
         // Modal functions
         function openAddServiceModal() {
@@ -536,12 +449,57 @@
             const formData = new FormData(this);
             const serviceData = Object.fromEntries(formData);
             
-            // In production, this would send to API
-            console.log('Creating service:', serviceData);
+            // Create new service object
+            const newService = {
+                id: Date.now(), // Simple ID generation
+                name: serviceData.serviceName,
+                price: parseFloat(serviceData.servicePrice),
+                duration: parseInt(serviceData.serviceDuration),
+                description: serviceData.serviceDescription || 'No description provided',
+                bookings_count: 0,
+                revenue: 0.00,
+                status: 'active',
+                max_participants: parseInt(serviceData.serviceCapacity) || 1,
+                allow_non_members: serviceData.allowNonMembers === 'on'
+            };
+            
+            // Add service to the services list
+            addServiceToList(newService);
+            
+            console.log('Creating service:', newService);
             alert('Service created successfully!');
             closeAddServiceModal();
-            loadServices(); // Refresh services list
         });
+        
+        function addServiceToList(service) {
+            const servicesList = document.getElementById('servicesList');
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300';
+            serviceCard.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-gray-900">${service.name}</h3>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">${service.status}</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">${service.description}</p>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-lg font-bold text-primary">$${service.price.toFixed(2)}</span>
+                    <span class="text-sm text-gray-500">${service.duration} min</span>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-gray-600">${service.bookings_count} bookings</span>
+                    <span class="text-sm font-medium text-green-600">$${service.revenue.toFixed(2)} revenue</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editService(${service.id})" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition duration-300">
+                        Edit
+                    </button>
+                    <button onclick="viewServiceBookings(${service.id})" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition duration-300">
+                        Bookings
+                    </button>
+                </div>
+            `;
+            servicesList.appendChild(serviceCard);
+        }
 
         // Utility functions
         function copyPublicUrl() {
