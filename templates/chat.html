@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ club.name }} - Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .chat-container {
+            height: calc(100vh - 80px);
+        }
+        .messages-container {
+            height: calc(100% - 120px);
+        }
+        .message-input {
+            height: 60px;
+        }
+        .channel-list {
+            height: calc(100% - 80px);
+        }
+        .members-list {
+            height: calc(100% - 80px);
+        }
+        .typing-indicator {
+            display: none;
+        }
+        .typing-indicator.show {
+            display: block;
+        }
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+        .message-actions {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .online-dot.online {
+            background-color: #10b981;
+        }
+        .online-dot.away {
+            background-color: #f59e0b;
+        }
+        .online-dot.offline {
+            background-color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <a href="/club/{{ club.slug }}/" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </a>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">{{ club.name }}</h1>
+                        <p class="text-sm text-gray-500">Community Chat</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">{{ online_members|length }} online</span>
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 text-gray-400 hover:text-gray-600 relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Chat Container -->
+    <div class="chat-container flex">
+        <!-- Left Sidebar - Channels -->
+        <div class="w-1/4 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Channels</h2>
+                <button onclick="createChannel()" class="mt-2 text-sm text-primary hover:text-secondary">
+                    <i class="fas fa-plus mr-1"></i>Create Channel
+                </button>
+            </div>
+            
+            <div class="channel-list overflow-y-auto">
+                {% for channel in channels %}
+                <div class="channel-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition duration-200 {% if channel.id == current_channel %}bg-blue-50 border-l-4 border-l-primary{% endif %}" 
+                     onclick="switchChannel('{{ channel.id }}')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center">
+                                <span class="text-gray-500 mr-2">#</span>
+                                <span class="font-medium text-gray-900">{{ channel.name }}</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">{{ channel.description }}</p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                {{ channel.last_message_author }}: {{ channel.last_message }}
+                            </p>
+                            <p class="text-xs text-gray-400">{{ channel.last_message_time }}</p>
+                        </div>
+                        {% if channel.unread_count > 0 %}
+                        <span class="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                            {{ channel.unread_count }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Channel Header -->
+            <div class="bg-white border-b border-gray-200 p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="text-gray-500 mr-2">#</span>
+                        <h2 class="text-xl font-semibold text-gray-900">{{ channels[0].name }}</h2>
+                        <span class="ml-2 text-sm text-gray-500">{{ channels[0].description }}</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleMembers()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-users text-lg"></i>
+                        </button>
+                        <button onclick="toggleChannelSettings()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-cog text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container bg-gray-50 overflow-y-auto p-4" id="messagesContainer">
+                {% for message in recent_messages %}
+                <div class="message mb-4 group" data-message-id="{{ message.id }}">
+                    <div class="flex items-start space-x-3">
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                {{ message.author[0].upper() }}
+                            </div>
+                        </div>
+                        
+                        <!-- Message Content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="font-semibold text-gray-900">{{ message.author }}</span>
+                                {% if message.is_owner %}
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full">Owner</span>
+                                {% endif %}
+                                <span class="text-xs text-gray-500">{{ message.time_display }}</span>
+                            </div>
+                            <div class="text-gray-800 leading-relaxed">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                        
+                        <!-- Message Actions -->
+                        <div class="message-actions flex space-x-2">
+                            <button onclick="reactToMessage({{ message.id }})" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <button onclick="replyToMessage({{ message.id }})" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-reply"></i>
+                            </button>
+                            <button onclick="moreActions({{ message.id }})" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Typing Indicator -->
+                <div class="typing-indicator mb-4" id="typingIndicator">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex space-x-1">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        </div>
+                        <span class="text-sm text-gray-500">Someone is typing...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="message-input bg-white border-t border-gray-200 p-4">
+                <div class="flex items-end space-x-3">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="Type a message..." 
+                                class="w-full resize-none border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                rows="1"
+                                onkeydown="handleKeyDown(event)"
+                                oninput="autoResize(this)"
+                            ></textarea>
+                            <button onclick="toggleEmojiPicker()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-smile text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="sendMessage()" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition duration-200 disabled:opacity-50" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex items-center space-x-4 mt-2">
+                    <button onclick="attachFile()" class="text-gray-400 hover:text-gray-600 text-sm">
+                        <i class="fas fa-paperclip mr-1"></i>Attach
+                    </button>
+                    <button onclick="attachImage()" class="text-gray-400 hover:text-gray-600 text-sm">
+                        <i class="fas fa-image mr-1"></i>Image
+                    </button>
+                    <button onclick="mentionUser()" class="text-gray-400 hover:text-gray-600 text-sm">
+                        <i class="fas fa-at mr-1"></i>Mention
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Members -->
+        <div class="w-64 bg-white border-l border-gray-200 flex flex-col" id="membersSidebar">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-900">Members</h2>
+                    <span class="text-sm text-gray-500">{{ online_members|length }} online</span>
+                </div>
+            </div>
+            
+            <div class="members-list overflow-y-auto">
+                {% for member in online_members %}
+                <div class="member-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition duration-200" 
+                     onclick="startPrivateChat({{ member.id }}, '{{ member.name }}')">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold text-sm">
+                                {{ member.name[0].upper() }}
+                            </div>
+                            <span class="online-dot {{ member.status }} absolute -bottom-1 -right-1"></span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-medium text-gray-900">{{ member.name }}</span>
+                                {% if member.name == 'ClubOwner' %}
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full">Owner</span>
+                                {% endif %}
+                            </div>
+                            <span class="text-xs text-gray-500 capitalize">{{ member.status }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker Modal -->
+    <div id="emojiPicker" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Choose Emoji</h3>
+                    <button onclick="toggleEmojiPicker()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-8 gap-2">
+                    <button onclick="insertEmoji('😀')" class="text-2xl hover:bg-gray-100 p-2 rounded">😀</button>
+                    <button onclick="insertEmoji('😂')" class="text-2xl hover:bg-gray-100 p-2 rounded">😂</button>
+                    <button onclick="insertEmoji('😍')" class="text-2xl hover:bg-gray-100 p-2 rounded">😍</button>
+                    <button onclick="insertEmoji('🤔')" class="text-2xl hover:bg-gray-100 p-2 rounded">🤔</button>
+                    <button onclick="insertEmoji('👍')" class="text-2xl hover:bg-gray-100 p-2 rounded">👍</button>
+                    <button onclick="insertEmoji('👎')" class="text-2xl hover:bg-gray-100 p-2 rounded">👎</button>
+                    <button onclick="insertEmoji('❤️')" class="text-2xl hover:bg-gray-100 p-2 rounded">❤️</button>
+                    <button onclick="insertEmoji('🎉')" class="text-2xl hover:bg-gray-100 p-2 rounded">🎉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentChannel = '{{ current_channel }}';
+        let isTyping = false;
+        let typingTimer;
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // Handle Enter key
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Send message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add message to chat
+            addMessageToChat('You', message, 'now', false);
+            
+            // Clear input
+            input.value = '';
+            autoResize(input);
+            
+            // Simulate other users responding
+            setTimeout(() => {
+                simulateOtherUserMessage();
+            }, 1000 + Math.random() * 3000);
+        }
+
+        // Add message to chat
+        function addMessageToChat(author, content, time, isOwner = false) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            // Hide typing indicator
+            typingIndicator.classList.remove('show');
+            
+            const messageId = Date.now();
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message mb-4 group';
+            messageElement.setAttribute('data-message-id', messageId);
+            
+            messageElement.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            ${author[0].toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="font-semibold text-gray-900">${author}</span>
+                            ${isOwner ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full">Owner</span>' : ''}
+                            <span class="text-xs text-gray-500">${time}</span>
+                        </div>
+                        <div class="text-gray-800 leading-relaxed">
+                            ${content}
+                        </div>
+                    </div>
+                    <div class="message-actions flex space-x-2">
+                        <button onclick="reactToMessage(${messageId})" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <button onclick="replyToMessage(${messageId})" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                        <button onclick="moreActions(${messageId})" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Insert before typing indicator
+            messagesContainer.insertBefore(messageElement, typingIndicator);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Simulate other user messages
+        function simulateOtherUserMessage() {
+            const responses = [
+                "That's awesome!",
+                "I agree!",
+                "Great point!",
+                "Thanks for sharing!",
+                "I'll check that out!",
+                "Same here!",
+                "Interesting!",
+                "Good to know!"
+            ];
+            
+            const authors = ['John', 'Jane', 'Mike', 'Sarah'];
+            const author = authors[Math.floor(Math.random() * authors.length)];
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            
+            addMessageToChat(author, response, 'now', false);
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            if (!isTyping) {
+                isTyping = true;
+                document.getElementById('typingIndicator').classList.add('show');
+            }
+            
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                document.getElementById('typingIndicator').classList.remove('show');
+                isTyping = false;
+            }, 3000);
+        }
+
+        // Switch channel
+        function switchChannel(channelId) {
+            currentChannel = channelId;
+            
+            // Update channel list
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('bg-blue-50', 'border-l-4', 'border-l-primary');
+            });
+            
+            document.querySelector(`[onclick="switchChannel('${channelId}')"]`).classList.add('bg-blue-50', 'border-l-4', 'border-l-primary');
+            
+            // Clear messages
+            const messagesContainer = document.getElementById('messagesContainer');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const messages = messagesContainer.querySelectorAll('.message');
+            messages.forEach(message => message.remove());
+            
+            // Load channel messages (simulate)
+            addMessageToChat('System', `Welcome to #${channelId}!`, 'now', false);
+        }
+
+        // Toggle members sidebar
+        function toggleMembers() {
+            const sidebar = document.getElementById('membersSidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        // Start private chat
+        function startPrivateChat(memberId, memberName) {
+            alert(`Starting private chat with ${memberName}...`);
+        }
+
+        // Toggle emoji picker
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.classList.toggle('hidden');
+        }
+
+        // Insert emoji
+        function insertEmoji(emoji) {
+            const input = document.getElementById('messageInput');
+            input.value += emoji;
+            input.focus();
+            toggleEmojiPicker();
+        }
+
+        // Attach file
+        function attachFile() {
+            alert('File attachment coming soon!');
+        }
+
+        // Attach image
+        function attachImage() {
+            alert('Image attachment coming soon!');
+        }
+
+        // Mention user
+        function mentionUser() {
+            const input = document.getElementById('messageInput');
+            input.value += '@';
+            input.focus();
+        }
+
+        // React to message
+        function reactToMessage(messageId) {
+            alert(`Reacting to message ${messageId}...`);
+        }
+
+        // Reply to message
+        function replyToMessage(messageId) {
+            alert(`Replying to message ${messageId}...`);
+        }
+
+        // More actions
+        function moreActions(messageId) {
+            alert(`More actions for message ${messageId}...`);
+        }
+
+        // Create channel
+        function createChannel() {
+            alert('Create channel coming soon!');
+        }
+
+        // Toggle channel settings
+        function toggleChannelSettings() {
+            alert('Channel settings coming soon!');
+        }
+
+        // Toggle notifications
+        function toggleNotifications() {
+            alert('Notifications coming soon!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus message input
+            document.getElementById('messageInput').focus();
+            
+            // Scroll to bottom
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+    </script>
+</body>
+</html>

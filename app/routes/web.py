@@ -30,7 +30,7 @@ async def features(request: Request):
 
 @router.get("/about", response_class=HTMLResponse)
 async def about(request: Request):
-    """About page"""
+    """About page for Webwise Solutions"""
     return templates.TemplateResponse("about.html", {"request": request})
 
 @router.get("/contact", response_class=HTMLResponse)
@@ -423,6 +423,158 @@ async def calendar_view(request: Request, club_slug: str):
         "request": request,
         "club": club_data
     })
+
+@router.get("/club/{club_slug}/chat", response_class=HTMLResponse)
+async def chat_view(request: Request, club_slug: str):
+    """Chat interface for club members"""
+    # Mock club data
+    club_data = {
+        "name": f"Club {club_slug.title()}",
+        "slug": club_slug,
+        "description": "Connect and chat with your community",
+        "primary_color": "#3B82F6",
+        "secondary_color": "#1E40AF",
+        "logo_url": None
+    }
+    
+    # Mock chat channels
+    channels = [
+        {
+            "id": "general",
+            "name": "General",
+            "description": "General community chat",
+            "unread_count": 5,
+            "last_message": "Hey everyone! How's the new booking system working?",
+            "last_message_time": "2 min ago",
+            "last_message_author": "John"
+        },
+        {
+            "id": "announcements",
+            "name": "Announcements",
+            "description": "Important club updates",
+            "unread_count": 2,
+            "last_message": "New booking system is live! Check it out.",
+            "last_message_time": "1 hour ago",
+            "last_message_author": "ClubOwner"
+        },
+        {
+            "id": "events",
+            "name": "Events",
+            "description": "Event discussions and planning",
+            "unread_count": 3,
+            "last_message": "Who's coming to the weekend workshop?",
+            "last_message_time": "30 min ago",
+            "last_message_author": "Jane"
+        },
+        {
+            "id": "help",
+            "name": "Help & Support",
+            "description": "Get help and support",
+            "unread_count": 1,
+            "last_message": "How do I cancel my booking?",
+            "last_message_time": "15 min ago",
+            "last_message_author": "Mike"
+        },
+        {
+            "id": "introductions",
+            "name": "Introductions",
+            "description": "Welcome new members",
+            "unread_count": 1,
+            "last_message": "Hi everyone! New to the club.",
+            "last_message_time": "45 min ago",
+            "last_message_author": "Sarah"
+        }
+    ]
+    
+    # Mock online members
+    online_members = [
+        {"id": 1, "name": "John", "status": "online", "avatar": None},
+        {"id": 2, "name": "Jane", "status": "online", "avatar": None},
+        {"id": 3, "name": "Mike", "status": "away", "avatar": None},
+        {"id": 4, "name": "Sarah", "status": "online", "avatar": None},
+        {"id": 5, "name": "ClubOwner", "status": "online", "avatar": None}
+    ]
+    
+    # Mock recent messages for general channel
+    recent_messages = [
+        {
+            "id": 1,
+            "author": "John",
+            "author_id": 1,
+            "content": "Hey everyone! How's the new booking system working?",
+            "timestamp": "2025-01-27T19:25:00Z",
+            "time_display": "2 min ago",
+            "is_owner": False
+        },
+        {
+            "id": 2,
+            "author": "Jane",
+            "author_id": 2,
+            "content": "It's great! Just booked my personal training session.",
+            "timestamp": "2025-01-27T19:26:00Z",
+            "time_display": "1 min ago",
+            "is_owner": False
+        },
+        {
+            "id": 3,
+            "author": "Mike",
+            "author_id": 3,
+            "content": "Same here! Much easier than before.",
+            "timestamp": "2025-01-27T19:27:00Z",
+            "time_display": "now",
+            "is_owner": False
+        }
+    ]
+    
+    return templates.TemplateResponse("chat.html", {
+        "request": request,
+        "club": club_data,
+        "channels": channels,
+        "online_members": online_members,
+        "recent_messages": recent_messages,
+        "current_channel": "general"
+    })
+
+@router.get("/club/{club_slug}/ai-terminal", response_class=HTMLResponse)
+async def ai_terminal_view(request: Request, club_slug: str):
+    """AI Terminal interface for club management"""
+    # Mock club data
+    club_data = {
+        "name": f"Club {club_slug.title()}",
+        "slug": club_slug,
+        "description": "AI-powered club management and insights",
+        "primary_color": "#3B82F6",
+        "secondary_color": "#1E40AF",
+        "logo_url": None
+    }
+    
+    return templates.TemplateResponse("ai_terminal.html", {
+        "request": request,
+        "club": club_data
+    })
+
+@router.get("/api/v1/ai/suggest/{club_slug}")
+async def get_ai_suggestions(club_slug: str):
+    """Get AI suggestions for club optimization"""
+    # Mock AI suggestions - in production, this would use real AI analysis
+    suggestions = [
+        {
+            "type": "revenue_optimization",
+            "title": "Package Deal Optimization",
+            "description": "Create 5-session personal training packages at $425 (save $25). This could increase booking frequency by 35% and improve member retention.",
+            "priority": "high",
+            "impact": "+15% revenue potential"
+        },
+        {
+            "type": "member_retention",
+            "title": "Peak Hour Expansion",
+            "description": "Add more evening classes (6-8 PM) when member activity is highest. Current utilization shows 89% capacity during these hours.",
+            "priority": "medium",
+            "impact": "+20% class attendance"
+        }
+    ]
+    
+    return {"suggestions": suggestions}
 
 @router.get("/club/{club_slug}/book", response_class=HTMLResponse)
 async def public_booking(request: Request, club_slug: str):

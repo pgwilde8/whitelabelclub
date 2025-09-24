@@ -34,7 +34,7 @@
                         <a href="/features" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
                         <a href="#pricing" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
                         <a href="#demo" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Demo</a>
-                        <a href="#contact" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Start Free Trial</a>
+                        <a href="/signup" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Start Free Trial</a>
                     </div>
                 </div>
             </div>
@@ -223,9 +223,9 @@
                             <span>Custom Subdomain</span>
                         </li>
                     </ul>
-                    <button onclick="startCheckout('starter')" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
+                    <a href="/signup?plan=starter" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
                         Start Free Trial
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Pro Plan -->
@@ -264,9 +264,9 @@
                             <span class="text-white">Priority Support</span>
                         </li>
                     </ul>
-                    <button onclick="startCheckout('pro')" class="w-full bg-white text-primary py-3 rounded-lg text-center block hover:bg-gray-100 transition duration-300 font-semibold">
+                    <a href="/signup?plan=pro" class="w-full bg-white text-primary py-3 rounded-lg text-center block hover:bg-gray-100 transition duration-300 font-semibold">
                         Start Free Trial
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Enterprise Plan -->
@@ -302,9 +302,9 @@
                             <span>SLA Guarantee</span>
                         </li>
                     </ul>
-                    <button onclick="startCheckout('enterprise')" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
+                    <a href="/signup?plan=enterprise" class="w-full bg-gray-800 text-white py-3 rounded-lg text-center block hover:bg-gray-900 transition duration-300">
                         Start Free Trial
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -483,45 +483,6 @@
             }
         });
 
-        // Stripe Checkout Function
-        async function startCheckout(plan) {
-            try {
-                // Show loading state
-                const buttons = document.querySelectorAll(`button[onclick="startCheckout('${plan}')"]`);
-                buttons.forEach(btn => {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
-                });
-
-                // Call your FastAPI endpoint to create checkout session
-                const response = await fetch(`/create-checkout-session/${plan}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to create checkout session');
-                }
-
-                const data = await response.json();
-                
-                // Redirect to Stripe Checkout
-                window.location.href = data.checkout_url;
-
-            } catch (error) {
-                console.error('Error starting checkout:', error);
-                alert('There was an error starting the checkout process. Please try again.');
-                
-                // Reset button states
-                const buttons = document.querySelectorAll(`button[onclick="startCheckout('${plan}')"]`);
-                buttons.forEach(btn => {
-                    btn.disabled = false;
-                    btn.innerHTML = 'Start Free Trial';
-                });
-            }
-        }
     </script>
 </body>
 </html>

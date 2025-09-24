@@ -149,9 +149,9 @@
                         <p class="text-sm text-gray-600">{{ recent_messages }} new messages</p>
                     </div>
                 </div>
-                <button onclick="viewChat()" class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                <a href="/club/{{ club.slug }}/chat" class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300 block text-center">
                     View Chat
-                </button>
+                </a>
             </div>
             {% endif %}
 
@@ -178,12 +178,6 @@
                 <!-- AI Suggestions Widget -->
                 {% include 'ai_suggestions_widget.html' %}
                 
-                <!-- Revenue Chart -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Revenue Overview</h2>
-                    <canvas id="revenueChart" width="400" height="200"></canvas>
-                </div>
-
                 <!-- Recent Activity -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>

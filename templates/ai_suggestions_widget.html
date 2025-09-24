@@ -5,9 +5,9 @@
             <i class="fas fa-lightbulb text-primary mr-3"></i>
             AI Insights & Suggestions
         </h2>
-        <button onclick="refreshAISuggestions()" class="text-primary hover:text-secondary transition duration-300">
-            <i class="fas fa-sync-alt"></i>
-        </button>
+        <a href="/club/{{ club.slug }}/ai-terminal" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 text-sm">
+            <i class="fas fa-terminal mr-2"></i>AI Terminal
+        </a>
     </div>
     
     <div id="aiSuggestions" class="space-y-4">
@@ -137,19 +137,6 @@ function getPriorityColor(priority) {
         'low': 'green'
     };
     return colors[priority] || 'gray';
-}
-
-function refreshAISuggestions() {
-    const suggestionsDiv = document.getElementById('aiSuggestions');
-    const loadingDiv = document.getElementById('suggestionsLoading');
-    
-    // Show loading
-    suggestionsDiv.innerHTML = '';
-    suggestionsDiv.appendChild(loadingDiv);
-    loadingDiv.style.display = 'block';
-    
-    // Reload suggestions
-    loadAISuggestions();
 }
 
 function implementSuggestion(type) {
