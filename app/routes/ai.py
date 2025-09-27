@@ -1,10 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
-import openai
+from openai import OpenAI
 import os
 from app.core.security import encryption_service
 from app.core.config import settings
+from app.db.session import get_db_session
+from app.services.club_service import ClubService
+from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,94 +22,114 @@ class ChatRequest(BaseModel):
     message: str
     club_slug: str
     chat_history: Optional[List[ChatMessage]] = []
+    context: Optional[str] = "chat"  # "chat", "terminal", "widget"
 
 class ChatResponse(BaseModel):
     response: str
     tokens_used: Optional[int] = None
 
-# Mock club data - in production, this would come from database
-MOCK_CLUBS = {
-    "aaaaaa": {
-        "name": "Club Aaaaaa",
-        "description": "A vibrant fitness community",
-        "services": ["Personal Training", "Group Classes", "Nutrition Consultation", "Yoga"],
-        "hours": "Mon-Fri: 6AM-10PM, Sat-Sun: 8AM-8PM",
-        "location": "123 Main St, City, State",
-        "membership_tiers": ["Basic ($29/month)", "Premium ($59/month)", "VIP ($99/month)"],
-        "features": ["24/7 Access", "Personal Training", "Group Classes", "Nutrition Support"],
-        "openai_key": "sk-test-key-encrypted"  # This would be encrypted in real implementation
-    }
-}
-
-def get_club_openai_key(club_slug: str) -> str:
+async def get_club_openai_key(club_slug: str, db: AsyncSession) -> str:
     """
-    Get the OpenAI API key for a specific club.
-    In production, this would decrypt the key from the database.
+    Get the OpenAI API key for a specific club from the database.
     """
-    club = MOCK_CLUBS.get(club_slug)
+    club = await ClubService.get_club_by_slug(db, club_slug)
     if not club:
         raise HTTPException(status_code=404, detail="Club not found")
     
-    # In production, decrypt the stored key
-    # encrypted_key = club.get('openai_key')
-    # if not encrypted_key:
-    #     raise HTTPException(status_code=400, detail="OpenAI API key not configured for this club")
+    # Check if club has its own OpenAI key
+    if club.openai_api_key:
+        return club.openai_api_key
     
-    # decrypted_key = encryption_service.decrypt(encrypted_key)
-    # return decrypted_key
+    # Fallback to platform's OpenAI key if available
+    if settings.OPENAI_API_KEY:
+        return settings.OPENAI_API_KEY
     
-    # For demo purposes, use the platform's OpenAI key
-    return settings.OPENAI_API_KEY
+    raise HTTPException(status_code=400, detail="OpenAI API key not configured for this club")
 
-def create_club_context(club_slug: str) -> str:
+async def create_club_context(club_slug: str, db: AsyncSession, context_type: str = "chat") -> str:
     """Create context about the club for the AI assistant"""
-    club = MOCK_CLUBS.get(club_slug, {})
+    club = await ClubService.get_club_by_slug(db, club_slug)
+    if not club:
+        club_name = f"Club {club_slug.title()}"
+        description = "A vibrant community for passionate members"
+    else:
+        club_name = club.name
+        description = club.description or "A vibrant community for passionate members"
     
-    context = f"""
-You are an AI assistant for {club.get('name', 'this club')}. 
+    # Get club analytics for more context
+    try:
+        if club:
+            analytics = await ClubService.get_club_analytics(db, club)
+        else:
+            analytics = {"total_members": 0, "total_revenue": 0, "active_members": 0}
+    except:
+        analytics = {"total_members": 0, "total_revenue": 0, "active_members": 0}
+    
+    if context_type == "terminal":
+        context = f"""
+You are an AI business consultant for {club_name}, a club management platform. 
+You have access to the club's data and can provide intelligent business insights.
+
+Club Information:
+- Name: {club_name}
+- Description: {description}
+- Total Members: {analytics.get('total_members', 0)}
+- Active Members: {analytics.get('active_members', 0)}
+- Total Revenue: ${analytics.get('total_revenue', 0)}
+
+Your role as a business consultant:
+1. Analyze club performance and member engagement
+2. Provide actionable business recommendations
+3. Help optimize pricing, scheduling, and operations
+4. Generate marketing content and strategies
+5. Forecast revenue and growth opportunities
+6. Answer questions about club management best practices
+
+When responding:
+- Be professional and data-driven
+- Provide specific, actionable advice
+- Use the club's actual data when available
+- Keep responses concise but comprehensive
+- Format responses clearly with bullet points when appropriate
+
+Available commands: analyze_members, predict_revenue, suggest_pricing, generate_content, optimize_schedule
+        """
+    else:
+        context = f"""
+You are an AI assistant for {club_name}. 
 Here's information about the club:
 
-Club Name: {club.get('name', 'Unknown')}
-Description: {club.get('description', 'No description available')}
-
-Services Offered:
-{chr(10).join([f"- {service}" for service in club.get('services', [])])}
-
-Operating Hours: {club.get('hours', 'Contact for hours')}
-Location: {club.get('location', 'Contact for location')}
-
-Membership Options:
-{chr(10).join([f"- {tier}" for tier in club.get('membership_tiers', [])])}
-
-Club Features:
-{chr(10).join([f"- {feature}" for feature in club.get('features', [])])}
+Club Name: {club_name}
+Description: {description}
+Current Members: {analytics.get('total_members', 0)}
 
 Your role is to:
-1. Answer questions about the club's services, hours, location, and membership
-2. Help members understand how to book services
-3. Provide information about membership benefits
+1. Answer questions about the club's services and features
+2. Help members with booking and membership questions
+3. Provide information about club policies and procedures
 4. Be friendly, helpful, and professional
 5. If you don't know something specific, suggest they contact the club directly
 6. Keep responses concise but informative
 
-Remember: You represent {club.get('name', 'this club')} and should maintain a professional, welcoming tone.
-"""
+Remember: You represent {club_name} and should maintain a professional, welcoming tone.
+        """
+    
     return context
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat_with_ai(request: ChatRequest):
+async def chat_with_ai(request: ChatRequest, db: AsyncSession = Depends(get_db_session)):
     """
-    Chat with AI assistant for a specific club
+    Chat with AI assistant for a specific club using real database data
     """
     try:
         # Get OpenAI API key for this club
-        openai_key = get_club_openai_key(request.club_slug)
+        openai_key = await get_club_openai_key(request.club_slug, db)
         
-        # Set OpenAI API key
-        openai.api_key = openai_key
+        # Create OpenAI client
+        client = OpenAI(api_key=openai_key)
         
         # Create club context
-        club_context = create_club_context(request.club_slug)
+        club_context = await create_club_context(request.club_slug, db, request.context or "chat")
         
         # Prepare messages for OpenAI
         messages = [
@@ -121,7 +144,7 @@ async def chat_with_ai(request: ChatRequest):
         messages.append({"role": "user", "content": request.message})
         
         # Call OpenAI API
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
             max_tokens=500,
@@ -131,7 +154,7 @@ async def chat_with_ai(request: ChatRequest):
         )
         
         ai_response = response.choices[0].message.content
-        tokens_used = response.usage.total_tokens if hasattr(response, 'usage') else None
+        tokens_used = response.usage.total_tokens if response.usage else None
         
         logger.info(f"AI chat response generated for club {request.club_slug}, tokens: {tokens_used}")
         
@@ -140,34 +163,30 @@ async def chat_with_ai(request: ChatRequest):
             tokens_used=tokens_used
         )
         
-    except openai.error.AuthenticationError:
-        logger.error(f"OpenAI authentication failed for club {request.club_slug}")
-        raise HTTPException(status_code=401, detail="Invalid OpenAI API key")
-    
-    except openai.error.RateLimitError:
-        logger.error(f"OpenAI rate limit exceeded for club {request.club_slug}")
-        raise HTTPException(status_code=429, detail="AI service temporarily unavailable")
-    
-    except openai.error.APIError as e:
-        logger.error(f"OpenAI API error for club {request.club_slug}: {str(e)}")
-        raise HTTPException(status_code=500, detail="AI service error")
-    
     except Exception as e:
-        logger.error(f"Unexpected error in AI chat for club {request.club_slug}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        error_message = str(e)
+        logger.error(f"AI chat error for club {request.club_slug}: {error_message}")
+        
+        # Check for specific OpenAI errors in the message
+        if "invalid_api_key" in error_message.lower() or "incorrect api key" in error_message.lower():
+            raise HTTPException(status_code=401, detail="Invalid OpenAI API key")
+        elif "rate_limit" in error_message.lower() or "quota" in error_message.lower():
+            raise HTTPException(status_code=429, detail="AI service temporarily unavailable")
+        else:
+            raise HTTPException(status_code=500, detail="AI service error")
 
 @router.get("/status/{club_slug}")
-async def get_ai_status(club_slug: str):
+async def get_ai_status(club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """
     Check if AI is available for a specific club
     """
     try:
-        club = MOCK_CLUBS.get(club_slug)
+        club = await ClubService.get_club_by_slug(db, club_slug)
         if not club:
             raise HTTPException(status_code=404, detail="Club not found")
         
         # Check if club has OpenAI key configured
-        has_openai_key = bool(club.get('openai_key'))
+        has_openai_key = bool(club.openai_api_key) or bool(settings.OPENAI_API_KEY)
         
         return {
             "club_slug": club_slug,
@@ -181,46 +200,98 @@ async def get_ai_status(club_slug: str):
         raise HTTPException(status_code=500, detail="Error checking AI status")
 
 @router.post("/suggest/{club_slug}")
-async def get_ai_suggestions(club_slug: str):
+async def get_ai_suggestions(club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """
-    Get AI-powered suggestions for club optimization
+    Get AI-powered suggestions for club optimization using real data
     """
     try:
-        club = MOCK_CLUBS.get(club_slug)
+        club = await ClubService.get_club_by_slug(db, club_slug)
         if not club:
             raise HTTPException(status_code=404, detail="Club not found")
         
-        # Mock AI suggestions - in production, this would use actual data analysis
-        suggestions = [
-            {
+        # Get real analytics data
+        analytics = await ClubService.get_club_analytics(db, club)
+        
+        # Generate suggestions based on real data
+        suggestions = []
+        
+        # Revenue optimization based on actual data
+        if analytics["total_revenue"] < 1000:
+            suggestions.append({
                 "type": "revenue_optimization",
-                "title": "Peak Hour Analysis",
-                "description": "Consider adding more classes during 6-8 PM when member activity is highest",
-                "impact": "Could increase revenue by 15-20%",
+                "title": "Increase Revenue Streams",
+                "description": f"With ${analytics['total_revenue']} current revenue, consider adding premium services",
+                "impact": "Could increase revenue by 30-50%",
                 "priority": "high"
-            },
-            {
-                "type": "member_retention",
-                "title": "New Member Onboarding",
-                "description": "Implement a 7-day welcome series for new members",
-                "impact": "Could improve retention by 25%",
+            })
+        
+        # Member engagement based on real member count
+        if analytics["total_members"] > 0:
+            engagement_rate = (analytics["active_members"] / analytics["total_members"]) * 100
+            if engagement_rate < 70:
+                suggestions.append({
+                    "type": "member_retention",
+                    "title": "Improve Member Engagement",
+                    "description": f"Current engagement rate is {engagement_rate:.1f}%. Focus on member re-activation",
+                    "impact": "Could improve retention by 25%",
+                    "priority": "high"
+                })
+        
+        # Growth suggestions
+        if analytics["total_members"] < 50:
+            suggestions.append({
+                "type": "growth",
+                "title": "Member Acquisition Campaign",
+                "description": f"With {analytics['total_members']} members, focus on growth strategies",
+                "impact": "Could attract 20-30 new members",
                 "priority": "medium"
-            },
-            {
-                "type": "service_expansion",
-                "title": "Popular Service Addition",
-                "description": "Members frequently ask about yoga classes - consider adding more sessions",
-                "impact": "Could attract 30+ new members",
-                "priority": "high"
-            }
-        ]
+            })
+        
+        # Default suggestions if no specific data patterns
+        if not suggestions:
+            suggestions = [
+                {
+                    "type": "optimization",
+                    "title": "General Optimization",
+                    "description": "Continue monitoring member engagement and revenue trends",
+                    "impact": "Maintain steady growth",
+                    "priority": "low"
+                }
+            ]
         
         return {
             "club_slug": club_slug,
             "suggestions": suggestions,
-            "generated_at": "2024-01-15T10:30:00Z"
+            "generated_at": "2025-01-15T10:30:00Z",
+            "analytics": analytics
         }
         
     except Exception as e:
         logger.error(f"Error generating AI suggestions for club {club_slug}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error generating suggestions")
+
+@router.post("/configure/{club_slug}")
+async def configure_openai_key(club_slug: str, openai_key: str, db: AsyncSession = Depends(get_db_session)):
+    """
+    Configure OpenAI API key for a club (for testing/demo purposes)
+    """
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Set the OpenAI key (will be encrypted automatically)
+        club.openai_api_key = openai_key
+        
+        await db.commit()
+        await db.refresh(club)
+        
+        return {
+            "club_slug": club_slug,
+            "message": "OpenAI API key configured successfully",
+            "ai_enabled": True
+        }
+        
+    except Exception as e:
+        logger.error(f"Error configuring OpenAI key for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error configuring OpenAI key")
