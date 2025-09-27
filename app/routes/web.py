@@ -70,6 +70,27 @@ async def launch(request: Request):
     """Launch page"""
     return templates.TemplateResponse("launch.html", {"request": request})
 
+@router.get("/test-club69")
+async def test_club69(request: Request):
+    """Simple test route for club69"""
+    return {"message": "Club69 test route works", "club": "club69"}
+
+# Mock club data for testing and fallback
+MOCK_CLUBS = {
+    "aaaaaa": {
+        "name": "Club Aaaaaa",
+        "description": "A vibrant fitness community",
+        "primary_color": "#3B82F6",
+        "secondary_color": "#1E40AF"
+    },
+    "club69": {
+        "name": "Club 69",
+        "description": "An exclusive member community",
+        "primary_color": "#8B5CF6",
+        "secondary_color": "#7C3AED"
+    }
+}
+
 @router.get("/club/{club_slug}/", response_class=HTMLResponse)
 async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Club owner dashboard with real database data"""
@@ -93,6 +114,11 @@ async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = De
         "primary_color": club.primary_color,
         "secondary_color": club.secondary_color,
         "logo_url": club.logo_url,
+        "features": {
+            "enable_bookings": club.features.get("enable_bookings", True),
+            "enable_chat": club.features.get("enable_chat", True),
+            "enable_donations": club.features.get("enable_donations", True)
+        },
         "enable_bookings": club.features.get("enable_bookings", True),
         "enable_chat": club.features.get("enable_chat", True),
         "enable_ai": club.ai_enabled,
