@@ -19,6 +19,15 @@
             }
         }
     </script>
+    <style>
+        :root {
+            --club-primary: {{ club.primary_color or '#3B82F6' }};
+            --club-secondary: {{ club.secondary_color or '#1E40AF' }};
+        }
+        .progress-bar {
+            background-color: var(--club-primary);
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -33,15 +42,15 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#dashboard" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="#members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
-                        {% if club.enable_bookings %}
-                        <a href="#bookings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        <a href="/club/{{ club.slug }}/" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="/club/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        {% if club.features.enable_bookings %}
+                        <a href="/club/{{ club.slug }}/bookings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
                         {% endif %}
-                        {% if club.enable_chat %}
-                        <a href="#chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        {% if club.features.enable_chat %}
+                        <a href="/club/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
                         {% endif %}
-                        <a href="#settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                        <a href="/club/{{ club.slug }}/settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -241,7 +250,7 @@
                             <div class="text-right">
                                 <p class="font-semibold text-primary">${{ tier.price }}/{{ tier.interval }}</p>
                                 <div class="w-16 h-2 bg-gray-200 rounded-full">
-                                    <div class="h-2 bg-primary rounded-full" style="width: {{ tier.percentage }}%"></div>
+                                    <div class="h-2 progress-bar rounded-full" style="--tier-width: {{ tier.percentage }}%; width: var(--tier-width);"></div>
                                 </div>
                             </div>
                         </div>
@@ -337,12 +346,12 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: {{ revenue_chart_labels | safe }},
+                labels: window.chartData.labels,
                 datasets: [{
                     label: 'Revenue',
-                    data: {{ revenue_chart_data | safe }},
-                    borderColor: '{{ club.primary_color or "#3B82F6" }}',
-                    backgroundColor: '{{ club.primary_color or "#3B82F6" }}20',
+                    data: window.chartData.data,
+                    borderColor: window.chartData.primaryColor,
+                    backgroundColor: window.chartData.primaryColor + '20',
                     tension: 0.4,
                     fill: true
                 }]
