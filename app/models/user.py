@@ -12,10 +12,12 @@ class PlatformUser(Base, BaseModel):
     __tablename__ = "platform_users"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    username = Column(String(50), unique=True, nullable=False)  # Added username field
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     first_name = Column(String(100), nullable=True)
     last_name = Column(String(100), nullable=True)
+    bio = Column(String(500), nullable=True)  # Added bio field
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     

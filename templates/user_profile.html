@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} - Profile - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+<div class="container mt-4">
+    <div class="row">
+        <!-- User Info Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary mx-auto mb-3" style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-person-fill text-white" style="font-size: 48px;"></i>
+                    </div>
+                    <h4 class="card-title">{{ user.first_name or user.username }} {{ user.last_name or '' }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+                    <p class="text-muted"><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                    <p class="text-muted"><i class="bi bi-calendar"></i> Member since {{ member_since }}</p>
+                    
+                    <a href="/user/{{ user.username }}/settings" class="btn btn-outline-primary">
+                        <i class="bi bi-gear"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Column -->
+        <div class="col-lg-8">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5><i class="bi bi-building"></i> Clubs Owned</h5>
+                            <h2>{{ total_clubs }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5><i class="bi bi-person-badge"></i> Memberships</h5>
+                            <h2>{{ total_memberships }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Owned Clubs -->
+            {% if owned_clubs %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-building"></i> My Clubs</h5>
+                </div>
+                <div class="card-body">
+                    {% for club in owned_clubs %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <h6 class="mb-1">{{ club.name }}</h6>
+                            <small class="text-muted">{{ club.description[:100] }}...</small>
+                        </div>
+                        <a href="/{{ club.slug }}" class="btn btn-sm btn-outline-primary">
+                            Manage
+                        </a>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if total_clubs > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="/user/{{ user.username }}/dashboard" class="btn btn-outline-primary">
+                            View All {{ total_clubs }} Clubs
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Memberships -->
+            {% if memberships %}
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5><i class="bi bi-person-badge"></i> My Memberships</h5>
+                </div>
+                <div class="card-body">
+                    {% for membership in memberships %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <h6 class="mb-1">Club Membership</h6>
+                            <small class="text-muted">{{ membership.member_tier.title() }} Member</small>
+                        </div>
+                        <span class="badge bg-primary">{{ membership.member_tier.title() }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if total_memberships > 5 %}
+                    <div class="text-center mt-3">
+                        <small class="text-muted">+ {{ total_memberships - 5 }} more memberships</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if not owned_clubs and not memberships %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle text-muted" style="font-size: 64px;"></i>
+                    <h5 class="mt-3">No clubs or memberships yet</h5>
+                    <p class="text-muted">Start by creating your first club or joining an existing one.</p>
+                    <a href="/launch" class="btn btn-primary">Create Your Club</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

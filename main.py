@@ -19,7 +19,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Include routes
-from app.routes import web, api, ai, admin
+from app.routes import web, api, ai, admin, users
 
 # Include web routes
 app.include_router(web.router)
@@ -32,6 +32,9 @@ app.include_router(ai.router)
 
 # Include Admin routes
 app.include_router(admin.router)
+
+# Include User routes
+app.include_router(users.router)
 
 @app.on_event("startup")
 async def startup_event():

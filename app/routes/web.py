@@ -255,6 +255,80 @@ async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = De
         "current_time": current_time
     })
 
+@router.get("/club/{club_slug}/members", response_class=HTMLResponse)
+async def club_members_list(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """List all members of a club - Dynamic route for any club"""
+    try:
+        # Get club
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail=f"Club '{club_slug}' not found")
+        
+        # Get all members of this club
+        all_members = await ClubService.get_all_members(db, club)
+        
+        # Pre-format dates to avoid async issues in templates
+        for member in all_members:
+            member.formatted_joined_date = member.created_at.strftime('%b %d, %Y') if member.created_at else 'Unknown'
+            member.formatted_joined_month = member.created_at.strftime('%B %Y') if member.created_at else 'Unknown'
+        
+        # Group members by tier
+        members_by_tier = {
+            "free": [m for m in all_members if m.member_tier == "free"],
+            "basic": [m for m in all_members if m.member_tier == "basic"],
+            "premium": [m for m in all_members if m.member_tier == "premium"],
+            "vip": [m for m in all_members if m.member_tier == "vip"]
+        }
+        
+        # Calculate stats
+        total_members = len(all_members)
+        active_members = len([m for m in all_members if m.status == "active"])
+        
+        return templates.TemplateResponse("club_members.html", {
+            "request": request,
+            "club": club,
+            "members": all_members,
+            "members_by_tier": members_by_tier,
+            "total_members": total_members,
+            "active_members": active_members,
+            "free_count": len(members_by_tier["free"]),
+            "basic_count": len(members_by_tier["basic"]),
+            "premium_count": len(members_by_tier["premium"]),
+            "vip_count": len(members_by_tier["vip"])
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading members: {str(e)}")
+
+@router.get("/club/{club_slug}/member/{member_id}", response_class=HTMLResponse)
+async def club_member_profile(request: Request, club_slug: str, member_id: str, db: AsyncSession = Depends(get_db_session)):
+    """Individual member profile within a club"""
+    try:
+        # Get club
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail=f"Club '{club_slug}' not found")
+        
+        # Get specific member
+        member = await ClubService.get_member_by_id(db, club, member_id)
+        if not member:
+            raise HTTPException(status_code=404, detail=f"Member not found in club '{club_slug}'")
+        
+        return templates.TemplateResponse("club_member_profile.html", {
+            "request": request,
+            "club": club,
+            "member": member,
+            "member_since": member.created_at.strftime("%B %Y"),
+            "recent_activity": []  # TODO: Add member activity tracking
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading member profile: {str(e)}")
+
 @router.get("/club/{club_slug}/bookings", response_class=HTMLResponse)
 async def booking_management(request: Request, club_slug: str):
     """Booking management page for club owners"""

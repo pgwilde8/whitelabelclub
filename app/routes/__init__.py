@@ -1,4 +1,4 @@
 # Import all route modules
-from . import web, api, ai, admin
+from . import web, api, ai, admin, users
 
-__all__ = ["web", "api", "ai", "admin"]
+__all__ = ["web", "api", "ai", "admin", "users"]

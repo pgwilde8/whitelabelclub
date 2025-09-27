@@ -214,3 +214,27 @@ class ClubService:
             .order_by(Club.created_at.desc())
         )
         return result.scalars().all()
+
+    @staticmethod
+    async def get_all_members(db: AsyncSession, club: Club) -> List[ClubMember]:
+        """Get all members for a specific club"""
+        result = await db.execute(
+            select(ClubMember)
+            .where(ClubMember.club_id == club.id)
+            .order_by(ClubMember.created_at.desc())
+        )
+        return result.scalars().all()
+
+    @staticmethod
+    async def get_member_by_id(db: AsyncSession, club: Club, member_id: str) -> Optional[ClubMember]:
+        """Get a specific member by ID within a club"""
+        result = await db.execute(
+            select(ClubMember)
+            .where(
+                and_(
+                    ClubMember.club_id == club.id,
+                    ClubMember.id == member_id
+                )
+            )
+        )
+        return result.scalar_one_or_none()
