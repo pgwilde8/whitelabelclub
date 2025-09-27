@@ -82,8 +82,8 @@ class ClubRole(Base, BaseModel):
     # Relationships
     club = relationship("Club", back_populates="roles")
     user = relationship("PlatformUser", back_populates="club_roles")
-    uploaded_media = relationship("MediaFile", back_populates="uploaded_by", cascade="all, delete-orphan")
-    created_content = relationship("ContentPage", back_populates="created_by", cascade="all, delete-orphan")
+    uploaded_media = relationship("MediaFile", back_populates="uploaded_by_role", cascade="all, delete-orphan")
+    created_content = relationship("ContentPage", back_populates="created_by_role", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<ClubRole(id={self.id}, club_id={self.club_id}, user_id={self.user_id}, role='{self.role}')>"

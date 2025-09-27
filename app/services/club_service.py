@@ -7,7 +7,7 @@ import uuid
 import re
 
 from app.models.club import Club
-from app.models.membership import ClubMember
+from app.models.user import ClubMember
 from app.models.booking import Booking
 from app.models.payment import Payment
 from app.schemas.club import ClubCreate, ClubUpdate, ClubResponse
@@ -112,13 +112,13 @@ class ClubService:
         )
         total_members = member_count_result.scalar() or 0
         
-        # Get recent member activity (last 30 days)
+        # Get recent member activity (last 30 days) - using updated_at since last_active_at doesn't exist
         thirty_days_ago = datetime.now() - timedelta(days=30)
         active_members_result = await db.execute(
             select(func.count(ClubMember.id)).where(
                 and_(
                     ClubMember.club_id == club.id,
-                    ClubMember.last_active_at >= thirty_days_ago
+                    ClubMember.updated_at >= thirty_days_ago
                 )
             )
         )

@@ -42,5 +42,33 @@ class ClubResponse(ClubBase):
     created_at: datetime
     updated_at: datetime
 
+    # Override base class fields to allow None values for existing data
+    primary_color: str = "#3B82F6"  
+    secondary_color: str = "#1E40AF"
+    features: Dict[str, Any] = Field(default_factory=dict)
+
     class Config:
         from_attributes = True
+
+    @classmethod
+    def from_orm(cls, obj):
+        # Handle None values gracefully
+        return cls(
+            id=obj.id,
+            name=obj.name,
+            slug=obj.slug,
+            description=obj.description,
+            primary_color=obj.primary_color or "#3B82F6",
+            secondary_color=obj.secondary_color or "#1E40AF", 
+            logo_url=obj.logo_url,
+            custom_domain=obj.custom_domain,
+            features=obj.features or {},
+            stripe_account_id=obj.stripe_account_id,
+            stripe_onboarding_complete=obj.stripe_onboarding_complete or False,
+            ai_enabled=obj.ai_enabled or False,
+            subscription_status=obj.subscription_status or "trial",
+            subscription_plan=obj.subscription_plan or "basic",
+            subscription_ends_at=obj.subscription_ends_at,
+            created_at=obj.created_at,
+            updated_at=obj.updated_at
+        )
