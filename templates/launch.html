@@ -277,7 +277,11 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-700">Platform URL:</span>
-                        <span class="text-primary">${platformData.clubSlug || 'myclub'}.clublaunch.com</span>
+                        <span class="text-primary">${(() => {
+                            const customDomain = platformData.customDomain || (window.location.hostname === 'ezclub.app' ? 'ezclub.app' : null);
+                            const clubSlug = platformData.clubSlug || 'myclub';
+                            return customDomain ? `${customDomain}/club/${clubSlug}/` : `${clubSlug}.clublaunch.com`;
+                        })()}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-700">Selected Plan:</span>
@@ -324,13 +328,19 @@
 
         function visitPlatform() {
             const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
-            const url = `https://${platformData.clubSlug || 'myclub'}.clublaunch.com`;
+            // Check if custom domain is available, otherwise use clublaunch subdomain
+            const customDomain = platformData.customDomain || window.location.hostname === 'ezclub.app' ? 'ezclub.app' : null;
+            const clubSlug = platformData.clubSlug || 'myclub';
+            const url = customDomain ? `https://${customDomain}/club/${clubSlug}/` : `https://${clubSlug}.clublaunch.com`;
             window.open(url, '_blank');
         }
 
         function inviteMembers() {
             const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
-            const url = `https://${platformData.clubSlug || 'myclub'}.clublaunch.com`;
+            // Check if custom domain is available, otherwise use clublaunch subdomain
+            const customDomain = platformData.customDomain || window.location.hostname === 'ezclub.app' ? 'ezclub.app' : null;
+            const clubSlug = platformData.clubSlug || 'myclub';
+            const url = customDomain ? `https://${customDomain}/club/${clubSlug}/` : `https://${clubSlug}.clublaunch.com`;
             const shareText = `Join my community on ${platformData.clubName || 'My Club'}! Visit: ${url}`;
             
             if (navigator.share) {

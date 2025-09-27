@@ -1,10 +1,10 @@
 # ClubLaunch Database Schema Documentation
 
-## 🗄️ Database Overview
+## 🗄️ Database Overview: psql -h localhost -U adminuser -d white_label_club
 - **Database Name:** `white_label_club`
 - **Host:** localhost
 - **User:** adminuser
-- **Connection String:** `postgresql+asyncpg://adminuser:Securepass@localhost/white_label_club`
+- **Connection String:** `postgresql://adminuser:Securepass@localhost/white_label_club`
 
 ## 📋 Complete Table List
 
@@ -164,19 +164,158 @@ platform_subscriptions.stripe_subscription_id → Stripe Subscription
 psql -h localhost -U adminuser -d white_label_club
 ```
 
-### Common Queries
+### Club Onboarding Monitoring Queries
 ```sql
--- View all clubs
-SELECT name, slug, stripe_onboarding_complete FROM clubs;
+-- 1. View Platform Users (Club Owners)
+SELECT id, email, first_name, last_name, created_at, is_active
+FROM platform_users 
+ORDER BY created_at DESC;
 
--- Check Stripe connections
-SELECT name, stripe_account_id FROM clubs WHERE stripe_onboarding_complete = true;
+-- Count total platform users
+SELECT COUNT(*) as total_platform_users FROM platform_users;
 
--- View platform subscriptions
-SELECT plan_name, amount, status FROM platform_subscriptions;
+-- 2. View All Clubs
+SELECT c.id, c.name, c.slug, c.created_at, 
+       c.stripe_onboarding_complete, c.subscription_status, c.subscription_plan
+FROM clubs c
+ORDER BY c.created_at DESC;
 
--- Check recent payments
-SELECT amount, status, created_at FROM payments ORDER BY created_at DESC LIMIT 10;
+-- See clubs with their owners (through club_roles)
+SELECT c.id, c.name, c.slug, c.created_at,
+       c.stripe_onboarding_complete, c.subscription_status,
+       p.email as owner_email, p.first_name, p.last_name,
+       cr.role
+FROM clubs c
+JOIN club_roles cr ON c.id = cr.club_id
+JOIN platform_users p ON cr.user_id = p.id
+WHERE cr.role = 'owner'
+ORDER BY c.created_at DESC;
+
+-- 3. Club Member Growth
+SELECT c.name as club_name, 
+       COUNT(cm.id) as member_count,
+       c.slug as club_slug
+FROM clubs c
+LEFT JOIN club_members cm ON c.id = cm.club_id
+GROUP BY c.id, c.name, c.slug
+ORDER BY member_count DESC;
+
+-- Recent club member signups
+SELECT cm.email, cm.display_name, c.name as club_name, cm.created_at, cm.member_tier
+FROM club_members cm
+JOIN clubs c ON cm.club_id = c.id
+ORDER BY cm.created_at DESC
+LIMIT 10;
+
+-- 4. Platform Subscriptions
+SELECT p.email, ps.plan_name, ps.status, ps.amount, ps.created_at
+FROM platform_subscriptions ps
+JOIN platform_users p ON ps.user_id = p.id
+ORDER BY ps.created_at DESC;
+
+-- 5. Stripe Integration Status
+SELECT name, slug, stripe_onboarding_complete, 
+       CASE WHEN stripe_account_id IS NOT NULL THEN 'Yes' ELSE 'No' END as has_stripe_account,
+       subscription_status, subscription_plan
+FROM clubs
+ORDER BY created_at DESC;
+
+-- Recent payments
+SELECT p.amount, p.status, p.currency, c.name as club_name, p.created_at
+FROM payments p
+JOIN clubs c ON p.club_id = c.id
+ORDER BY p.created_at DESC
+LIMIT 10;
+
+-- 6. Platform Health Summary
+SELECT 
+  (SELECT COUNT(*) FROM platform_users) as total_platform_users,
+  (SELECT COUNT(*) FROM clubs) as total_clubs,
+  (SELECT COUNT(*) FROM club_members) as total_club_members,
+  (SELECT COUNT(*) FROM clubs WHERE stripe_onboarding_complete = true) as clubs_with_stripe,
+  (SELECT COUNT(*) FROM club_roles WHERE role = 'owner') as total_club_owners;
+
+-- 7. Recent Activity (Last 7 Days)
+SELECT 
+  'Platform User' as type, email as name, created_at
+FROM platform_users 
+WHERE created_at >= NOW() - INTERVAL '7 days'
+UNION ALL
+SELECT 
+  'Club' as type, name, created_at
+FROM clubs 
+WHERE created_at >= NOW() - INTERVAL '7 days'
+UNION ALL
+SELECT 
+  'Club Member' as type, email, created_at
+FROM club_members 
+WHERE created_at >= NOW() - INTERVAL '7 days'
+ORDER BY created_at DESC;
+```
+
+### Sample Test Data Creation
+```sql
+-- Create a test platform user (club owner)
+INSERT INTO platform_users (id, email, password_hash, first_name, last_name, is_active)
+VALUES (
+  gen_random_uuid(),
+  'testowner@example.com',
+  '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsIAbnCl8', -- "password"
+  'Test',
+  'Owner',
+  true
+);
+
+-- Create a test club
+INSERT INTO clubs (id, name, slug, description, subscription_status, subscription_plan)
+VALUES (
+  gen_random_uuid(),
+  'Test Fitness Club',
+  'test-fitness',
+  'A test club for onboarding verification',
+  'trial',
+  'basic'
+);
+
+-- Link the club owner to the club
+INSERT INTO club_roles (id, club_id, user_id, role)
+SELECT 
+  gen_random_uuid(),
+  c.id,
+  p.id,
+  'owner'
+FROM clubs c, platform_users p
+WHERE c.slug = 'test-fitness' AND p.email = 'testowner@example.com';
+
+-- Create test club members
+INSERT INTO club_members (id, club_id, email, display_name, member_tier, status)
+SELECT 
+  gen_random_uuid(),
+  c.id,
+  'member1@example.com',
+  'Test Member 1',
+  'free',
+  'active'
+FROM clubs c WHERE c.slug = 'test-fitness';
+
+INSERT INTO club_members (id, club_id, email, display_name, member_tier, status)
+SELECT 
+  gen_random_uuid(),
+  c.id,
+  'member2@example.com',
+  'Test Member 2',
+  'premium',
+  'active'
+FROM clubs c WHERE c.slug = 'test-fitness';
+```
+
+### Clear Test Data
+```sql
+-- Remove all test data (use with caution!)
+DELETE FROM club_members WHERE email LIKE '%@example.com';
+DELETE FROM club_roles WHERE club_id IN (SELECT id FROM clubs WHERE slug = 'test-fitness');
+DELETE FROM clubs WHERE slug = 'test-fitness';
+DELETE FROM platform_users WHERE email LIKE '%@example.com';
 ```
 
 ### Migration Commands
@@ -221,3 +360,19 @@ alembic current
 **Last Updated:** September 23, 2025  
 **Database Version:** PostgreSQL 14.19  
 **Migration Status:** Up to date with Alembic
+
+                  List of relations
+ Schema |          Name          | Type  |   Owner   
+--------+------------------------+-------+-----------
+ public | ai_conversations       | table | adminuser
+ public | ai_messages            | table | adminuser
+ public | alembic_version        | table | adminuser
+ public | audit_logs             | table | adminuser
+ public | booking_services       | table | adminuser
+ public | booking_slots          | table | adminuser
+ public | bookings               | table | adminuser
+ public | chat_channels          | table | adminuser
+ public | chat_messages          | table | adminuser
+ public | club_analytics         | table | adminuser
+ public | club_members           | table | adminuser
+ public | club_roles             | table | adminuser

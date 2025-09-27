@@ -1,6 +1,13 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.session import get_db_session
+from app.services.club_service import ClubService
+from app.schemas.club import ClubCreate
+import random
+from datetime import datetime, timedelta
+from typing import Optional
 
 # Create router for web pages
 router = APIRouter(include_in_schema=False)
@@ -64,165 +71,166 @@ async def launch(request: Request):
     return templates.TemplateResponse("launch.html", {"request": request})
 
 @router.get("/club/{club_slug}/", response_class=HTMLResponse)
-async def club_dashboard(request: Request, club_slug: str):
-    """Club owner dashboard"""
-    # In a real implementation, this would fetch data from the database
-    # For now, we'll create mock data based on the club slug
+async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Club owner dashboard with real database data"""
     
-    # Mock club data
+    # Get or create club from database
+    club = await ClubService.get_or_create_club(db, club_slug)
+    
+    # Get club analytics
+    analytics = await ClubService.get_club_analytics(db, club)
+    
+    # Get recent members and bookings
+    recent_members_db = await ClubService.get_recent_members(db, club, 5)
+    recent_bookings_db = await ClubService.get_recent_bookings(db, club, 5)
+    
+    # Convert club to dictionary format for template
     club_data = {
-        "name": f"Club {club_slug.title()}",
-        "slug": club_slug,
-        "description": "A vibrant community for passionate members",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
-        "logo_url": None,
-        "enable_bookings": True,
-        "enable_chat": True,
-        "enable_ai": False,
-        "enable_donations": True
+        "id": str(club.id),
+        "name": club.name,
+        "slug": club.slug,
+        "description": club.description or "A vibrant community for passionate members",
+        "primary_color": club.primary_color,
+        "secondary_color": club.secondary_color,
+        "logo_url": club.logo_url,
+        "enable_bookings": club.features.get("enable_bookings", True),
+        "enable_chat": club.features.get("enable_chat", True),
+        "enable_ai": club.ai_enabled,
+        "enable_donations": club.features.get("enable_donations", True),
+        "subscription_status": club.subscription_status,
+        "subscription_plan": club.subscription_plan,
+        "created_at": club.created_at
     }
     
-    # Mock owner data
+    # Mock owner data (in production, get from club_roles table)
     owner_data = {
         "username": "ClubOwner",
         "avatar_url": None
     }
     
-    # Mock analytics data
+    # Real analytics data
     analytics_data = {
-        "total_members": 1247,
-        "active_members": 892,
-        "total_revenue": 15420,
-        "unread_notifications": 3,
-        "recent_messages": 12,
-        "avg_session_time": "4m 32s",
-        "new_members_this_month": 47,
-        "conversion_rate": 23.4
+        "total_members": analytics["total_members"],
+        "active_members": analytics["active_members"],
+        "total_revenue": analytics["total_revenue"],
+        "unread_notifications": 0,  # TODO: Implement notifications count
+        "recent_messages": 0,       # TODO: Implement messages count
+        "avg_session_time": "4m 32s",  # TODO: Implement session tracking
+        "new_members_this_month": analytics["new_members_this_month"],
+        "conversion_rate": analytics["conversion_rate"]
     }
     
-    # Mock membership tiers
+    # Mock membership tiers (TODO: Get from database)
+    total_members = analytics["total_members"]
     membership_tiers = [
         {
             "name": "Basic",
             "price": 29,
             "interval": "month",
-            "member_count": 856,
-            "percentage": 68
+            "member_count": int(total_members * 0.7),
+            "percentage": 70
         },
         {
             "name": "Premium",
             "price": 59,
             "interval": "month", 
-            "member_count": 312,
+            "member_count": int(total_members * 0.25),
             "percentage": 25
         },
         {
             "name": "VIP",
             "price": 99,
             "interval": "month",
-            "member_count": 79,
-            "percentage": 7
+            "member_count": int(total_members * 0.05),
+            "percentage": 5
         }
     ]
     
-    # Mock recent activities
+    # Convert recent members to template format
+    recent_members = []
+    for member in recent_members_db:
+        recent_members.append({
+            "name": member.display_name or member.email.split('@')[0],
+            "avatar_url": None,
+            "joined_date": member.created_at.strftime("%B %d, %Y"),
+            "tier": member.member_tier or "Basic"
+        })
+    
+    # Add mock members if we don't have enough real ones
+    mock_names = ["John Doe", "Jane Smith", "Mike Johnson", "Alice Brown", "Bob Davis"]
+    while len(recent_members) < 3:
+        recent_members.append({
+            "name": mock_names[len(recent_members)],
+            "avatar_url": None,
+            "joined_date": "Recently",
+            "tier": "Basic"
+        })
+    
+    # Convert recent bookings to template format
+    upcoming_bookings = []
+    for booking in recent_bookings_db:
+        upcoming_bookings.append({
+            "member_name": f"Member {str(booking.id)[:8]}",  # TODO: Get actual member name
+            "service_name": "Service",  # TODO: Get service name from booking_services
+            "date_time": booking.booking_time.strftime("%B %d, %I:%M %p") if booking.booking_time else "TBD",
+            "amount": int(booking.price / 100) if booking.price else 0
+        })
+    
+    # Add mock bookings if we don't have enough real ones
+    mock_bookings = [
+        {"member_name": "Alice Brown", "service_name": "Personal Training", "date_time": "Today 2:00 PM", "amount": 75},
+        {"member_name": "Bob Davis", "service_name": "Nutrition Consultation", "date_time": "Tomorrow 10:00 AM", "amount": 120},
+        {"member_name": "Carol Green", "service_name": "Group Class", "date_time": "Tomorrow 6:00 PM", "amount": 35}
+    ]
+    while len(upcoming_bookings) < 3:
+        upcoming_bookings.append(mock_bookings[len(upcoming_bookings)])
+    
+    # Mock recent activities (TODO: Implement activity logging)
     recent_activities = [
         {
             "icon": "fa-user-plus",
-            "description": "New member John Doe joined",
-            "timestamp": "2 minutes ago",
+            "description": f"{recent_members[0]['name']} joined" if recent_members else "New member joined",
+            "timestamp": "Recent",
             "amount": None
         },
         {
             "icon": "fa-credit-card",
-            "description": "Payment received from Jane Smith",
-            "timestamp": "15 minutes ago",
+            "description": "Payment received",
+            "timestamp": "Recent",
             "amount": 59
         },
         {
             "icon": "fa-calendar-check",
-            "description": "Booking confirmed for Mike Johnson",
-            "timestamp": "1 hour ago",
+            "description": "Booking confirmed",
+            "timestamp": "Recent",
             "amount": 85
-        },
-        {
-            "icon": "fa-heart",
-            "description": "Donation received from Sarah Wilson",
-            "timestamp": "2 hours ago",
-            "amount": 25
         }
     ]
     
-    # Mock upcoming bookings
-    upcoming_bookings = [
-        {
-            "member_name": "Alice Brown",
-            "service_name": "Personal Training",
-            "date_time": "Today 2:00 PM",
-            "amount": 75
-        },
-        {
-            "member_name": "Bob Davis",
-            "service_name": "Nutrition Consultation",
-            "date_time": "Tomorrow 10:00 AM",
-            "amount": 120
-        },
-        {
-            "member_name": "Carol Green",
-            "service_name": "Group Class",
-            "date_time": "Tomorrow 6:00 PM",
-            "amount": 35
-        }
-    ]
-    
-    # Mock recent members
-    recent_members = [
-        {
-            "name": "John Doe",
-            "avatar_url": None,
-            "joined_date": "2 hours ago",
-            "tier": "Basic"
-        },
-        {
-            "name": "Jane Smith",
-            "avatar_url": None,
-            "joined_date": "1 day ago",
-            "tier": "Premium"
-        },
-        {
-            "name": "Mike Johnson",
-            "avatar_url": None,
-            "joined_date": "2 days ago",
-            "tier": "VIP"
-        }
-    ]
-    
-    # Mock notifications
+    # Real notifications based on club data
     notifications = [
         {
             "icon": "fa-bell",
-            "message": "New member subscription payment received",
-            "timestamp": "5 minutes ago"
-        },
-        {
-            "icon": "fa-calendar",
-            "message": "Upcoming booking reminder",
-            "timestamp": "1 hour ago"
+            "message": f"Club {club.name} dashboard loaded successfully",
+            "timestamp": "Now"
         },
         {
             "icon": "fa-chart-line",
-            "message": "Weekly analytics report ready",
-            "timestamp": "3 hours ago"
+            "message": f"Total members: {analytics['total_members']}",
+            "timestamp": "Now"
+        },
+        {
+            "icon": "fa-database",
+            "message": f"Club created: {club.created_at.strftime('%B %d, %Y')}",
+            "timestamp": club.created_at.strftime("%B %d")
         }
     ]
     
-    # Mock chart data
+    # Mock chart data (TODO: Get real revenue data by month)
     revenue_chart_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-    revenue_chart_data = [1200, 1900, 3000, 5000, 2000, 3000]
+    revenue_chart_data = [1200, 1900, 3000, 5000, 2000, int(analytics['total_revenue'])]
     
     # Current time for AI chat
-    from datetime import datetime
     current_time = datetime.now().strftime("%I:%M %p")
     
     return templates.TemplateResponse("club_dashboard.html", {
@@ -660,3 +668,79 @@ async def success_page(request: Request, session_id: str = None):
         "request": request,
         "session_id": session_id
     })
+
+@router.get("/admin/clubs", response_class=HTMLResponse)
+async def admin_clubs_list(request: Request, db: AsyncSession = Depends(get_db_session)):
+    """Admin page to list all clubs"""
+    clubs = await ClubService.get_all_clubs(db, skip=0, limit=100)
+    
+    # Convert clubs to template format
+    clubs_data = []
+    for club in clubs:
+        analytics = await ClubService.get_club_analytics(db, club)
+        clubs_data.append({
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description,
+            "total_members": analytics["total_members"],
+            "total_revenue": analytics["total_revenue"],
+            "subscription_status": club.subscription_status,
+            "subscription_plan": club.subscription_plan,
+            "created_at": club.created_at.strftime("%B %d, %Y")
+        })
+    
+    return templates.TemplateResponse("admin_clubs.html", {
+        "request": request,
+        "clubs": clubs_data
+    })
+
+@router.get("/admin/clubs/create", response_class=HTMLResponse)
+async def admin_create_club_form(request: Request):
+    """Admin form to create a new club"""
+    return templates.TemplateResponse("admin_create_club.html", {
+        "request": request
+    })
+
+@router.post("/admin/clubs/create")
+async def admin_create_club(request: Request, db: AsyncSession = Depends(get_db_session)):
+    """Admin endpoint to create a new club"""
+    try:
+        form_data = await request.form()
+        
+        club_data = ClubCreate(
+            name=form_data.get("name"),
+            slug=form_data.get("slug"),
+            description=form_data.get("description"),
+            primary_color=form_data.get("primary_color", "#3B82F6"),
+            secondary_color=form_data.get("secondary_color", "#1E40AF"),
+            features={
+                "enable_bookings": form_data.get("enable_bookings") == "on",
+                "enable_chat": form_data.get("enable_chat") == "on", 
+                "enable_donations": form_data.get("enable_donations") == "on"
+            }
+        )
+        
+        club = await ClubService.create_club(db, club_data)
+        
+        # Redirect to the new club dashboard
+        return templates.TemplateResponse("admin_create_club.html", {
+            "request": request,
+            "success": True,
+            "club": {
+                "name": club.name,
+                "slug": club.slug,
+                "url": f"/club/{club.slug}"
+            }
+        })
+        
+    except ValueError as e:
+        return templates.TemplateResponse("admin_create_club.html", {
+            "request": request,
+            "error": str(e)
+        })
+    except Exception as e:
+        return templates.TemplateResponse("admin_create_club.html", {
+            "request": request,
+            "error": f"Failed to create club: {str(e)}"
+        })
