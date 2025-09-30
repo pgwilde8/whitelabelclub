@@ -215,7 +215,7 @@ class ClubService:
         if club_id_str in ClubService._services_storage:
             return ClubService._services_storage[club_id_str]
         
-        # Return default mock services for new clubs
+        # Return default services for new clubs (restore placeholders)
         default_services = [
             {
                 "id": 1,

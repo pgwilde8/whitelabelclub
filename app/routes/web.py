@@ -379,62 +379,83 @@ async def booking_management(request: Request, club_slug: str, db: AsyncSession 
         if deleted_service_ids:
             deleted_ids = [int(x) for x in deleted_service_ids.split(',') if x.isdigit()]
             booking_services = [s for s in booking_services if s['id'] not in deleted_ids]
-    
-    # Mock recent bookings
-    all_recent_bookings = [
-        {
-            "id": 1,
-            "client_name": "Alice Johnson",
-            "client_email": "alice@example.com",
-            "service_name": "Personal Training",
-            "date_time": "Today 2:00 PM",
-            "status": "confirmed",
-            "amount": 75.00,
-            "is_member": True,
-            "phone": "+1 (555) 123-4567"
-        },
-        {
-            "id": 2,
-            "client_name": "Bob Smith",
-            "client_email": "bob@example.com", 
-            "service_name": "Nutrition Consultation",
-            "date_time": "Tomorrow 10:00 AM",
-            "status": "pending",
-            "amount": 120.00,
-            "is_member": False,
-            "phone": "+1 (555) 987-6543"
-        },
-        {
-            "id": 3,
-            "client_name": "Carol Davis",
-            "client_email": "carol@example.com",
-            "service_name": "Group Yoga Class", 
-            "date_time": "Tomorrow 6:00 PM",
-            "status": "confirmed",
-            "amount": 35.00,
-            "is_member": True,
-            "phone": "+1 (555) 456-7890"
-        }
-    ]
-    
-    # Filter out deleted bookings (similar to services)
-    deleted_booking_ids = request.cookies.get('deleted_bookings', '')
-    if deleted_booking_ids:
-        deleted_ids = [int(x) for x in deleted_booking_ids.split(',') if x.isdigit()]
-        recent_bookings = [b for b in all_recent_bookings if b['id'] not in deleted_ids]
-    else:
-        recent_bookings = all_recent_bookings
-    
-        return templates.TemplateResponse("booking_management.html", {
-            "request": request,
-            "club": club_data,
-            "booking_services": booking_services,
-            "recent_bookings": recent_bookings
-        })
+        
+        # Mock recent bookings
+            all_recent_bookings = [
+                {
+                    "id": 1,
+                    "client_name": "Alice Johnson",
+                    "client_email": "alice@example.com",
+                    "service_name": "Personal Training",
+                    "date_time": "Today 2:00 PM",
+                    "status": "confirmed",
+                    "amount": 75.00,
+                    "is_member": True,
+                    "phone": "+1 (555) 123-4567"
+                },
+                {
+                    "id": 2,
+                    "client_name": "Bob Smith",
+                    "client_email": "bob@example.com", 
+                    "service_name": "Nutrition Consultation",
+                    "date_time": "Tomorrow 10:00 AM",
+                    "status": "pending",
+                    "amount": 120.00,
+                    "is_member": False,
+                    "phone": "+1 (555) 987-6543"
+                },
+                {
+                    "id": 3,
+                    "client_name": "Carol Davis",
+                    "client_email": "carol@example.com",
+                    "service_name": "Group Yoga Class", 
+                    "date_time": "Tomorrow 6:00 PM",
+                    "status": "confirmed",
+                    "amount": 35.00,
+                    "is_member": True,
+                    "phone": "+1 (555) 456-7890"
+                }
+            ]
+            
+            # Filter out deleted bookings (similar to services)
+            deleted_booking_ids = request.cookies.get('deleted_bookings', '')
+            if deleted_booking_ids:
+                deleted_ids = [int(x) for x in deleted_booking_ids.split(',') if x.isdigit()]
+                recent_bookings = [b for b in all_recent_bookings if b['id'] not in deleted_ids]
+            else:
+                recent_bookings = all_recent_bookings
+            
+            return templates.TemplateResponse("booking_management.html", {
+                "request": request,
+                "club": club_data,
+                "booking_services": booking_services,
+                "recent_bookings": recent_bookings
+            })
         
     except Exception as e:
         logger.error(f"Error loading booking management page for club {club_slug}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error loading booking management page")
+
+@router.post("/club/{club_slug}/services")
+async def create_booking_service(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Create a new booking service"""
+    try:
+        # Get the club
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get the service data from request body
+        service_data = await request.json()
+        
+        # Add the service to the database
+        new_service = await ClubService.add_booking_service(db, club.id, service_data)
+        
+        return {"success": True, "service": new_service}
+        
+    except Exception as e:
+        logger.error(f"Error creating service for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating service")
 
 @router.delete("/club/{club_slug}/services/{service_id}")
 async def delete_booking_service(request: Request, club_slug: str, service_id: int):
@@ -513,94 +534,24 @@ async def chat_view(request: Request, club_slug: str):
         "logo_url": None
     }
     
-    # Mock chat channels
+    # Empty chat channels (no fake data)
     channels = [
         {
             "id": "general",
             "name": "General",
             "description": "General community chat",
-            "unread_count": 5,
-            "last_message": "Hey everyone! How's the new booking system working?",
-            "last_message_time": "2 min ago",
-            "last_message_author": "John"
-        },
-        {
-            "id": "announcements",
-            "name": "Announcements",
-            "description": "Important club updates",
-            "unread_count": 2,
-            "last_message": "New booking system is live! Check it out.",
-            "last_message_time": "1 hour ago",
-            "last_message_author": "ClubOwner"
-        },
-        {
-            "id": "events",
-            "name": "Events",
-            "description": "Event discussions and planning",
-            "unread_count": 3,
-            "last_message": "Who's coming to the weekend workshop?",
-            "last_message_time": "30 min ago",
-            "last_message_author": "Jane"
-        },
-        {
-            "id": "help",
-            "name": "Help & Support",
-            "description": "Get help and support",
-            "unread_count": 1,
-            "last_message": "How do I cancel my booking?",
-            "last_message_time": "15 min ago",
-            "last_message_author": "Mike"
-        },
-        {
-            "id": "introductions",
-            "name": "Introductions",
-            "description": "Welcome new members",
-            "unread_count": 1,
-            "last_message": "Hi everyone! New to the club.",
-            "last_message_time": "45 min ago",
-            "last_message_author": "Sarah"
+            "unread_count": 0,
+            "last_message": "No messages yet",
+            "last_message_time": "",
+            "last_message_author": ""
         }
     ]
     
-    # Mock online members
-    online_members = [
-        {"id": 1, "name": "John", "status": "online", "avatar": None},
-        {"id": 2, "name": "Jane", "status": "online", "avatar": None},
-        {"id": 3, "name": "Mike", "status": "away", "avatar": None},
-        {"id": 4, "name": "Sarah", "status": "online", "avatar": None},
-        {"id": 5, "name": "ClubOwner", "status": "online", "avatar": None}
-    ]
+    # Empty online members list (no fake members)
+    online_members = []
     
-    # Mock recent messages for general channel
-    recent_messages = [
-        {
-            "id": 1,
-            "author": "John",
-            "author_id": 1,
-            "content": "Hey everyone! How's the new booking system working?",
-            "timestamp": "2025-01-27T19:25:00Z",
-            "time_display": "2 min ago",
-            "is_owner": False
-        },
-        {
-            "id": 2,
-            "author": "Jane",
-            "author_id": 2,
-            "content": "It's great! Just booked my personal training session.",
-            "timestamp": "2025-01-27T19:26:00Z",
-            "time_display": "1 min ago",
-            "is_owner": False
-        },
-        {
-            "id": 3,
-            "author": "Mike",
-            "author_id": 3,
-            "content": "Same here! Much easier than before.",
-            "timestamp": "2025-01-27T19:27:00Z",
-            "time_display": "now",
-            "is_owner": False
-        }
-    ]
+    # Empty recent messages (no fake messages)
+    recent_messages = []
     
     return templates.TemplateResponse("chat.html", {
         "request": request,

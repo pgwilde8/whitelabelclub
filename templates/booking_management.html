@@ -63,8 +63,8 @@
                         <p class="text-sm text-gray-600">Create a new bookable service</p>
                     </div>
                 </div>
-                <button onclick="openAddServiceModal()" class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300">
-                    Add Service
+                <button onclick="redirectToPublicBooking()" class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300">
+                    View & Add Services
                 </button>
             </div>
 
@@ -432,6 +432,11 @@
         // Services and bookings are now loaded server-side
         // No need for mock data or load functions
 
+        // Redirect to public booking page
+        function redirectToPublicBooking() {
+            window.open(`http://24.144.69.226:8000/club/{{ club.slug }}/book`, '_blank');
+        }
+
         // Modal functions
         function openAddServiceModal() {
             document.getElementById('addServiceModal').classList.remove('hidden');
@@ -451,32 +456,47 @@
         }
 
         // Form submission
-        document.getElementById('addServiceForm').addEventListener('submit', function(e) {
+        document.getElementById('addServiceForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const serviceData = Object.fromEntries(formData);
             
-            // Create new service object
-            const newService = {
-                id: Date.now(), // Simple ID generation
+            // Create service data object
+            const servicePayload = {
                 name: serviceData.serviceName,
                 price: parseFloat(serviceData.servicePrice),
                 duration: parseInt(serviceData.serviceDuration),
                 description: serviceData.serviceDescription || 'No description provided',
-                bookings_count: 0,
-                revenue: 0.00,
-                status: 'active',
                 max_participants: parseInt(serviceData.serviceCapacity) || 1,
                 allow_non_members: serviceData.allowNonMembers === 'on'
             };
             
-            // Add service to the services list
-            addServiceToList(newService);
-            
-            console.log('Creating service:', newService);
-            alert('Service created successfully!');
-            closeAddServiceModal();
+            try {
+                // Call the API to create the service
+                const response = await fetch(`/club/{{ club.slug }}/services`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(servicePayload)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Service created successfully:', result.service);
+                    alert('Service created successfully!');
+                    closeAddServiceModal();
+                    
+                    // Reload the page to show the new service
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to create service');
+                }
+            } catch (error) {
+                console.error('Error creating service:', error);
+                alert('Failed to create service. Please try again.');
+            }
         });
         
         function addServiceToList(service) {

@@ -395,11 +395,8 @@
                 "Good to know!"
             ];
             
-            const authors = ['John', 'Jane', 'Mike', 'Sarah'];
-            const author = authors[Math.floor(Math.random() * authors.length)];
-            const response = responses[Math.floor(Math.random() * responses.length)];
-            
-            addMessageToChat(author, response, 'now', false);
+            // No fake auto-responses - let real users chat
+            // addMessageToChat(author, response, 'now', false);
         }
 
         // Show typing indicator
