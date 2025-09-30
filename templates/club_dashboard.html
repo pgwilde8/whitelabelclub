@@ -212,6 +212,7 @@
                 {% if club.enable_bookings %}
                 <div class="bg-white rounded-lg shadow p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming Bookings</h2>
+                    {% if upcoming_bookings %}
                     <div class="space-y-3">
                         {% for booking in upcoming_bookings %}
                         <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
@@ -231,6 +232,19 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-plus text-gray-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No bookings yet</h3>
+                        <p class="text-gray-500 mb-4">Start by adding booking services to your club</p>
+                        <a href="/club/{{ club.slug }}/bookings" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Service
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

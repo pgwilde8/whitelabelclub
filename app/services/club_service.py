@@ -203,6 +203,93 @@ class ClubService:
         club.deleted_at = datetime.now()
         await db.commit()
 
+    # Simple in-memory storage for demo purposes
+    _services_storage = {}
+    
+    @staticmethod
+    async def get_booking_services(db: AsyncSession, club_id: uuid.UUID) -> List[Dict[str, Any]]:
+        """Get booking services for a club"""
+        club_id_str = str(club_id)
+        
+        # Check if we have custom services for this club
+        if club_id_str in ClubService._services_storage:
+            return ClubService._services_storage[club_id_str]
+        
+        # Return default mock services for new clubs
+        default_services = [
+            {
+                "id": 1,
+                "name": "Personal Training",
+                "price": 75.00,
+                "duration": 60,
+                "description": "One-on-one personal training session with certified trainer",
+                "bookings_count": 23,
+                "revenue": 1725.00,
+                "status": "active",
+                "max_participants": 1,
+                "allow_non_members": True
+            },
+            {
+                "id": 2,
+                "name": "Nutrition Consultation", 
+                "price": 120.00,
+                "duration": 90,
+                "description": "Comprehensive nutrition planning and meal prep guidance",
+                "bookings_count": 8,
+                "revenue": 960.00,
+                "status": "active",
+                "max_participants": 1,
+                "allow_non_members": True
+            },
+            {
+                "id": 3,
+                "name": "Group Yoga Class",
+                "price": 35.00,
+                "duration": 60,
+                "description": "Relaxing yoga class for all skill levels",
+                "bookings_count": 45,
+                "revenue": 1575.00,
+                "status": "active",
+                "max_participants": 12,
+                "allow_non_members": False
+            }
+        ]
+        
+        # Store default services for this club
+        ClubService._services_storage[club_id_str] = default_services
+        return default_services
+    
+    @staticmethod
+    async def add_booking_service(db: AsyncSession, club_id: uuid.UUID, service_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Add a new booking service"""
+        club_id_str = str(club_id)
+        
+        # Get current services
+        current_services = ClubService._services_storage.get(club_id_str, [])
+        
+        # Generate new ID
+        new_id = max([s.get("id", 0) for s in current_services], default=0) + 1
+        
+        # Create new service
+        new_service = {
+            "id": new_id,
+            "name": service_data.get("name", "New Service"),
+            "price": float(service_data.get("price", 0)),
+            "duration": int(service_data.get("duration", 60)),
+            "description": service_data.get("description", ""),
+            "bookings_count": 0,
+            "revenue": 0.00,
+            "status": "active",
+            "max_participants": int(service_data.get("max_participants", 1)),
+            "allow_non_members": service_data.get("allow_non_members", True)
+        }
+        
+        # Add to storage
+        current_services.append(new_service)
+        ClubService._services_storage[club_id_str] = current_services
+        
+        return new_service
+
     @staticmethod
     async def get_all_clubs(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Club]:
         """Get all clubs with pagination"""

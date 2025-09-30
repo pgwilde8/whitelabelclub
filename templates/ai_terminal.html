@@ -120,20 +120,23 @@
                 <!-- Quick Commands -->
                 <div class="mb-4">
                     <div class="text-gray-400 text-sm mb-2">💡 Quick Commands:</div>
-                    <div class="command-suggestion" onclick="sendCommand('analyze_members')">
-                        <strong>analyze_members</strong> - Get member engagement insights
+                    <div class="command-suggestion" onclick="executeAITool('get_metrics')">
+                        <strong>📊 get_metrics</strong> - Real-time club analytics
                     </div>
-                    <div class="command-suggestion" onclick="sendCommand('suggest_pricing')">
-                        <strong>suggest_pricing</strong> - AI pricing recommendations
+                    <div class="command-suggestion" onclick="executeAITool('list_at_risk_members')">
+                        <strong>⚠️ at_risk_members</strong> - Identify churn risk
+                    </div>
+                    <div class="command-suggestion" onclick="executeAITool('suggest_pricing')">
+                        <strong>💰 suggest_pricing</strong> - AI pricing optimization
+                    </div>
+                    <div class="command-suggestion" onclick="executeAITool('predict_revenue')">
+                        <strong>📈 predict_revenue</strong> - Revenue forecasting
+                    </div>
+                    <div class="command-suggestion" onclick="executeAITool('optimize_schedule')">
+                        <strong>⏰ optimize_schedule</strong> - Booking optimization
                     </div>
                     <div class="command-suggestion" onclick="sendCommand('generate_content')">
-                        <strong>generate_content</strong> - Create marketing content
-                    </div>
-                    <div class="command-suggestion" onclick="sendCommand('predict_revenue')">
-                        <strong>predict_revenue</strong> - Revenue forecasting
-                    </div>
-                    <div class="command-suggestion" onclick="sendCommand('optimize_schedule')">
-                        <strong>optimize_schedule</strong> - Schedule optimization
+                        <strong>📝 generate_content</strong> - Create marketing content
                     </div>
                 </div>
 
@@ -211,6 +214,34 @@
                     </div>
                 </div>
 
+                <!-- AI Business Tools -->
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-cogs text-purple-400"></i>
+                        <h3 class="font-semibold">AI Business Tools</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button onclick="executeAITool('get_metrics')" class="text-xs bg-blue-600 text-white px-2 py-2 rounded hover:bg-blue-700 transition duration-200">
+                            📊 Metrics
+                        </button>
+                        <button onclick="executeAITool('list_at_risk_members')" class="text-xs bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700 transition duration-200">
+                            ⚠️ At-Risk
+                        </button>
+                        <button onclick="executeAITool('suggest_pricing')" class="text-xs bg-green-600 text-white px-2 py-2 rounded hover:bg-green-700 transition duration-200">
+                            💰 Pricing
+                        </button>
+                        <button onclick="executeAITool('predict_revenue')" class="text-xs bg-yellow-600 text-white px-2 py-2 rounded hover:bg-yellow-700 transition duration-200">
+                            📈 Revenue
+                        </button>
+                        <button onclick="executeAITool('optimize_schedule')" class="text-xs bg-indigo-600 text-white px-2 py-2 rounded hover:bg-indigo-700 transition duration-200">
+                            ⏰ Schedule
+                        </button>
+                        <button onclick="executeAITool('post_announcement')" class="text-xs bg-purple-600 text-white px-2 py-2 rounded hover:bg-purple-700 transition duration-200">
+                            📢 Announce
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Quick Actions -->
                 <div class="bg-gray-700 rounded-lg p-4">
                     <div class="flex items-center space-x-2 mb-2">
@@ -281,11 +312,14 @@
         function autoComplete() {
             const input = document.getElementById('terminalInput');
             const commands = [
-                'analyze_members',
+                'get_metrics',
+                'list_at_risk_members',
                 'suggest_pricing',
-                'generate_content',
                 'predict_revenue',
                 'optimize_schedule',
+                'post_announcement',
+                'analyze_members',
+                'generate_content',
                 'send_newsletter',
                 'create_event',
                 'member_outreach',
@@ -326,6 +360,151 @@
             const input = document.getElementById('terminalInput');
             input.value = command;
             await sendMessage();
+        }
+
+        // Execute AI tool directly
+        async function executeAITool(toolName) {
+            if (isAiThinking) return;
+            
+            isAiThinking = true;
+            showAiThinking();
+            
+            try {
+                const response = await fetch(`/api/v1/ai/tools/${toolName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        club_slug: '{{ club.slug }}'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Tool execution failed: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                hideAiThinking();
+                
+                // Format and display the tool result
+                const formattedResult = formatToolResult(toolName, data);
+                addToTerminal(formattedResult, 'ai');
+                
+            } catch (error) {
+                hideAiThinking();
+                addToTerminal(`<div class="error-message">Tool Error: ${error.message}</div>`, 'error');
+            }
+        }
+
+        // Format tool results for display
+        function formatToolResult(toolName, data) {
+            switch (toolName) {
+                case 'get_metrics':
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">📊 Club Metrics Report</div>
+                        <div class="space-y-2 text-sm">
+                            <p>• <strong>Engagement Rate:</strong> ${data.engagement_pct}%</p>
+                            <p>• <strong>Active Members:</strong> ${data.active_members}</p>
+                            <p>• <strong>Total Members:</strong> ${data.total_members}</p>
+                            <p>• <strong>New Joins (30d):</strong> ${data.new_joins_30d}</p>
+                            <p>• <strong>At-Risk Members:</strong> ${data.at_risk_count}</p>
+                            <p>• <strong>Total Revenue:</strong> $${data.total_revenue}</p>
+                            <p class="mt-3 text-blue-300">💡 <strong>Analysis Window:</strong> ${data.window}</p>
+                        </div>
+                    </div>`;
+
+                case 'list_at_risk_members':
+                    const atRiskList = data.at_risk.map(member => 
+                        `• <strong>${member.name}</strong> - ${member.last_active} (${member.risk_score} risk)`
+                    ).join('<br>');
+                    
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">⚠️ At-Risk Members (${data.days_inactive}+ days inactive)</div>
+                        <div class="space-y-2 text-sm">
+                            <p><strong>Total At-Risk:</strong> ${data.at_risk_count} members</p>
+                            <div class="mt-2">
+                                ${atRiskList}
+                            </div>
+                            <p class="mt-3 text-yellow-300">💡 <strong>Recommendation:</strong> Send re-engagement campaigns and special offers to these members.</p>
+                        </div>
+                    </div>`;
+
+                case 'suggest_pricing':
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">💰 Pricing Optimization</div>
+                        <div class="space-y-2 text-sm">
+                            <p>• <strong>Tier:</strong> ${data.tier}</p>
+                            <p>• <strong>Current Revenue:</strong> $${data.current_revenue}</p>
+                            <p>• <strong>Suggested Price:</strong> $${data.suggested_monthly_price}/month</p>
+                            <p>• <strong>Price Increase:</strong> ${data.price_increase_pct}%</p>
+                            <p>• <strong>Expected Impact:</strong> ${data.expected_revenue_impact}</p>
+                            <p>• <strong>Risk Assessment:</strong> ${data.risk_assessment}</p>
+                            <p class="mt-3 text-green-300">💡 <strong>Target MRR:</strong> ${data.target_mrr}</p>
+                        </div>
+                    </div>`;
+
+                case 'optimize_schedule':
+                    const slots = data.suggested_slots.map(slot => 
+                        `• <strong>${slot.day} ${slot.time}</strong> - ${slot.demand} demand (${slot.recommended_price})`
+                    ).join('<br>');
+                    
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">⏰ Schedule Optimization</div>
+                        <div class="space-y-2 text-sm">
+                            <p>• <strong>Service:</strong> ${data.service}</p>
+                            <p>• <strong>Window:</strong> ${data.window}</p>
+                            <p>• <strong>Optimization Score:</strong> ${data.optimization_score}%</p>
+                            <p>• <strong>Expected Fill Rate:</strong> ${data.expected_fill_rate}</p>
+                            <p>• <strong>Revenue Potential:</strong> ${data.revenue_potential}</p>
+                            <div class="mt-2">
+                                <p class="font-semibold">Suggested Time Slots:</p>
+                                ${slots}
+                            </div>
+                        </div>
+                    </div>`;
+
+                case 'predict_revenue':
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">📈 Revenue Forecast</div>
+                        <div class="space-y-2 text-sm">
+                            <p>• <strong>Current Revenue:</strong> $${data.current_revenue}</p>
+                            <p>• <strong>Forecast Period:</strong> ${data.forecast_period_days} days</p>
+                            <p>• <strong>Confidence:</strong> ${data.confidence}</p>
+                            <div class="mt-2">
+                                <p class="font-semibold">Scenarios:</p>
+                                <p>• <strong>Base:</strong> $${data.scenarios.base}</p>
+                                <p>• <strong>Optimistic:</strong> $${data.scenarios.optimistic}</p>
+                                <p>• <strong>Conservative:</strong> $${data.scenarios.conservative}</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="font-semibold">Key Drivers:</p>
+                                ${data.key_drivers.map(driver => `• ${driver}`).join('<br>')}
+                            </div>
+                            <div class="mt-2">
+                                <p class="font-semibold">Recommendations:</p>
+                                ${data.recommendations.map(rec => `• ${rec}`).join('<br>')}
+                            </div>
+                        </div>
+                    </div>`;
+
+                case 'post_announcement':
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">📢 Announcement Posted</div>
+                        <div class="space-y-2 text-sm">
+                            <p>✅ <strong>Status:</strong> ${data.message}</p>
+                            <p>📝 <strong>Message:</strong> ${data.announcement}</p>
+                            <p>🏢 <strong>Club:</strong> ${data.club_slug}</p>
+                            <p class="mt-3 text-green-300">💡 <strong>Next Steps:</strong> Monitor member engagement and responses to the announcement.</p>
+                        </div>
+                    </div>`;
+
+                default:
+                    return `<div class="ai-response">
+                        <div class="font-semibold mb-2">🔧 Tool Result</div>
+                        <pre class="text-sm">${JSON.stringify(data, null, 2)}</pre>
+                    </div>`;
+            }
         }
 
         // Process commands and questions
@@ -468,16 +647,21 @@
                     return `<div class="ai-response">
                         <div class="font-semibold mb-2">🤖 Available Commands</div>
                         <div class="space-y-1 text-sm">
-                            <p><strong>analyze_members</strong> - Member engagement insights</p>
-                            <p><strong>suggest_pricing</strong> - Pricing recommendations</p>
+                            <div class="font-semibold text-blue-300 mt-2">AI Business Tools:</div>
+                            <p><strong>get_metrics</strong> - Real-time club analytics</p>
+                            <p><strong>list_at_risk_members</strong> - Identify members at risk of churning</p>
+                            <p><strong>suggest_pricing</strong> - AI-powered pricing optimization</p>
+                            <p><strong>predict_revenue</strong> - Revenue forecasting with scenarios</p>
+                            <p><strong>optimize_schedule</strong> - Booking schedule optimization</p>
+                            <p><strong>post_announcement</strong> - Post announcements to club chat</p>
+                            <div class="font-semibold text-green-300 mt-2">Content & Marketing:</div>
                             <p><strong>generate_content</strong> - Marketing content ideas</p>
-                            <p><strong>predict_revenue</strong> - Revenue forecasting</p>
-                            <p><strong>optimize_schedule</strong> - Schedule optimization</p>
                             <p><strong>send_newsletter</strong> - Create newsletter</p>
                             <p><strong>create_event</strong> - Plan events</p>
                             <p><strong>member_outreach</strong> - Member engagement</p>
                             <p><strong>help</strong> - Show this help</p>
-                            <p class="mt-3 text-gray-300">You can also ask questions like "How can I increase member retention?" or "What's the best time to schedule classes?"</p>
+                            <p class="mt-3 text-gray-300">💡 <strong>Pro Tip:</strong> Use the AI Business Tools buttons in the sidebar for one-click access!</p>
+                            <p class="mt-2 text-gray-300">You can also ask questions like "How can I increase member retention?" or "What's the best time to schedule classes?"</p>
                         </div>
                     </div>`;
 

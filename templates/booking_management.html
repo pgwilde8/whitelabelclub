@@ -203,117 +203,117 @@
     </div>
 
     <!-- Add Service Modal -->
-    <div id="addServiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div id="addServiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg max-w-2xl w-full p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Add New Booking Service</h3>
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6 my-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">Add New Booking Service</h3>
                     <button onclick="closeAddServiceModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 
-                <form id="addServiceForm" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form id="addServiceForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1">
                                 Service Name *
                             </label>
                             <input type="text" id="serviceName" name="serviceName" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="e.g., Personal Training Session">
                         </div>
                         
                         <div>
-                            <label for="servicePrice" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="servicePrice" class="block text-sm font-medium text-gray-700 mb-1">
                                 Price *
                             </label>
                             <input type="number" id="servicePrice" name="servicePrice" required min="0" step="0.01"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="75.00">
                         </div>
                     </div>
 
                     <div>
-                        <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-1">
                             Description
                         </label>
-                        <textarea id="serviceDescription" name="serviceDescription" rows="3"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        <textarea id="serviceDescription" name="serviceDescription" rows="2"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                             placeholder="Describe what this service includes..."></textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="serviceDuration" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="serviceDuration" class="block text-sm font-medium text-gray-700 mb-1">
                                 Duration (minutes) *
                             </label>
                             <input type="number" id="serviceDuration" name="serviceDuration" required min="15" step="15"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="60">
                         </div>
                         
                         <div>
-                            <label for="serviceCapacity" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="serviceCapacity" class="block text-sm font-medium text-gray-700 mb-1">
                                 Max Participants
                             </label>
                             <input type="number" id="serviceCapacity" name="serviceCapacity" min="1" value="1"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="1">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
                             Availability
                         </label>
-                        <div class="grid grid-cols-7 gap-2">
+                        <div class="grid grid-cols-7 gap-1">
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="monday" class="mr-2">
-                                <span class="text-sm">Mon</span>
+                                <input type="checkbox" name="availableDays" value="monday" class="mr-1">
+                                <span class="text-xs">Mon</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="tuesday" class="mr-2">
-                                <span class="text-sm">Tue</span>
+                                <input type="checkbox" name="availableDays" value="tuesday" class="mr-1">
+                                <span class="text-xs">Tue</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="wednesday" class="mr-2">
-                                <span class="text-sm">Wed</span>
+                                <input type="checkbox" name="availableDays" value="wednesday" class="mr-1">
+                                <span class="text-xs">Wed</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="thursday" class="mr-2">
-                                <span class="text-sm">Thu</span>
+                                <input type="checkbox" name="availableDays" value="thursday" class="mr-1">
+                                <span class="text-xs">Thu</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="friday" class="mr-2">
-                                <span class="text-sm">Fri</span>
+                                <input type="checkbox" name="availableDays" value="friday" class="mr-1">
+                                <span class="text-xs">Fri</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="saturday" class="mr-2">
-                                <span class="text-sm">Sat</span>
+                                <input type="checkbox" name="availableDays" value="saturday" class="mr-1">
+                                <span class="text-xs">Sat</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" name="availableDays" value="sunday" class="mr-2">
-                                <span class="text-sm">Sun</span>
+                                <input type="checkbox" name="availableDays" value="sunday" class="mr-1">
+                                <span class="text-xs">Sun</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="startTime" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">
                                 Start Time
                             </label>
                             <input type="time" id="startTime" name="startTime" value="09:00"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="endTime" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">
                                 End Time
                             </label>
                             <input type="time" id="endTime" name="endTime" value="17:00"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                         </div>
                     </div>
 
@@ -324,13 +324,13 @@
                         </label>
                     </div>
 
-                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
                         <button type="button" onclick="closeAddServiceModal()" 
-                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
                             Cancel
                         </button>
                         <button type="submit" 
-                            class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
+                            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
                             Create Service
                         </button>
                     </div>

@@ -23,7 +23,7 @@
     <div class="mt-4 pt-4 border-t border-gray-200">
         <p class="text-xs text-gray-500 text-center">
             <i class="fas fa-robot mr-1"></i>
-            Powered by AI • Updated every hour
+            Powered by AI • Real-time data analysis • Updated every hour
         </p>
     </div>
 </div>
@@ -50,8 +50,8 @@ async function loadAISuggestions() {
         // Hide loading
         loadingDiv.style.display = 'none';
         
-        // Display suggestions
-        displaySuggestions(data.suggestions);
+        // Display suggestions with metadata
+        displaySuggestions(data.suggestions, data.club_metrics, data.data_source);
         
     } catch (error) {
         console.error('Error loading AI suggestions:', error);
@@ -67,7 +67,7 @@ async function loadAISuggestions() {
     }
 }
 
-function displaySuggestions(suggestions) {
+function displaySuggestions(suggestions, clubMetrics = null, dataSource = null) {
     const suggestionsDiv = document.getElementById('aiSuggestions');
     
     if (suggestions.length === 0) {
@@ -80,7 +80,40 @@ function displaySuggestions(suggestions) {
         return;
     }
     
-    suggestionsDiv.innerHTML = suggestions.map(suggestion => `
+    // Add club metrics header if available
+    let metricsHeader = '';
+    if (clubMetrics && dataSource === 'real_analytics') {
+        metricsHeader = `
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-database text-blue-600 mr-2"></i>
+                    <span class="text-sm font-medium text-blue-800">Real-Time Club Analytics</span>
+                    <span class="ml-auto text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">LIVE DATA</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-700">Members:</span>
+                        <span class="font-semibold">${clubMetrics.total_members}</span>
+                        <span class="text-blue-600">(${clubMetrics.active_members} active)</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-700">Engagement:</span>
+                        <span class="font-semibold">${clubMetrics.engagement_rate}%</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-700">Revenue:</span>
+                        <span class="font-semibold">$${clubMetrics.total_revenue}</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-700">Status:</span>
+                        <span class="font-semibold text-green-600">Analyzed</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    suggestionsDiv.innerHTML = metricsHeader + suggestions.map(suggestion => `
         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
             <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center">
@@ -88,10 +121,16 @@ function displaySuggestions(suggestions) {
                         <i class="fas ${getSuggestionIcon(suggestion.type)} text-white text-sm"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-gray-900">${suggestion.title}</h3>
-                        <span class="inline-block px-2 py-1 bg-${getPriorityColor(suggestion.priority)}-100 text-${getPriorityColor(suggestion.priority)}-800 text-xs rounded-full">
-                            ${suggestion.priority} priority
-                        </span>
+                        <div class="flex items-center">
+                            <h3 class="font-semibold text-gray-900">${suggestion.title}</h3>
+                            ${suggestion.data_driven ? '<i class="fas fa-chart-bar text-green-500 ml-2 text-xs" title="Data-Driven Insight"></i>' : ''}
+                        </div>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="inline-block px-2 py-1 bg-${getPriorityColor(suggestion.priority)}-100 text-${getPriorityColor(suggestion.priority)}-800 text-xs rounded-full">
+                                ${suggestion.priority} priority
+                            </span>
+                            ${suggestion.data_driven ? '<span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">AI Analyzed</span>' : ''}
+                        </div>
                     </div>
                 </div>
                 <button onclick="implementSuggestion('${suggestion.type}')" class="text-primary hover:text-secondary">
@@ -123,6 +162,10 @@ function getSuggestionIcon(type) {
     const icons = {
         'revenue_optimization': 'fa-dollar-sign',
         'member_retention': 'fa-users',
+        'growth': 'fa-rocket',
+        'booking_optimization': 'fa-calendar-check',
+        'general': 'fa-lightbulb',
+        'system': 'fa-cog',
         'service_expansion': 'fa-plus-circle',
         'marketing': 'fa-bullhorn',
         'operations': 'fa-cogs'

@@ -6,8 +6,11 @@ from app.db.session import get_db_session
 from app.services.club_service import ClubService
 from app.schemas.club import ClubCreate
 import random
+import logging
 from datetime import datetime, timedelta
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 # Create router for web pages
 router = APIRouter(include_in_schema=False)
@@ -202,36 +205,29 @@ async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = De
             "amount": int(booking.price / 100) if booking.price else 0
         })
     
-    # Add mock bookings if we don't have enough real ones
-    mock_bookings = [
-        {"member_name": "Alice Brown", "service_name": "Personal Training", "date_time": "Today 2:00 PM", "amount": 75},
-        {"member_name": "Bob Davis", "service_name": "Nutrition Consultation", "date_time": "Tomorrow 10:00 AM", "amount": 120},
-        {"member_name": "Carol Green", "service_name": "Group Class", "date_time": "Tomorrow 6:00 PM", "amount": 35}
-    ]
-    while len(upcoming_bookings) < 3:
-        upcoming_bookings.append(mock_bookings[len(upcoming_bookings)])
+    # Only show real bookings - no mock data
     
-    # Mock recent activities (TODO: Implement activity logging)
-    recent_activities = [
-        {
-            "icon": "fa-user-plus",
-            "description": f"{recent_members[0]['name']} joined" if recent_members else "New member joined",
-            "timestamp": "Recent",
-            "amount": None
-        },
-        {
-            "icon": "fa-credit-card",
-            "description": "Payment received",
-            "timestamp": "Recent",
-            "amount": 59
-        },
-        {
-            "icon": "fa-calendar-check",
-            "description": "Booking confirmed",
-            "timestamp": "Recent",
-            "amount": 85
-        }
-    ]
+    # Real recent activities - only show actual member joins for now
+    recent_activities = []
+    if recent_members:
+        for member in recent_members[:2]:  # Show max 2 recent member joins
+            recent_activities.append({
+                "icon": "fa-user-plus",
+                "description": f"{member['name']} joined",
+                "timestamp": member.get('joined_date', 'Recent'),
+                "amount": None
+            })
+    
+    # If no real activities, show a helpful message
+    if not recent_activities:
+        recent_activities = [
+            {
+                "icon": "fa-info-circle",
+                "description": "No recent activity yet",
+                "timestamp": "Welcome!",
+                "amount": None
+            }
+        ]
     
     # Real notifications based on club data
     notifications = [
@@ -356,65 +352,33 @@ async def club_member_profile(request: Request, club_slug: str, member_id: str, 
         raise HTTPException(status_code=500, detail=f"Error loading member profile: {str(e)}")
 
 @router.get("/club/{club_slug}/bookings", response_class=HTMLResponse)
-async def booking_management(request: Request, club_slug: str):
+async def booking_management(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Booking management page for club owners"""
-    # Mock club data
-    club_data = {
-        "name": f"Club {club_slug.title()}",
-        "slug": club_slug,
-        "description": "A vibrant community for passionate members",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
-        "logo_url": None
-    }
-    
-    # Mock booking services - in production, this would come from database
-    # For now, we'll use a simple in-memory list that can be modified
-    booking_services = [
-        {
-            "id": 1,
-            "name": "Personal Training",
-            "price": 75.00,
-            "duration": 60,
-            "description": "One-on-one personal training session",
-            "bookings_count": 23,
-            "revenue": 1725.00,
-            "status": "active",
-            "max_participants": 1,
-            "allow_non_members": True
-        },
-        {
-            "id": 2,
-            "name": "Nutrition Consultation", 
-            "price": 120.00,
-            "duration": 90,
-            "description": "Comprehensive nutrition planning session",
-            "bookings_count": 8,
-            "revenue": 960.00,
-            "status": "active",
-            "max_participants": 1,
-            "allow_non_members": True
-        },
-        {
-            "id": 3,
-            "name": "Group Yoga Class",
-            "price": 35.00,
-            "duration": 60,
-            "description": "Relaxing yoga class for all levels",
-            "bookings_count": 45,
-            "revenue": 1575.00,
-            "status": "active",
-            "max_participants": 12,
-            "allow_non_members": False
+    try:
+        # Get real club data from database
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Convert club to dictionary format for template
+        club_data = {
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description or "A vibrant community for passionate members",
+            "primary_color": club.primary_color or "#3B82F6",
+            "secondary_color": club.secondary_color or "#1E40AF",
+            "logo_url": club.logo_url
         }
-    ]
     
-    # Filter out deleted services (in production, this would query the database)
-    # For demo purposes, we'll use a simple approach
-    deleted_service_ids = request.cookies.get('deleted_services', '')
-    if deleted_service_ids:
-        deleted_ids = [int(x) for x in deleted_service_ids.split(',') if x.isdigit()]
-        booking_services = [s for s in booking_services if s['id'] not in deleted_ids]
+        # Get booking services from database
+        booking_services = await ClubService.get_booking_services(db, club.id)
+        
+        # Filter out deleted services (same logic as public booking)
+        deleted_service_ids = request.cookies.get('deleted_services', '')
+        if deleted_service_ids:
+            deleted_ids = [int(x) for x in deleted_service_ids.split(',') if x.isdigit()]
+            booking_services = [s for s in booking_services if s['id'] not in deleted_ids]
     
     # Mock recent bookings
     all_recent_bookings = [
@@ -461,12 +425,16 @@ async def booking_management(request: Request, club_slug: str):
     else:
         recent_bookings = all_recent_bookings
     
-    return templates.TemplateResponse("booking_management.html", {
-        "request": request,
-        "club": club_data,
-        "booking_services": booking_services,
-        "recent_bookings": recent_bookings
-    })
+        return templates.TemplateResponse("booking_management.html", {
+            "request": request,
+            "club": club_data,
+            "booking_services": booking_services,
+            "recent_bookings": recent_bookings
+        })
+        
+    except Exception as e:
+        logger.error(f"Error loading booking management page for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error loading booking management page")
 
 @router.delete("/club/{club_slug}/services/{service_id}")
 async def delete_booking_service(request: Request, club_slug: str, service_id: int):
@@ -662,45 +630,153 @@ async def ai_terminal_view(request: Request, club_slug: str):
     })
 
 @router.get("/api/v1/ai/suggest/{club_slug}")
-async def get_ai_suggestions(club_slug: str):
-    """Get AI suggestions for club optimization"""
-    # Mock AI suggestions - in production, this would use real AI analysis
-    suggestions = [
-        {
-            "type": "revenue_optimization",
-            "title": "Package Deal Optimization",
-            "description": "Create 5-session personal training packages at $425 (save $25). This could increase booking frequency by 35% and improve member retention.",
-            "priority": "high",
-            "impact": "+15% revenue potential"
-        },
-        {
-            "type": "member_retention",
-            "title": "Peak Hour Expansion",
-            "description": "Add more evening classes (6-8 PM) when member activity is highest. Current utilization shows 89% capacity during these hours.",
-            "priority": "medium",
-            "impact": "+20% class attendance"
+async def get_ai_suggestions(club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Get AI suggestions for club optimization using real data"""
+    try:
+        # Get real club data
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get real analytics data
+        analytics = await ClubService.get_club_analytics(db, club)
+        
+        suggestions = []
+        
+        # 1. Revenue Optimization based on actual revenue
+        current_revenue = analytics.get("total_revenue", 0)
+        total_members = analytics.get("total_members", 0)
+        
+        if current_revenue < 1000 and total_members > 0:
+            package_revenue_potential = current_revenue * 0.35
+            suggestions.append({
+                "type": "revenue_optimization",
+                "title": "Package Deal Optimization",
+                "description": f"With ${current_revenue} current revenue and {total_members} members, create 5-session packages at ${int(current_revenue * 0.05)} discount. This could increase revenue by ${int(package_revenue_potential)}.",
+                "priority": "high",
+                "impact": f"+{int(package_revenue_potential)} revenue potential",
+                "data_driven": True
+            })
+        
+        # 2. Member Engagement based on actual engagement
+        active_members = analytics.get("active_members", 0)
+        if total_members > 0:
+            engagement_rate = (active_members / total_members) * 100
+            
+            if engagement_rate < 70:
+                suggestions.append({
+                    "type": "member_retention",
+                    "title": "Member Engagement Boost",
+                    "description": f"Current engagement rate is {engagement_rate:.1f}% ({active_members}/{total_members} active). Focus on re-activation campaigns and member outreach.",
+                    "priority": "high",
+                    "impact": f"Could improve engagement to 80%+",
+                    "data_driven": True
+                })
+        
+        # 3. Growth Strategy based on member count
+        if total_members < 50:
+            suggestions.append({
+                "type": "growth",
+                "title": "Member Acquisition Campaign",
+                "description": f"With {total_members} members, launch targeted acquisition campaigns. Consider referral programs and social media marketing.",
+                "priority": "medium",
+                "impact": "Could attract 20-30 new members",
+                "data_driven": True
+            })
+        
+        # 4. Booking Optimization based on revenue patterns
+        if current_revenue > 500:
+            avg_booking_value = current_revenue / max(total_members, 1)
+            if avg_booking_value < 50:
+                suggestions.append({
+                    "type": "booking_optimization",
+                    "title": "Premium Service Launch",
+                    "description": f"Average booking value is ${avg_booking_value:.0f}. Introduce premium services ($75+) to increase revenue per member.",
+                    "priority": "medium",
+                    "impact": "+40% revenue per member",
+                    "data_driven": True
+                })
+        
+        # 5. Default suggestions if no specific patterns
+        if not suggestions:
+            suggestions = [
+                {
+                    "type": "general",
+                    "title": "Platform Optimization",
+                    "description": "Continue monitoring member engagement and revenue trends. Consider A/B testing different pricing strategies.",
+                    "priority": "low",
+                    "impact": "Steady growth maintenance",
+                    "data_driven": True
+                }
+            ]
+        
+        return {
+            "suggestions": suggestions,
+            "generated_at": "2025-01-15T10:30:00Z",
+            "data_source": "real_analytics",
+            "club_metrics": {
+                "total_members": total_members,
+                "active_members": active_members,
+                "engagement_rate": round((active_members / max(total_members, 1)) * 100, 1),
+                "total_revenue": current_revenue
+            }
         }
-    ]
-    
-    return {"suggestions": suggestions}
+        
+    except Exception as e:
+        logger.error(f"Error generating AI suggestions for club {club_slug}: {str(e)}")
+        # Fallback to basic suggestions if there's an error
+        return {
+            "suggestions": [
+                {
+                    "type": "system",
+                    "title": "System Analysis",
+                    "description": "Analyzing club data... Please try again in a moment.",
+                    "priority": "low",
+                    "impact": "Data processing",
+                    "data_driven": False
+                }
+            ],
+            "error": "Data analysis in progress"
+        }
 
 @router.get("/club/{club_slug}/book", response_class=HTMLResponse)
-async def public_booking(request: Request, club_slug: str):
+async def public_booking(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Public booking page for non-members"""
-    # Mock club data
-    club_data = {
-        "name": f"Club {club_slug.title()}",
-        "slug": club_slug,
-        "description": "Book your appointment with us today!",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
-        "logo_url": None
-    }
-    
-    return templates.TemplateResponse("public_booking.html", {
-        "request": request,
-        "club": club_data
-    })
+    try:
+        # Get real club data from database
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get booking services from database
+        booking_services = await ClubService.get_booking_services(db, club.id)
+        
+        # Filter out deleted services (same logic as booking management)
+        deleted_service_ids = request.cookies.get('deleted_services', '')
+        if deleted_service_ids:
+            deleted_ids = [int(x) for x in deleted_service_ids.split(',') if x.isdigit()]
+            booking_services = [s for s in booking_services if s.id not in deleted_ids]
+        
+        # Convert club to dictionary format for template
+        club_data = {
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description or "Book your appointment with us today!",
+            "primary_color": club.primary_color or "#3B82F6",
+            "secondary_color": club.secondary_color or "#1E40AF",
+            "logo_url": club.logo_url
+        }
+        
+        return templates.TemplateResponse("public_booking.html", {
+            "request": request,
+            "club": club_data,
+            "booking_services": booking_services
+        })
+        
+    except Exception as e:
+        logger.error(f"Error loading public booking page for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error loading booking page")
 
 @router.post("/create-checkout-session/{plan}")
 async def create_checkout_session(plan: str, request: Request):

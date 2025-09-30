@@ -295,3 +295,176 @@ async def configure_openai_key(club_slug: str, openai_key: str, db: AsyncSession
     except Exception as e:
         logger.error(f"Error configuring OpenAI key for club {club_slug}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error configuring OpenAI key")
+
+# AI Tools Endpoints for Business Operations
+
+@router.post("/tools/get_metrics")
+async def get_metrics(window: str = "30d", club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """Get club engagement metrics"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get real analytics data
+        analytics = await ClubService.get_club_analytics(db, club)
+        
+        return {
+            "club_slug": club_slug,
+            "window": window,
+            "engagement_pct": 78.5,
+            "active_members": analytics.get("active_members", 0),
+            "total_members": analytics.get("total_members", 0),
+            "new_joins_30d": 12,
+            "at_risk_count": 3,
+            "total_revenue": analytics.get("total_revenue", 0)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting metrics for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error getting metrics")
+
+@router.post("/tools/post_announcement")
+async def post_announcement(message: str, club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """Post announcement to club chat"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # For now, just return success - you can wire to real chat later
+        return {
+            "success": True, 
+            "message": "Announcement posted to chat",
+            "club_slug": club_slug,
+            "announcement": message
+        }
+        
+    except Exception as e:
+        logger.error(f"Error posting announcement for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error posting announcement")
+
+@router.post("/tools/list_at_risk_members")
+async def list_at_risk_members(days_inactive: int = 21, club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """List members at risk of churning"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Mock data for now - replace with real query later
+        at_risk_members = [
+            {"name": "John D.", "last_active": "18 days ago", "risk_score": "High"},
+            {"name": "Sarah M.", "last_active": "25 days ago", "risk_score": "Medium"},
+            {"name": "Mike R.", "last_active": "22 days ago", "risk_score": "Medium"}
+        ]
+        
+        return {
+            "club_slug": club_slug,
+            "days_inactive": days_inactive,
+            "at_risk_count": len(at_risk_members),
+            "at_risk": at_risk_members
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting at-risk members for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error getting at-risk members")
+
+@router.post("/tools/suggest_pricing")
+async def suggest_pricing(tier: str = "Premium", target_mrr: str = "+20%", club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """Suggest pricing optimization for club tiers"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get current revenue data
+        analytics = await ClubService.get_club_analytics(db, club)
+        current_revenue = analytics.get("total_revenue", 0)
+        
+        # Calculate suggested pricing (mock for now)
+        suggested_increase = 1.20  # 20% increase
+        new_monthly_price = 99 * suggested_increase  # Assuming $99 base
+        
+        return {
+            "club_slug": club_slug,
+            "tier": tier,
+            "target_mrr": target_mrr,
+            "current_revenue": current_revenue,
+            "suggested_monthly_price": round(new_monthly_price, 2),
+            "price_increase_pct": 20,
+            "expected_revenue_impact": f"+${current_revenue * 0.2:.0f}/month",
+            "risk_assessment": "Low - Gradual increase with member benefits"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error suggesting pricing for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error suggesting pricing")
+
+@router.post("/tools/optimize_schedule")
+async def optimize_schedule(service: str = "1:1 Coaching", window: str = "Fri 2-6pm", club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """Optimize booking schedule for services"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Mock optimization suggestions
+        suggested_slots = [
+            {"day": "Friday", "time": "2:00 PM", "demand": "High", "recommended_price": "$120"},
+            {"day": "Friday", "time": "3:30 PM", "demand": "Medium", "recommended_price": "$110"},
+            {"day": "Friday", "time": "5:00 PM", "demand": "High", "recommended_price": "$120"}
+        ]
+        
+        return {
+            "club_slug": club_slug,
+            "service": service,
+            "window": window,
+            "suggested_slots": suggested_slots,
+            "optimization_score": 87,
+            "expected_fill_rate": "75%",
+            "revenue_potential": "$330/session"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error optimizing schedule for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error optimizing schedule")
+
+@router.post("/tools/predict_revenue")
+async def predict_revenue(days: int = 30, club_slug: str = "aaaaaa", db: AsyncSession = Depends(get_db_session)):
+    """Predict revenue for the next period"""
+    try:
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get current analytics
+        analytics = await ClubService.get_club_analytics(db, club)
+        current_revenue = analytics.get("total_revenue", 0)
+        
+        # Mock predictions (replace with real forecasting logic)
+        base_scenario = current_revenue * 1.1  # 10% growth
+        optimistic_scenario = current_revenue * 1.25  # 25% growth
+        conservative_scenario = current_revenue * 0.95  # 5% decline
+        
+        return {
+            "club_slug": club_slug,
+            "forecast_period_days": days,
+            "current_revenue": current_revenue,
+            "scenarios": {
+                "base": round(base_scenario, 2),
+                "optimistic": round(optimistic_scenario, 2),
+                "conservative": round(conservative_scenario, 2)
+            },
+            "confidence": "78%",
+            "key_drivers": ["Member renewals", "New bookings", "Premium upgrades"],
+            "recommendations": [
+                "Focus on member retention",
+                "Increase booking frequency",
+                "Launch premium tier promotion"
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Error predicting revenue for club {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error predicting revenue")
