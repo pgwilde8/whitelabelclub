@@ -188,13 +188,10 @@
                     Our support team is here to help you make the most of your new platform.
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onclick="openSupport()" class="bg-white text-primary px-6 py-3 rounded-lg hover:bg-gray-100 transition duration-300 font-semibold">
+                <div class="flex justify-center">
+                    <a href="/contact" class="bg-white text-primary px-6 py-3 rounded-lg hover:bg-gray-100 transition duration-300 font-semibold inline-block">
                         <i class="fas fa-comments mr-2"></i>Contact Support
-                    </button>
-                    <button onclick="openDocs()" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-primary transition duration-300 font-semibold">
-                        <i class="fas fa-book mr-2"></i>View Documentation
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -363,13 +360,6 @@
             visitPlatform();
         }
 
-        function openSupport() {
-            window.open('mailto:support@clublaunch.com?subject=New Platform Setup Support', '_blank');
-        }
-
-        function openDocs() {
-            window.open('https://docs.clublaunch.com', '_blank');
-        }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {

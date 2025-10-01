@@ -73,10 +73,6 @@ async def launch(request: Request):
     """Launch page"""
     return templates.TemplateResponse("launch.html", {"request": request})
 
-@router.get("/test-club69")
-async def test_club69(request: Request):
-    """Simple test route for club69"""
-    return {"message": "Club69 test route works", "club": "club69"}
 
 # Mock club data for testing and fallback
 MOCK_CLUBS = {
@@ -85,12 +81,6 @@ MOCK_CLUBS = {
         "description": "A vibrant fitness community",
         "primary_color": "#3B82F6",
         "secondary_color": "#1E40AF"
-    },
-    "club69": {
-        "name": "Club 69",
-        "description": "An exclusive member community",
-        "primary_color": "#8B5CF6",
-        "secondary_color": "#7C3AED"
     }
 }
 
