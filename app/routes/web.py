@@ -76,6 +76,11 @@ async def launch(request: Request):
     """Launch page"""
     return templates.TemplateResponse("launch.html", {"request": request})
 
+@router.get("/create-community", response_class=HTMLResponse)
+async def create_community(request: Request):
+    """Create community sales page"""
+    return templates.TemplateResponse("create-community.html", {"request": request})
+
 
 # Mock club data for testing and fallback
 MOCK_CLUBS = {

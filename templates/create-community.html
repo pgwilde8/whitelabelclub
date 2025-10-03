@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Own Community Platform - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="/" class="text-2xl font-bold text-primary">🚀 ClubLaunch</a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/features" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="/signup" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                    <i class="fas fa-star mr-2"></i>Trusted by 500+ Entrepreneurs
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Create Your Own
+                    <span class="text-primary">Community Platform</span>
+                    in 15 Minutes
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Stop paying monthly fees to platforms that don't care about your business. 
+                    Launch your own branded community with booking, payments, chat, and AI - 
+                    <strong>all under your brand name.</strong>
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/signup" class="bg-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-secondary transition duration-300 shadow-lg">
+                        <i class="fas fa-rocket mr-2"></i>Start Building Now - FREE
+                    </a>
+                    <a href="#how-it-works" class="border-2 border-primary text-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary hover:text-white transition duration-300">
+                        <i class="fas fa-play mr-2"></i>See How It Works
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">
+                    <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                    14-day free trial • No credit card required • Your own domain • Cancel anytime
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    What Is ClubLaunch?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    ClubLaunch is a white-label platform that gives you everything you need to create and run your own branded community business.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Your Own Branded Platform</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Custom Domain:</strong> YourCommunity.com (not yourcommunity.clublaunch.com)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Your Logo & Colors:</strong> Complete brand customization</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Member Dashboard:</strong> Professional member portal</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Admin Control:</strong> Full control over your community</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                            <i class="fas fa-crown text-primary text-3xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Complete Business Platform</h4>
+                        <p class="text-gray-600">Everything you need to run a successful community business under your own brand.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Why Choose ClubLaunch?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Stop giving your hard-earned money to platforms that don't care about your success. 
+                    Build something that's truly yours.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Stop Platform Dependency</h3>
+                    <p class="text-gray-600">Why risk your business on platforms that can change rules, increase fees, or shut you down? Build something you control.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Keep More Revenue</h3>
+                    <p class="text-gray-600">Stop paying 3-5% fees on every transaction. Keep 100% of your revenue with your own payment processing.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Own Your Members</h3>
+                    <p class="text-gray-600">Your members are your members. No platform can take them away or compete with your business.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Scale Without Limits</h3>
+                    <p class="text-gray-600">No arbitrary limits on members, features, or growth. Scale your community as big as you want.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-cogs text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Complete Customization</h3>
+                    <p class="text-gray-600">Customize everything - features, design, functionality. Make it perfectly fit your business needs.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Business Security</h3>
+                    <p class="text-gray-600">Your business can't be shut down by platform policy changes. You're in complete control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Where Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Where Will You Use This?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Perfect for any business that wants to build and monetize a community
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-dumbbell text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Fitness & Wellness</h3>
+                    <p class="text-gray-600 text-sm">Personal trainers, yoga instructors, nutritionists</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-graduation-cap text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Education & Coaching</h3>
+                    <p class="text-gray-600 text-sm">Life coaches, business mentors, online educators</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-paint-brush text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Creative Services</h3>
+                    <p class="text-gray-600 text-sm">Photographers, designers, artists, consultants</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-handshake text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Professional Services</h3>
+                    <p class="text-gray-600 text-sm">Lawyers, accountants, consultants, agencies</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-home text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Local Communities</h3>
+                    <p class="text-gray-600 text-sm">Neighborhood groups, hobby clubs, meetups</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-church text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Religious Groups</h3>
+                    <p class="text-gray-600 text-sm">Churches, temples, spiritual communities</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-pink-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Support Groups</h3>
+                    <p class="text-gray-600 text-sm">Recovery groups, health support, parenting</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-briefcase text-teal-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Business Networks</h3>
+                    <p class="text-gray-600 text-sm">Industry groups, networking, professional associations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- When Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    When Should You Start?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    The best time to build your own community platform is right now
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+                        <i class="fas fa-clock text-red-500 mr-3"></i>Start Today
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Market timing:</strong> Community platforms are exploding in popularity</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Competition advantage:</strong> Get ahead of competitors still using generic platforms</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Revenue opportunity:</strong> Start monetizing your audience immediately</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700"><strong>Brand building:</strong> Establish your professional presence now</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+                        <i class="fas fa-calendar text-blue-500 mr-3"></i>Perfect Timing
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-green-600 font-bold">1</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Free Trial Period</h4>
+                                <p class="text-gray-600 text-sm">14 days to test everything risk-free</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-blue-600 font-bold">2</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Quick Setup</h4>
+                                <p class="text-gray-600 text-sm">Launch in under 15 minutes</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-purple-600 font-bold">3</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Immediate Revenue</h4>
+                                <p class="text-gray-600 text-sm">Start accepting payments from day one</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    How It Works
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Get your own branded community platform running in just 4 simple steps
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Sign Up Free</h3>
+                    <p class="text-gray-600">Create your account in 30 seconds. No credit card required for your 14-day free trial.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Customize Your Brand</h3>
+                    <p class="text-gray-600">Add your logo, choose colors, set up your domain. Make it look like your own product.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Connect Payments</h3>
+                    <p class="text-gray-600">Link your Stripe account in minutes and start accepting payments from members.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">4</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Launch & Grow</h3>
+                    <p class="text-gray-600">Share your platform with members and start building your community business.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="/signup" class="bg-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-secondary transition duration-300 shadow-lg">
+                    <i class="fas fa-rocket mr-2"></i>Start Your Free Trial Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Everything You Need Included
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    No hidden fees, no surprise costs. Everything you need to run a successful community business.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-calendar-check text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Booking & Scheduling</h3>
+                    <p class="text-gray-600">Full calendar system with automated confirmations, rescheduling, and payment processing.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-comments text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Real-time Chat</h3>
+                    <p class="text-gray-600">Member chat rooms, direct messaging, and AI-powered community assistant.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-credit-card text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Payment Processing</h3>
+                    <p class="text-gray-600">Stripe integration for memberships, one-time payments, and subscription billing.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-brain text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">AI Assistant</h3>
+                    <p class="text-gray-600">AI-powered insights, member engagement tools, and automated community management.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Member Management</h3>
+                    <p class="text-gray-600">Complete member profiles, activity tracking, and engagement analytics.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-bar text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Analytics Dashboard</h3>
+                    <p class="text-gray-600">Revenue tracking, member engagement metrics, and business insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Simple, Transparent Pricing
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Start free, scale as you grow. No hidden fees, no surprises.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200 hover:border-primary transition duration-300">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$67<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">Perfect for getting started</p>
+                        <div class="mt-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>1 Club/Community</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Unlimited Members</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Booking System</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Real-time Chat</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Stripe Payments</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Subdomain</span>
+                        </li>
+                    </ul>
+                    <a href="/signup?plan=starter" class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition duration-300 text-center block">
+                        Start Free Trial
+                    </a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-primary p-8 rounded-xl border-2 border-primary relative transform scale-105">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-secondary text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
+                        <div class="text-4xl font-bold text-white mb-2">$97<span class="text-lg text-blue-200">/month</span></div>
+                        <p class="text-blue-200">For growing communities</p>
+                        <div class="mt-4 bg-green-400 text-white px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Everything in Starter</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Custom Domain</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">AI Assistant</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Media Library</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Advanced Analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span class="text-white">Priority Support</span>
+                        </li>
+                    </ul>
+                    <a href="/signup?plan=pro" class="w-full bg-white text-primary py-3 rounded-lg hover:bg-gray-100 transition duration-300 font-semibold text-center block">
+                        Start Free Trial
+                    </a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-gray-50 p-8 rounded-xl border-2 border-gray-200 hover:border-primary transition duration-300">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$197<span class="text-lg text-gray-600">/month</span></div>
+                        <p class="text-gray-600">For established businesses</p>
+                        <div class="mt-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-gift mr-1"></i>14 days free
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Everything in Pro</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Multiple Clubs</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Advanced AI Features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Custom Integrations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Dedicated Support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>SLA Guarantee</span>
+                        </li>
+                    </ul>
+                    <a href="/signup?plan=enterprise" class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition duration-300 text-center block">
+                        Start Free Trial
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <p class="text-gray-600 mb-4">
+                    <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                    All plans include 14-day free trial, no setup fees, and cancel anytime
+                </p>
+                <p class="text-sm text-gray-500">
+                    * Optional 3% platform fee on bookings and donations (can be disabled)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Build Your Own Community Platform?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Join hundreds of entrepreneurs who've already built successful community businesses with ClubLaunch.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/signup" class="bg-white text-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300 shadow-lg">
+                    <i class="fas fa-rocket mr-2"></i>Start Your Free Trial Now
+                </a>
+                <a href="/contact" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary transition duration-300">
+                    <i class="fas fa-question-circle mr-2"></i>Have Questions?
+                </a>
+            </div>
+            <p class="text-sm text-blue-200 mt-6">
+                <i class="fas fa-check-circle mr-1"></i>
+                No credit card required • 14-day free trial • Cancel anytime • Full support included
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">🚀 ClubLaunch</h3>
+                    <p class="text-gray-400 mb-4">
+                        The easiest way to launch your own branded community platform.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/features" class="hover:text-white">Features</a></li>
+                        <li><a href="/create-community" class="hover:text-white">Create Community</a></li>
+                        <li><a href="/#pricing" class="hover:text-white">Pricing</a></li>
+                        <li><a href="/#demo" class="hover:text-white">Demo</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/terms" class="hover:text-white">Terms</a></li>
+                        <li><a href="/privacy" class="hover:text-white">Privacy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/contact" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="/help" class="hover:text-white">Help Center</a></li>
+                        <li><a href="/status" class="hover:text-white">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 ClubLaunch. All rights reserved. Built for entrepreneurs who want to build communities.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
