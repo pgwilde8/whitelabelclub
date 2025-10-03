@@ -374,56 +374,56 @@ async def booking_management(request: Request, club_slug: str, db: AsyncSession 
             booking_services = [s for s in booking_services if s['id'] not in deleted_ids]
         
         # Mock recent bookings
-            all_recent_bookings = [
-                {
-                    "id": 1,
-                    "client_name": "Alice Johnson",
-                    "client_email": "alice@example.com",
-                    "service_name": "Personal Training",
-                    "date_time": "Today 2:00 PM",
-                    "status": "confirmed",
-                    "amount": 75.00,
-                    "is_member": True,
-                    "phone": "+1 (555) 123-4567"
-                },
-                {
-                    "id": 2,
-                    "client_name": "Bob Smith",
-                    "client_email": "bob@example.com", 
-                    "service_name": "Nutrition Consultation",
-                    "date_time": "Tomorrow 10:00 AM",
-                    "status": "pending",
-                    "amount": 120.00,
-                    "is_member": False,
-                    "phone": "+1 (555) 987-6543"
-                },
-                {
-                    "id": 3,
-                    "client_name": "Carol Davis",
-                    "client_email": "carol@example.com",
-                    "service_name": "Group Yoga Class", 
-                    "date_time": "Tomorrow 6:00 PM",
-                    "status": "confirmed",
-                    "amount": 35.00,
-                    "is_member": True,
-                    "phone": "+1 (555) 456-7890"
-                }
-            ]
-            
-            # Filter out deleted bookings (similar to services)
-            deleted_booking_ids = request.cookies.get('deleted_bookings', '')
-            if deleted_booking_ids:
-                deleted_ids = [int(x) for x in deleted_booking_ids.split(',') if x.isdigit()]
-                recent_bookings = [b for b in all_recent_bookings if b['id'] not in deleted_ids]
-            else:
-                recent_bookings = all_recent_bookings
-            
-            return templates.TemplateResponse("booking_management.html", {
-                "request": request,
-                "club": club_data,
-                "booking_services": booking_services,
-                "recent_bookings": recent_bookings
-            })
+        all_recent_bookings = [
+            {
+                "id": 1,
+                "client_name": "Alice Johnson",
+                "client_email": "alice@example.com",
+                "service_name": "Personal Training",
+                "date_time": "Today 2:00 PM",
+                "status": "confirmed",
+                "amount": 75.00,
+                "is_member": True,
+                "phone": "+1 (555) 123-4567"
+            },
+            {
+                "id": 2,
+                "client_name": "Bob Smith",
+                "client_email": "bob@example.com", 
+                "service_name": "Nutrition Consultation",
+                "date_time": "Tomorrow 10:00 AM",
+                "status": "pending",
+                "amount": 120.00,
+                "is_member": False,
+                "phone": "+1 (555) 987-6543"
+            },
+            {
+                "id": 3,
+                "client_name": "Carol Davis",
+                "client_email": "carol@example.com",
+                "service_name": "Group Yoga Class", 
+                "date_time": "Tomorrow 6:00 PM",
+                "status": "confirmed",
+                "amount": 35.00,
+                "is_member": True,
+                "phone": "+1 (555) 456-7890"
+            }
+        ]
+        
+        # Filter out deleted bookings (similar to services)
+        deleted_booking_ids = request.cookies.get('deleted_bookings', '')
+        if deleted_booking_ids:
+            deleted_ids = [int(x) for x in deleted_booking_ids.split(',') if x.isdigit()]
+            recent_bookings = [b for b in all_recent_bookings if b['id'] not in deleted_ids]
+        else:
+            recent_bookings = all_recent_bookings
+        
+        return templates.TemplateResponse("booking_management.html", {
+            "request": request,
+            "club": club_data,
+            "booking_services": booking_services,
+            "recent_bookings": recent_bookings
+        })
         
     except Exception as e:
         logger.error(f"Error loading booking management page for club {club_slug}: {str(e)}")
