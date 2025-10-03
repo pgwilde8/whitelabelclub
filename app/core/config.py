@@ -1,7 +1,7 @@
+# app/core/config.py
 from pydantic_settings import BaseSettings
 from typing import Optional
 import os
-
 
 class Settings(BaseSettings):
     # Database
@@ -17,11 +17,21 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: Optional[str] = None
     STRIPE_PUBLISHABLE_KEY: Optional[str] = None
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
+
+    # ✅ NEW: Stripe Connect
+    STRIPE_CONNECT_CLIENT_ID: Optional[str] = None
+    STRIPE_CONNECT_WEBHOOK_SECRET: Optional[str] = None
+    STRIPE_CONNECT_REDIRECT_URI: Optional[str] = None
     
     # Stripe Product IDs
     STRIPE_STARTER_PRODUCT_ID: Optional[str] = None
     STRIPE_PRO_PRODUCT_ID: Optional[str] = None
     STRIPE_ENTERPRISE_PRODUCT_ID: Optional[str] = None
+    
+    # Stripe Price IDs
+    STRIPE_STARTER_PRICE_ID: Optional[str] = None
+    STRIPE_PRO_PRICE_ID: Optional[str] = None
+    STRIPE_ENTERPRISE_PRICE_ID: Optional[str] = None
     
     # OpenAI
     OPENAI_API_KEY: Optional[str] = None
@@ -41,11 +51,10 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # Platform Settings
-    PLATFORM_DOMAIN: str = "yourplatform.com"
+    PLATFORM_DOMAIN: str = "ezclub.app"
     PLATFORM_NAME: str = "White Label Club Platform"
     
     class Config:
         env_file = ".env"
-
 
 settings = Settings()

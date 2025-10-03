@@ -54,9 +54,12 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.get("/signup", response_class=HTMLResponse)
-async def signup(request: Request):
-    """Signup page"""
-    return templates.TemplateResponse("signup.html", {"request": request})
+async def signup(request: Request, plan: str = None):
+    """Signup page with optional plan parameter"""
+    return templates.TemplateResponse("signup.html", {
+        "request": request,
+        "selected_plan": plan
+    })
 
 @router.get("/onboarding", response_class=HTMLResponse)
 async def onboarding(request: Request):
@@ -731,19 +734,19 @@ async def create_checkout_session(plan: str, request: Request):
     plan_mapping = {
         "starter": {
             "product_id": settings.STRIPE_STARTER_PRODUCT_ID,
-            "price_id": "price_1SAavgRucl0nfsvSRSm6xfOt",  # From your .env comments
+            "price_id": settings.STRIPE_STARTER_PRICE_ID,
             "amount": 6700,  # $67.00 in cents
             "name": "Starter Plan"
         },
         "pro": {
             "product_id": settings.STRIPE_PRO_PRODUCT_ID,
-            "price_id": "price_1SAavyRucl0nfsvScVAlRVXI",  # From your .env comments
+            "price_id": settings.STRIPE_PRO_PRICE_ID,
             "amount": 9700,  # $97.00 in cents
             "name": "Pro Plan"
         },
         "enterprise": {
             "product_id": settings.STRIPE_ENTERPRISE_PRODUCT_ID,
-            "price_id": "price_1SAawDRucl0nfsvS8L26yUCY",  # From your .env comments
+            "price_id": settings.STRIPE_ENTERPRISE_PRICE_ID,
             "amount": 19700,  # $197.00 in cents
             "name": "Enterprise Plan"
         }

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, JSON, ForeignKey
+from sqlalchemy import Column, String, Boolean, DateTime, JSON, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -20,6 +20,14 @@ class PlatformUser(Base, BaseModel):
     bio = Column(String(500), nullable=True)  # Added bio field
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
+    
+    # Stripe Connect fields
+    stripe_account_id = Column(Text, unique=True, nullable=True)
+    connect_dashboard_type = Column(Text, nullable=True)  # "express" | "standard"
+    charges_enabled = Column(Boolean, default=False, nullable=False)
+    details_submitted = Column(Boolean, default=False, nullable=False)
+    country = Column(Text, nullable=True)
+    default_currency = Column(Text, nullable=True)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

@@ -20,6 +20,8 @@ templates = Jinja2Templates(directory="templates")
 
 # Include routes
 from app.routes import web, api, ai, admin, users
+# NEW: Stripe routes
+from app.routes import stripe_connect, stripe_payments, stripe_webhooks
 
 # Include web routes
 app.include_router(web.router)
@@ -35,6 +37,11 @@ app.include_router(admin.router)
 
 # Include User routes
 app.include_router(users.router)
+
+# NEW: Include Stripe routers
+app.include_router(stripe_connect.router)
+app.include_router(stripe_payments.router)
+app.include_router(stripe_webhooks.router)
 
 @app.on_event("startup")
 async def startup_event():

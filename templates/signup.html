@@ -333,7 +333,10 @@
                 </div>
 
                 <div class="space-y-3">
-                    <button onclick="proceedToOnboarding()" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
+                    <button onclick="startCheckout()" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
+                        <i class="fas fa-credit-card mr-2"></i>Start Checkout
+                    </button>
+                    <button onclick="proceedToOnboarding()" class="w-full border border-primary text-primary py-3 rounded-lg hover:bg-primary hover:text-white transition duration-300">
                         <i class="fas fa-arrow-right mr-2"></i>Continue to Setup
                     </button>
                     <button onclick="closeModal()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition duration-300">
@@ -393,6 +396,31 @@
         let selectedPlan = null;
         let selectedPrice = null;
 
+        // Check for plan parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const planFromUrl = urlParams.get('plan');
+        
+        // Auto-select plan if provided in URL
+        if (planFromUrl) {
+            const planData = {
+                'starter': { price: 67, name: 'Starter' },
+                'pro': { price: 97, name: 'Pro' },
+                'enterprise': { price: 197, name: 'Enterprise' }
+            };
+            
+            if (planData[planFromUrl]) {
+                selectedPlan = planFromUrl;
+                selectedPrice = planData[planFromUrl].price;
+                
+                // Update modal content
+                document.getElementById('selectedPlanName').textContent = planData[planFromUrl].name;
+                document.getElementById('selectedPlanPrice').textContent = `$${planData[planFromUrl].price}/month`;
+                
+                // Show modal automatically
+                document.getElementById('planModal').classList.remove('hidden');
+            }
+        }
+
         function selectPlan(plan, price) {
             selectedPlan = plan;
             selectedPrice = price;
@@ -409,7 +437,7 @@
             document.getElementById('planModal').classList.add('hidden');
         }
 
-        function proceedToOnboarding() {
+        async function proceedToOnboarding() {
             // Close modal
             closeModal();
             
@@ -419,6 +447,36 @@
             
             // Redirect to onboarding page
             window.location.href = '/onboarding';
+        }
+
+        async function startCheckout() {
+            if (!selectedPlan) {
+                alert('Please select a plan first');
+                return;
+            }
+            
+            try {
+                // Call the checkout endpoint
+                const response = await fetch(`/create-checkout-session/${selectedPlan}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+                
+                const data = await response.json();
+                
+                // Redirect to Stripe checkout
+                window.location.href = data.checkout_url;
+                
+            } catch (error) {
+                console.error('Error creating checkout session:', error);
+                alert('Error creating checkout session. Please try again.');
+            }
         }
 
         // Close modal when clicking outside
