@@ -56,8 +56,8 @@ def create_account_onboarding_link(account_id: str):
         link = stripe_client.v2.core.account_links.create({
             "account": account_id,
             "type": "account_onboarding",
-            "refresh_url": "https://example.com/onboarding/refresh",
-            "return_url": "https://example.com/onboarding/done",
+            "refresh_url": "https://ezclub.app/stripe-setup/callback?stripe_return=error",
+            "return_url": "https://ezclub.app/stripe-setup/callback?stripe_return=success",
         })
         return {"url": link["url"]}
     except Exception as e:

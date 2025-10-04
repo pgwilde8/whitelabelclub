@@ -435,22 +435,66 @@
                 contact: Object.fromEntries(formData)
             };
             
-            // Simulate booking submission
+            // Store booking data in session storage for success page
+            sessionStorage.setItem('selectedService', JSON.stringify(selectedService));
+            sessionStorage.setItem('selectedDateTime', JSON.stringify(selectedDateTime));
+            
+            // Submit booking for payment
             submitBooking(bookingData);
         });
 
-        function submitBooking(bookingData) {
+        async function submitBooking(bookingData) {
             // Show loading state
             const submitBtn = document.getElementById('bookNowBtn');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing Payment...';
             submitBtn.disabled = true;
             
-            // Simulate API call
-            setTimeout(() => {
-                showSuccessModal(bookingData);
+            try {
+                // Get club owner's Stripe account ID (you'll need to pass this from the server)
+                const clubSlug = '{{ club.slug }}';
+                
+                // Create Stripe checkout session for the service
+                const response = await fetch(`/api/v1/stripe/checkout/service`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        club_slug: clubSlug,
+                        service_id: bookingData.service.id,
+                        service_name: bookingData.service.name,
+                        price_cents: Math.round(bookingData.service.price * 100), // Convert to cents
+                        customer_email: bookingData.contact.email,
+                        customer_name: bookingData.contact.name,
+                        booking_datetime: bookingData.datetime,
+                        notes: bookingData.contact.notes || '',
+                        metadata: {
+                            service_id: bookingData.service.id,
+                            booking_datetime: bookingData.datetime,
+                            club_slug: clubSlug
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create payment session');
+                }
+                
+                const checkoutData = await response.json();
+                
+                // Redirect to Stripe Checkout
+                window.location.href = checkoutData.checkout_url;
+                
+            } catch (error) {
+                console.error('Payment Error:', error);
+                
+                // Reset button
                 submitBtn.innerHTML = 'Complete Booking';
                 submitBtn.disabled = false;
-            }, 2000);
+                
+                // Show error message
+                alert('Payment processing failed. Please try again.');
+            }
         }
 
         function showSuccessModal(bookingData) {

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db_session
@@ -69,7 +69,14 @@ async def onboarding(request: Request):
 @router.get("/stripe-setup", response_class=HTMLResponse)
 async def stripe_setup(request: Request):
     """Stripe setup page"""
-    return templates.TemplateResponse("stripe-setup.html", {"request": request})
+    # For now, we'll pass a test user_id - in production this would come from session/auth
+    # TODO: Implement proper user session management
+    test_user_id = "test-user-123"  # This should be replaced with real user session
+    
+    return templates.TemplateResponse("stripe-setup.html", {
+        "request": request,
+        "user_id": test_user_id
+    })
 
 @router.get("/launch", response_class=HTMLResponse)
 async def launch(request: Request):
@@ -80,6 +87,13 @@ async def launch(request: Request):
 async def create_community(request: Request):
     """Create community sales page"""
     return templates.TemplateResponse("create-community.html", {"request": request})
+
+@router.get("/stripe-setup/callback", response_class=HTMLResponse)
+async def stripe_setup_callback(request: Request, stripe_return: str = None):
+    """Handle return from Stripe onboarding"""
+    # Redirect back to stripe-setup with status parameter
+    redirect_url = f"/stripe-setup?stripe_return={stripe_return or 'success'}"
+    return RedirectResponse(url=redirect_url, status_code=302)
 
 
 # Mock club data for testing and fallback
@@ -792,4 +806,19 @@ async def success_page(request: Request, session_id: str = None):
     return templates.TemplateResponse("success.html", {
         "request": request,
         "session_id": session_id
+    })
+
+@router.get("/booking/success", response_class=HTMLResponse)
+async def booking_success_page(request: Request, session_id: str = None):
+    """Success page after service booking payment"""
+    return templates.TemplateResponse("booking_success.html", {
+        "request": request,
+        "session_id": session_id
+    })
+
+@router.get("/booking/cancel", response_class=HTMLResponse)
+async def booking_cancel_page(request: Request):
+    """Cancel page when user cancels service booking payment"""
+    return templates.TemplateResponse("booking_cancel.html", {
+        "request": request
     })

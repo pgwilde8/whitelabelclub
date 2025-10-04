@@ -233,25 +233,78 @@
         //     window.location.href = '/onboarding';
         // }
 
-        function connectStripe() {
-            // In a real implementation, this would:
-            // 1. Create a Stripe Connect account link
-            // 2. Redirect to Stripe's onboarding flow
-            // 3. Handle the callback when user returns
-            
-            // For demo purposes, we'll simulate the connection
+        // Check if user is returning from Stripe onboarding
+        const urlParams = new URLSearchParams(window.location.search);
+        const stripeReturn = urlParams.get('stripe_return');
+        
+        if (stripeReturn === 'success') {
+            // User completed Stripe onboarding successfully
+            sessionStorage.setItem('stripeConnected', 'true');
+            showStripeConnected();
+        } else if (stripeReturn === 'error') {
+            // User had an error during Stripe onboarding
+            showStripeError();
+        }
+
+        async function connectStripe() {
             const button = document.getElementById('connectStripeBtn');
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Connecting...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Creating Account...';
             button.disabled = true;
             
-            // Simulate API call
-            setTimeout(() => {
-                // Store that Stripe is connected
-                sessionStorage.setItem('stripeConnected', 'true');
+            try {
+                // Get user data from sessionStorage (from onboarding)
+                const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+                const selectedPlan = sessionStorage.getItem('selectedPlan') || 'starter';
                 
-                // Show success modal
-                document.getElementById('successModal').classList.remove('hidden');
-            }, 2000);
+                // Create Express account via API
+                const response = await fetch('/stripe/connect/express/accounts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        display_name: platformData.clubName || 'My Club',
+                        owner_email: platformData.email || 'owner@example.com',
+                        country: 'US',
+                        user_id: '{{ user_id }}'  // From server template
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create Stripe account');
+                }
+                
+                const accountData = await response.json();
+                const accountId = accountData.account_id;
+                
+                // Create onboarding link
+                const onboardingResponse = await fetch(`/stripe/connect/express/accounts/${accountId}/onboard`, {
+                    method: 'POST'
+                });
+                
+                if (!onboardingResponse.ok) {
+                    throw new Error('Failed to create onboarding link');
+                }
+                
+                const onboardingData = await onboardingResponse.json();
+                
+                // Redirect to Stripe onboarding
+                window.location.href = onboardingData.url;
+                
+            } catch (error) {
+                console.error('Stripe Connect Error:', error);
+                button.innerHTML = '<i class="fas fa-exclamation-triangle mr-3"></i>Connection Failed';
+                button.disabled = false;
+                
+                // Show error message
+                alert('Failed to connect with Stripe. Please try again.');
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fab fa-stripe mr-3"></i>Connect with Stripe';
+                    button.disabled = false;
+                }, 3000);
+            }
         }
 
         function skipStripe() {
@@ -266,6 +319,16 @@
             
             // Redirect to launch page
             window.location.href = '/launch';
+        }
+
+        function showStripeConnected() {
+            // Hide the main content and show success state
+            document.querySelector('.main-content').style.display = 'none';
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function showStripeError() {
+            alert('There was an issue connecting your Stripe account. Please try again.');
         }
 
         function goBack() {

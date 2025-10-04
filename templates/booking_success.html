@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - ClubLaunch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-gray-900">ClubLaunch</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-2xl mx-auto px-4 py-12">
+        <!-- Success Message -->
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <!-- Success Icon -->
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-3xl text-green-600"></i>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Booking Confirmed! 🎉</h1>
+            <p class="text-xl text-gray-600 mb-8">
+                Your payment was successful and your booking is confirmed.
+            </p>
+
+            <!-- Booking Details -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Booking Details</h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Service:</span>
+                        <span class="font-medium" id="serviceName">Loading...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Date & Time:</span>
+                        <span class="font-medium" id="bookingDateTime">Loading...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Customer:</span>
+                        <span class="font-medium" id="customerName">Loading...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Payment Status:</span>
+                        <span class="font-medium text-green-600">✅ Paid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">What happens next?</h3>
+                <ul class="text-left text-blue-800 space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-envelope text-blue-600 mt-1 mr-3"></i>
+                        <span>You'll receive a confirmation email shortly</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-calendar text-blue-600 mt-1 mr-3"></i>
+                        <span>Add this booking to your calendar</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-blue-600 mt-1 mr-3"></i>
+                        <span>Check the location details in your email</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="window.print()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                    <i class="fas fa-print mr-2"></i>Print Receipt
+                </button>
+                <button onclick="window.location.href='/'" 
+                    class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                    <i class="fas fa-home mr-2"></i>Back to Home
+                </button>
+            </div>
+
+            <!-- Support -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-500">
+                    Need help? <a href="/contact" class="text-primary hover:underline">Contact Support</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Platform -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Platform</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="/features" class="hover:text-primary">Features</a></li>
+                        <li><a href="/pricing" class="hover:text-primary">Pricing</a></li>
+                        <li><a href="/demo" class="hover:text-primary">Demo</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-primary">Terms</a></li>
+                        <li><a href="#" class="hover:text-primary">Privacy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="/contact" class="hover:text-primary">Contact</a></li>
+                        <li><a href="/about" class="hover:text-primary">About</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Company</h3>
+                    <p class="text-sm text-gray-600">
+                        © 2025 ClubLaunch. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load booking details from session storage
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+                const selectedService = JSON.parse(sessionStorage.getItem('selectedService') || '{}');
+                const selectedDateTime = JSON.parse(sessionStorage.getItem('selectedDateTime') || '{}');
+                
+                // Update booking details
+                if (selectedService.name) {
+                    document.getElementById('serviceName').textContent = selectedService.name;
+                }
+                
+                if (selectedDateTime.date && selectedDateTime.time) {
+                    const date = new Date(selectedDateTime.date);
+                    const displayDate = date.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    document.getElementById('bookingDateTime').textContent = `${displayDate} at ${selectedDateTime.time}`;
+                }
+                
+                if (platformData.name) {
+                    document.getElementById('customerName').textContent = platformData.name;
+                }
+                
+            } catch (error) {
+                console.error('Error loading booking details:', error);
+                // Fallback to default values
+                document.getElementById('serviceName').textContent = 'Service Booking';
+                document.getElementById('customerName').textContent = 'Customer';
+            }
+        });
+    </script>
+</body>
+</html>
