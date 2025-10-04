@@ -26,7 +26,7 @@ class CreateExpressAccountIn(BaseModel):
 @router.post("/connect/express/accounts")
 async def create_express_account(body: CreateExpressAccountIn, db: AsyncSession = Depends(get_db_session)):
     try:
-        acct = stripe_client.v2.core.accounts.create({
+        acct = stripe_client.accounts.create({
             "dashboard": "express",
             "defaults": {
                 "responsibilities": {
@@ -53,7 +53,7 @@ async def create_express_account(body: CreateExpressAccountIn, db: AsyncSession 
 @router.post("/connect/express/accounts/{account_id}/onboard")
 def create_account_onboarding_link(account_id: str):
     try:
-        link = stripe_client.v2.core.account_links.create({
+        link = stripe_client.account_links.create({
             "account": account_id,
             "type": "account_onboarding",
             "refresh_url": "https://ezclub.app/stripe-setup/callback?stripe_return=error",
