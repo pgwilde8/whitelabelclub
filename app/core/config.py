@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     PLATFORM_DOMAIN: str = "ezclub.app"
     PLATFORM_NAME: str = "White Label Club Platform"
     
+    # Commission/Fee Settings
+    PLATFORM_COMMISSION_PERCENT: float = 3.0  # 3% commission on service bookings
+    SUBSCRIPTION_COMMISSION_PERCENT: float = 3.0  # 3% commission on subscriptions
+    ONE_TIME_FEE_CENTS: int = 200  # $2.00 flat fee for one-time payments
+    
     class Config:
         env_file = ".env"
 

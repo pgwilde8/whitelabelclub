@@ -5,22 +5,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db_session
 from app.db.crud_platform_users import get_user_by_stripe_account
 from app.services.club_service import ClubService
+from app.core.config import settings
 
 router = APIRouter(prefix="/stripe", tags=["stripe-payments"])
 
 class OneTimeCheckoutIn(BaseModel):
     price_id: str
     connected_account_id: str
-    fee_cents: int = 200  # your cut, e.g. $2.00
+    fee_cents: int = None  # Will use config default
 
 @router.post("/checkout/one-time")
 def create_one_time_checkout(body: OneTimeCheckoutIn):
     try:
+        # Use config default if not specified
+        fee_cents = body.fee_cents or settings.ONE_TIME_FEE_CENTS
+        
         session = stripe.checkout.Session.create(
             mode="payment",
             line_items=[{"price": body.price_id, "quantity": 1}],
             payment_intent_data={
-                "application_fee_amount": body.fee_cents,
+                "application_fee_amount": fee_cents,
                 "transfer_data": {"destination": body.connected_account_id},
             },
             success_url="https://example.com/success?sid={CHECKOUT_SESSION_ID}",
@@ -58,8 +62,8 @@ async def create_service_checkout(body: ServiceCheckoutIn, db: AsyncSession = De
         
         connected_account_id = club.stripe_account_id
         
-        # Calculate platform fee (3% of service price)
-        platform_fee_cents = int(body.price_cents * 0.03)  # 3% platform fee
+        # Calculate platform fee using configurable rate
+        platform_fee_cents = int(body.price_cents * (settings.PLATFORM_COMMISSION_PERCENT / 100))
         
         # Create Stripe checkout session
         session = stripe.checkout.Session.create(
@@ -113,16 +117,19 @@ async def create_service_checkout(body: ServiceCheckoutIn, db: AsyncSession = De
 class SubscriptionCheckoutIn(BaseModel):
     price_id: str
     connected_account_id: str
-    fee_percent: float = 3.0  # your cut in percent
+    fee_percent: float = None  # Will use config default
 
 @router.post("/checkout/subscription")
 def create_subscription_checkout(body: SubscriptionCheckoutIn):
     try:
+        # Use config default if not specified
+        fee_percent = body.fee_percent or settings.SUBSCRIPTION_COMMISSION_PERCENT
+        
         session = stripe.checkout.Session.create(
             mode="subscription",
             line_items=[{"price": body.price_id, "quantity": 1}],
             subscription_data={
-                "application_fee_percent": body.fee_percent,
+                "application_fee_percent": fee_percent,
                 "transfer_data": {"destination": body.connected_account_id},
             },
             success_url="https://example.com/sub-success?sid={CHECKOUT_SESSION_ID}",

@@ -35,3 +35,8 @@ DEBUG=true
 # Platform Settings
 PLATFORM_DOMAIN=yourplatform.com
 PLATFORM_NAME=White Label Club Platform
+
+# Commission/Fee Settings
+PLATFORM_COMMISSION_PERCENT=3.0
+SUBSCRIPTION_COMMISSION_PERCENT=3.0
+ONE_TIME_FEE_CENTS=200
