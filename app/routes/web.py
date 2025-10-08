@@ -469,7 +469,7 @@ async def create_booking_service(request: Request, club_slug: str, db: AsyncSess
         logger.error(f"Error creating service for club {club_slug}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error creating service")
 
-@router.delete("/club/{club_slug}/services/{service_id}")
+@router.delete("/community/{club_slug}/services/{service_id}")
 async def delete_booking_service(request: Request, club_slug: str, service_id: int):
     """Delete a booking service"""
     # In production, this would delete from database
@@ -492,7 +492,7 @@ async def delete_booking_service(request: Request, club_slug: str, service_id: i
     response.set_cookie("deleted_services", deleted_services_str)
     return response
 
-@router.delete("/club/{club_slug}/bookings/{booking_id}")
+@router.delete("/community/{club_slug}/bookings/{booking_id}")
 async def delete_booking(request: Request, club_slug: str, booking_id: int):
     """Delete a booking"""
     # In production, this would delete from database
@@ -734,6 +734,44 @@ async def get_ai_suggestions(club_slug: str, db: AsyncSession = Depends(get_db_s
             ],
             "error": "Data analysis in progress"
         }
+
+@router.get("/community/{club_slug}/join", response_class=HTMLResponse)
+async def community_join(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Public join/signup page for new members"""
+    try:
+        # Get real club data from database
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Community not found")
+        
+        # Get club analytics
+        analytics = await ClubService.get_club_analytics(db, club)
+        
+        # Convert club to dictionary format for template
+        club_data = {
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description or "Join our amazing community!",
+            "primary_color": club.primary_color or "#3B82F6",
+            "secondary_color": club.secondary_color or "#1E40AF",
+            "logo_url": club.logo_url,
+            "features": {
+                "enable_bookings": club.features.get("enable_bookings", True),
+                "enable_chat": club.features.get("enable_chat", True),
+                "enable_donations": club.features.get("enable_donations", True)
+            }
+        }
+        
+        return templates.TemplateResponse("community_join.html", {
+            "request": request,
+            "club": club_data,
+            "analytics": analytics
+        })
+        
+    except Exception as e:
+        logger.error(f"Error loading join page for community {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error loading join page")
 
 @router.get("/community/{club_slug}/book", response_class=HTMLResponse)
 async def public_booking(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):

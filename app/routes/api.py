@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 from typing import List
 from app.db.session import get_db_session
 from app.models.club import Club
@@ -127,3 +128,62 @@ async def delete_club(
 async def get_users():
     """Get all platform users"""
     return {"message": "Users endpoint - coming soon"}
+
+@router.post("/members/join", status_code=status.HTTP_201_CREATED)
+async def join_community(
+    request: dict,
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Create a new community member"""
+    try:
+        from app.models.user import ClubMember
+        from app.core.security import get_password_hash
+        import uuid
+        
+        # Get club
+        club_slug = request.get("club_slug")
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Community '{club_slug}' not found"
+            )
+        
+        # Create new member
+        new_member = ClubMember(
+            id=uuid.uuid4(),
+            club_id=club.id,
+            username=request.get("username"),
+            email=request.get("email"),
+            password_hash=get_password_hash(request.get("password")),
+            first_name=request.get("first_name"),
+            last_name=request.get("last_name"),
+            phone=request.get("phone"),
+            role="member",
+            subscription_status="active",
+            subscription_tier="free"
+        )
+        
+        db.add(new_member)
+        await db.commit()
+        await db.refresh(new_member)
+        
+        return {
+            "success": True,
+            "message": "Member created successfully",
+            "member_id": str(new_member.id),
+            "username": new_member.username
+        }
+        
+    except IntegrityError as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already exists"
+        )
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create member: {str(e)}"
+        )

@@ -1,8 +1,12 @@
 from cryptography.fernet import Fernet
+from passlib.context import CryptContext
 import base64
 import os
 from typing import Optional
 from app.core.config import settings
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class EncryptionService:
@@ -35,3 +39,14 @@ class EncryptionService:
 
 # Global encryption service instance
 encryption_service = EncryptionService()
+
+
+# Password hashing functions
+def get_password_hash(password: str) -> str:
+    """Hash a password for storing"""
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against its hash"""
+    return pwd_context.verify(plain_password, hashed_password)

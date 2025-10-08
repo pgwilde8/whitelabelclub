@@ -215,7 +215,12 @@ class ClubService:
         if club_id_str in ClubService._services_storage:
             return ClubService._services_storage[club_id_str]
         
-        # Return default services for new clubs (restore placeholders)
+        # Return empty list - no placeholder services
+        # Club owners need to create their own services
+        return []
+        
+        # Old placeholder services (commented out)
+        """
         default_services = [
             {
                 "id": 1,
@@ -254,10 +259,10 @@ class ClubService:
                 "allow_non_members": False
             }
         ]
+        """
         
-        # Store default services for this club
-        ClubService._services_storage[club_id_str] = default_services
-        return default_services
+        # No default services - commented out above
+        # return default_services
     
     @staticmethod
     async def add_booking_service(db: AsyncSession, club_id: uuid.UUID, service_data: Dict[str, Any]) -> Dict[str, Any]:
