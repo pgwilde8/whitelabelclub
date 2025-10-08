@@ -32,11 +32,11 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/club/{{ club.slug }}/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="/club/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
-                        <a href="/club/{{ club.slug }}/bookings" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
-                        <a href="/club/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
-                        <a href="/club/{{ club.slug }}/settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                        <a href="/community/{{ club.slug }}/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="/community/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        <a href="/community/{{ club.slug }}/bookings" class="text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        <a href="/community/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        <a href="/community/{{ club.slug }}/settings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Settings</a>
                     </div>
                 </div>
             </div>
@@ -369,7 +369,7 @@
                         <div class="flex">
                             <input type="text" id="publicBookingUrl" readonly
                                 class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900"
-                                value="http://24.144.69.226:8000/club/{{ club.slug }}/book">
+                                value="http://24.144.69.226:8000/community/{{ club.slug }}/book">
                             <button onclick="copyPublicUrl()" 
                                 class="ml-3 px-4 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition duration-300">
                                 <i class="fas fa-copy mr-2"></i>Copy
@@ -434,7 +434,7 @@
 
         // Redirect to public booking page
         function redirectToPublicBooking() {
-            window.open(`http://24.144.69.226:8000/club/{{ club.slug }}/book`, '_blank');
+            window.open(`http://24.144.69.226:8000/community/{{ club.slug }}/book`, '_blank');
         }
 
         // Modal functions
@@ -474,7 +474,7 @@
             
             try {
                 // Call the API to create the service
-                const response = await fetch(`/club/{{ club.slug }}/services`, {
+                const response = await fetch(`/community/{{ club.slug }}/services`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -586,7 +586,7 @@
 
         function viewCalendar() {
             // Open calendar in a new window/tab
-            const calendarUrl = `http://24.144.69.226:8000/club/{{ club.slug }}/calendar`;
+            const calendarUrl = `http://24.144.69.226:8000/community/{{ club.slug }}/calendar`;
             window.open(calendarUrl, '_blank', 'width=1200,height=800');
         }
 
@@ -602,7 +602,7 @@
             if (confirm(`Are you sure you want to delete "${serviceName}"?\n\nThis will permanently remove the service and cannot be undone.`)) {
                 try {
                     // Send DELETE request to the backend
-                    const response = await fetch(`/club/{{ club.slug }}/services/${id}`, {
+                    const response = await fetch(`/community/{{ club.slug }}/services/${id}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -638,7 +638,7 @@
             if (confirm(`Are you sure you want to delete the booking for "${clientName}"?\n\nThis will permanently remove the booking and cannot be undone.`)) {
                 try {
                     // Send DELETE request to the backend
-                    const response = await fetch(`/club/{{ club.slug }}/bookings/${id}`, {
+                    const response = await fetch(`/community/{{ club.slug }}/bookings/${id}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',

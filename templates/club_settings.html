@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - {{ club.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color }}',
+                        secondary: '{{ club.secondary_color }}',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        {% if club.logo_url %}
+                        <img src="{{ club.logo_url }}" alt="{{ club.name }}" class="h-8 w-auto mr-3">
+                        {% endif %}
+                        <span class="text-2xl font-bold" style="color: {{ club.primary_color }}">{{ club.name }}</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/community/{{ club.slug }}/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="/community/{{ club.slug }}/members" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Members</a>
+                        <a href="/community/{{ club.slug }}/bookings" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bookings</a>
+                        <a href="/community/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Chat</a>
+                        <a href="/community/{{ club.slug }}/settings" class="text-primary px-3 py-2 rounded-md text-sm font-medium border-b-2 border-primary">Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Community Settings</h1>
+            <p class="text-gray-600 mt-2">Customize your community's appearance and settings</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Settings Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <form id="settingsForm">
+                <!-- Basic Information -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-info-circle text-primary mr-2"></i>
+                        Basic Information
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Community Name</label>
+                            <input type="text" id="name" name="name" value="{{ club.name }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="description" name="description" rows="3"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">{{ club.description }}</textarea>
+                            <p class="text-sm text-gray-500 mt-1">Brief description of your community</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branding -->
+                <div class="mb-8 border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-palette text-primary mr-2"></i>
+                        Branding & Appearance
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Logo Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Community Logo</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div id="logoPreview" class="h-20 w-20 rounded-lg border-2 border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50">
+                                        {% if club.logo_url %}
+                                        <img src="{{ club.logo_url }}" alt="Logo" class="h-full w-full object-cover">
+                                        {% else %}
+                                        <i class="fas fa-image text-gray-400 text-2xl"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="url" id="logo_url" name="logo_url" value="{{ club.logo_url or '' }}"
+                                           placeholder="https://example.com/logo.png"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           onchange="updateLogoPreview()">
+                                    <p class="text-sm text-gray-500 mt-1">Enter a URL to your logo image</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Color Pickers -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="primary_color" class="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="color" id="primary_color" name="primary_color" value="{{ club.primary_color }}"
+                                           class="h-12 w-20 rounded-lg border border-gray-300 cursor-pointer"
+                                           onchange="updateColorPreview()">
+                                    <input type="text" id="primary_color_text" value="{{ club.primary_color }}"
+                                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           onchange="syncColorPicker('primary')">
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Main brand color for buttons and links</p>
+                            </div>
+
+                            <div>
+                                <label for="secondary_color" class="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="color" id="secondary_color" name="secondary_color" value="{{ club.secondary_color }}"
+                                           class="h-12 w-20 rounded-lg border border-gray-300 cursor-pointer"
+                                           onchange="updateColorPreview()">
+                                    <input type="text" id="secondary_color_text" value="{{ club.secondary_color }}"
+                                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           onchange="syncColorPicker('secondary')">
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Accent color for hover states</p>
+                            </div>
+                        </div>
+
+                        <!-- Color Preview -->
+                        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                            <h3 class="text-sm font-medium text-gray-700 mb-4">Preview</h3>
+                            <div class="flex items-center space-x-4">
+                                <button type="button" id="previewBtn" class="px-6 py-3 rounded-lg text-white font-semibold shadow-lg transition duration-300"
+                                        style="background-color: {{ club.primary_color }}">
+                                    Primary Button
+                                </button>
+                                <button type="button" id="previewBtnSecondary" class="px-6 py-3 rounded-lg text-white font-semibold shadow-lg transition duration-300"
+                                        style="background-color: {{ club.secondary_color }}">
+                                    Secondary Button
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="mb-8 border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-toggle-on text-primary mr-2"></i>
+                        Features
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Booking Services</h3>
+                                <p class="text-sm text-gray-500">Allow members to book services</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="enable_bookings" name="enable_bookings" class="sr-only peer"
+                                       {% if club.features.enable_bookings %}checked{% endif %}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Community Chat</h3>
+                                <p class="text-sm text-gray-500">Enable group chat for members</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="enable_chat" name="enable_chat" class="sr-only peer"
+                                       {% if club.features.enable_chat %}checked{% endif %}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between py-3">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Donations</h3>
+                                <p class="text-sm text-gray-500">Accept donations from members</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="enable_donations" name="enable_donations" class="sr-only peer"
+                                       {% if club.features.enable_donations %}checked{% endif %}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+                    <a href="/community/{{ club.slug }}/" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                    <div class="space-x-3">
+                        <button type="button" onclick="resetForm()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-300">
+                            Reset
+                        </button>
+                        <button type="submit" class="px-6 py-2 text-white rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                                style="background-color: {{ club.primary_color }}">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const clubSlug = '{{ club.slug }}';
+
+        // Update logo preview
+        function updateLogoPreview() {
+            const logoUrl = document.getElementById('logo_url').value;
+            const preview = document.getElementById('logoPreview');
+            
+            if (logoUrl) {
+                preview.innerHTML = `<img src="${logoUrl}" alt="Logo" class="h-full w-full object-cover" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-exclamation-triangle text-red-400 text-2xl\\'></i>'">`;
+            } else {
+                preview.innerHTML = '<i class="fas fa-image text-gray-400 text-2xl"></i>';
+            }
+        }
+
+        // Update color preview
+        function updateColorPreview() {
+            const primaryColor = document.getElementById('primary_color').value;
+            const secondaryColor = document.getElementById('secondary_color').value;
+            
+            document.getElementById('primary_color_text').value = primaryColor;
+            document.getElementById('secondary_color_text').value = secondaryColor;
+            
+            document.getElementById('previewBtn').style.backgroundColor = primaryColor;
+            document.getElementById('previewBtnSecondary').style.backgroundColor = secondaryColor;
+        }
+
+        // Sync color picker with text input
+        function syncColorPicker(type) {
+            const textInput = document.getElementById(`${type}_color_text`);
+            const colorPicker = document.getElementById(`${type}_color`);
+            colorPicker.value = textInput.value;
+            updateColorPreview();
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('settingsForm').reset();
+            updateLogoPreview();
+            updateColorPreview();
+        }
+
+        // Handle form submission
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                logo_url: formData.get('logo_url') || null,
+                primary_color: formData.get('primary_color'),
+                secondary_color: formData.get('secondary_color'),
+                features: {
+                    enable_bookings: formData.get('enable_bookings') === 'on',
+                    enable_chat: formData.get('enable_chat') === 'on',
+                    enable_donations: formData.get('enable_donations') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch(`/api/v1/clubs/${clubSlug}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Settings saved successfully! Refreshing page...', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showMessage('Error: ' + (result.detail || 'Failed to save settings'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Failed to save settings. Please try again.', 'error');
+            }
+        });
+
+        // Show message
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+            
+            container.innerHTML = `
+                <div class="${bgColor} border px-4 py-3 rounded-lg mb-4" role="alert">
+                    <span class="block sm:inline">${message}</span>
+                </div>
+            `;
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Initialize color preview on load
+        updateColorPreview();
+    </script>
+</body>
+</html>

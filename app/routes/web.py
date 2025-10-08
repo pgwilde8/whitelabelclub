@@ -106,9 +106,9 @@ MOCK_CLUBS = {
     }
 }
 
-@router.get("/club/{club_slug}/", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/", response_class=HTMLResponse)
 async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
-    """Club owner dashboard with real database data"""
+    """Community owner dashboard with real database data"""
     
     # Get or create club from database
     club = await ClubService.get_or_create_club(db, club_slug)
@@ -289,9 +289,9 @@ async def club_dashboard(request: Request, club_slug: str, db: AsyncSession = De
         "current_time": current_time
     })
 
-@router.get("/club/{club_slug}/members", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/members", response_class=HTMLResponse)
 async def club_members_list(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
-    """List all members of a club - Dynamic route for any club"""
+    """List all members of a community - Dynamic route for any community"""
     try:
         # Get club
         club = await ClubService.get_club_by_slug(db, club_slug)
@@ -336,7 +336,7 @@ async def club_members_list(request: Request, club_slug: str, db: AsyncSession =
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading members: {str(e)}")
 
-@router.get("/club/{club_slug}/member/{member_id}", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/member/{member_id}", response_class=HTMLResponse)
 async def club_member_profile(request: Request, club_slug: str, member_id: str, db: AsyncSession = Depends(get_db_session)):
     """Individual member profile within a club"""
     try:
@@ -363,7 +363,7 @@ async def club_member_profile(request: Request, club_slug: str, member_id: str, 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading member profile: {str(e)}")
 
-@router.get("/club/{club_slug}/bookings", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/bookings", response_class=HTMLResponse)
 async def booking_management(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Booking management page for club owners"""
     try:
@@ -448,7 +448,7 @@ async def booking_management(request: Request, club_slug: str, db: AsyncSession 
         logger.error(f"Error loading booking management page for club {club_slug}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error loading booking management page")
 
-@router.post("/club/{club_slug}/services")
+@router.post("/community/{club_slug}/services")
 async def create_booking_service(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Create a new booking service"""
     try:
@@ -515,7 +515,7 @@ async def delete_booking(request: Request, club_slug: str, booking_id: int):
     response.set_cookie("deleted_bookings", deleted_bookings_str)
     return response
 
-@router.get("/club/{club_slug}/calendar", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/calendar", response_class=HTMLResponse)
 async def calendar_view(request: Request, club_slug: str):
     """Calendar view for club bookings"""
     # Mock club data
@@ -533,7 +533,40 @@ async def calendar_view(request: Request, club_slug: str):
         "club": club_data
     })
 
-@router.get("/club/{club_slug}/chat", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/settings", response_class=HTMLResponse)
+async def club_settings(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Club settings page for customization"""
+    try:
+        # Get real club data from database
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Convert club to dictionary format for template
+        club_data = {
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description or "",
+            "primary_color": club.primary_color or "#3B82F6",
+            "secondary_color": club.secondary_color or "#1E40AF",
+            "logo_url": club.logo_url,
+            "features": {
+                "enable_bookings": club.features.get("enable_bookings", True),
+                "enable_chat": club.features.get("enable_chat", True),
+                "enable_donations": club.features.get("enable_donations", True)
+            }
+        }
+        
+        return templates.TemplateResponse("club_settings.html", {
+            "request": request,
+            "club": club_data
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading settings: {str(e)}")
+
+@router.get("/community/{club_slug}/chat", response_class=HTMLResponse)
 async def chat_view(request: Request, club_slug: str):
     """Chat interface for club members"""
     # Mock club data
@@ -574,7 +607,7 @@ async def chat_view(request: Request, club_slug: str):
         "current_channel": "general"
     })
 
-@router.get("/club/{club_slug}/ai-terminal", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/ai-terminal", response_class=HTMLResponse)
 async def ai_terminal_view(request: Request, club_slug: str):
     """AI Terminal interface for club management"""
     # Mock club data
@@ -702,7 +735,7 @@ async def get_ai_suggestions(club_slug: str, db: AsyncSession = Depends(get_db_s
             "error": "Data analysis in progress"
         }
 
-@router.get("/club/{club_slug}/book", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/book", response_class=HTMLResponse)
 async def public_booking(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """Public booking page for non-members"""
     try:

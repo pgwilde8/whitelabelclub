@@ -13,15 +13,33 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ENCRYPTION_KEY: str = "your-32-byte-base64-encryption-key-here"
     
-    # Stripe
-    STRIPE_SECRET_KEY: Optional[str] = None
-    STRIPE_PUBLISHABLE_KEY: Optional[str] = None
-    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    # Stripe Mode
+    STRIPE_MODE: str = "test"  # "test" or "live"
+    
+    # Stripe Test/Live variants
+    STRIPE_PUBLISHABLE_KEY_LIVE: Optional[str] = None
+    STRIPE_SECRET_KEY_LIVE: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET_LIVE: Optional[str] = None
+    STRIPE_PUBLISHABLE_KEY_TEST: Optional[str] = None
+    STRIPE_SECRET_KEY_TEST: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET_TEST: Optional[str] = None
 
-    # ✅ NEW: Stripe Connect
-    STRIPE_CONNECT_CLIENT_ID: Optional[str] = None
-    STRIPE_CONNECT_WEBHOOK_SECRET: Optional[str] = None
+    # Stripe Connect Test/Live variants
+    STRIPE_CONNECT_CLIENT_ID_LIVE: Optional[str] = None
+    STRIPE_CONNECT_WEBHOOK_SECRET_LIVE: Optional[str] = None
+    STRIPE_CONNECT_REDIRECT_URI_LIVE: Optional[str] = None
+    STRIPE_CONNECT_CLIENT_ID_TEST: Optional[str] = None
+    STRIPE_CONNECT_WEBHOOK_SECRET_TEST: Optional[str] = None
+    STRIPE_CONNECT_REDIRECT_URI_TEST: Optional[str] = None
+    
+    # Shared Stripe Connect (fallback if mode-specific not set)
     STRIPE_CONNECT_REDIRECT_URI: Optional[str] = None
+    
+    # Webhook URLs (optional, for reference)
+    STRIPE_WEBHOOK_URL_LIVE: Optional[str] = None
+    STRIPE_WEBHOOK_URL_TEST: Optional[str] = None
+    STRIPE_CONNECT_WEBHOOK_URL_LIVE: Optional[str] = None
+    STRIPE_CONNECT_WEBHOOK_URL_TEST: Optional[str] = None
     
     # Stripe Product IDs
     STRIPE_STARTER_PRODUCT_ID: Optional[str] = None

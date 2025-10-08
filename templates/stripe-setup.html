@@ -254,7 +254,6 @@
             try {
                 // Get user data from sessionStorage (from onboarding)
                 const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
-                const selectedPlan = sessionStorage.getItem('selectedPlan') || 'starter';
                 
                 // Create Express account via API
                 const response = await fetch('/stripe/connect/express/accounts', {
@@ -266,27 +265,34 @@
                         display_name: platformData.clubName || 'My Club',
                         owner_email: platformData.email || 'owner@example.com',
                         country: 'US',
-                        user_id: '{{ user_id }}'  // From server template
+                        user_id: '{{ user_id }}'
                     })
                 });
                 
+                const accountData = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error('Failed to create Stripe account');
+                    console.error('API Error:', accountData);
+                    throw new Error(accountData.detail || 'Failed to create Stripe account');
                 }
                 
-                const accountData = await response.json();
                 const accountId = accountData.account_id;
+                console.log('Created account:', accountId);
                 
                 // Create onboarding link
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Creating Onboarding Link...';
                 const onboardingResponse = await fetch(`/stripe/connect/express/accounts/${accountId}/onboard`, {
                     method: 'POST'
                 });
                 
+                const onboardingData = await onboardingResponse.json();
+                
                 if (!onboardingResponse.ok) {
-                    throw new Error('Failed to create onboarding link');
+                    console.error('Onboarding Error:', onboardingData);
+                    throw new Error(onboardingData.detail || 'Failed to create onboarding link');
                 }
                 
-                const onboardingData = await onboardingResponse.json();
+                console.log('Onboarding URL:', onboardingData.url);
                 
                 // Redirect to Stripe onboarding
                 window.location.href = onboardingData.url;
@@ -296,8 +302,8 @@
                 button.innerHTML = '<i class="fas fa-exclamation-triangle mr-3"></i>Connection Failed';
                 button.disabled = false;
                 
-                // Show error message
-                alert('Failed to connect with Stripe. Please try again.');
+                // Show detailed error message
+                alert('Failed to connect with Stripe: ' + error.message + '\n\nPlease check the browser console for more details.');
                 
                 // Reset button after 3 seconds
                 setTimeout(() => {
@@ -335,8 +341,7 @@
             window.location.href = '/onboarding';
         }
 
-        // Check URL parameters for Stripe callback
-        const urlParams = new URLSearchParams(window.location.search);
+        // Check URL parameters for Stripe callback (urlParams already declared above)
         if (urlParams.get('stripe_connected') === 'true') {
             sessionStorage.setItem('stripeConnected', 'true');
             document.getElementById('successModal').classList.remove('hidden');

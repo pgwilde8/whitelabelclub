@@ -142,7 +142,7 @@
             // Try to get the club slug from session storage or URL
             const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
             if (platformData.clubSlug) {
-                window.location.href = `/club/${platformData.clubSlug}/book`;
+                window.location.href = `/community/${platformData.clubSlug}/book`;
             } else {
                 // Fallback to home page
                 window.location.href = '/';
