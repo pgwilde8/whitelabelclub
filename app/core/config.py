@@ -77,6 +77,11 @@ class Settings(BaseSettings):
     SUBSCRIPTION_COMMISSION_PERCENT: float = 3.0  # 3% commission on subscriptions
     ONE_TIME_FEE_CENTS: int = 200  # $2.00 flat fee for one-time payments
     
+    # Email Settings (Brevo)
+    BREVO_API_KEY: Optional[str] = None
+    EMAIL_FROM: str = "noreply@ezclub.app"
+    EMAIL_SUPPORT: str = "support@ezclub.app"
+    
     class Config:
         env_file = ".env"
 
