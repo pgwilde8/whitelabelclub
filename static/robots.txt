@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /webhooks/
+Disallow: /stripe/
+
+Sitemap: https://ezclub.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+

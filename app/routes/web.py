@@ -48,6 +48,11 @@ async def contact(request: Request):
     """Contact page"""
     return templates.TemplateResponse("contact.html", {"request": request})
 
+@router.get("/sitemap", response_class=HTMLResponse)
+async def sitemap(request: Request):
+    """HTML Sitemap page"""
+    return templates.TemplateResponse("sitemap.html", {"request": request})
+
 @router.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
     """Login page"""
