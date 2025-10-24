@@ -311,18 +311,68 @@
         });
 
         // Form submission
-        document.getElementById('onboardingForm').addEventListener('submit', function(e) {
+        document.getElementById('onboardingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Collect form data
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
+            // Get submit button
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Your Club...';
             
-            // Store in sessionStorage
-            sessionStorage.setItem('platformData', JSON.stringify(data));
-            
-            // Redirect to Stripe setup
-            window.location.href = '/stripe-setup';
+            try {
+                // Collect form data
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                
+                // Store in sessionStorage for Stripe setup
+                sessionStorage.setItem('platformData', JSON.stringify(data));
+                
+                // Create club via API
+                const clubData = {
+                    name: data.clubName,
+                    slug: data.clubSlug,
+                    description: data.clubDescription || 'A vibrant community for passionate members',
+                    primary_color: data.primaryColor || '#3B82F6',
+                    secondary_color: data.secondaryColor || '#1E40AF',
+                    features: {
+                        enable_bookings: data.enableBookings === 'on',
+                        enable_chat: data.enableChat === 'on',
+                        enable_ai: data.enableAI === 'on',
+                        enable_donations: data.enableDonations === 'on'
+                    }
+                };
+                
+                console.log('Creating club:', clubData);
+                
+                const response = await fetch('/api/v1/clubs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(clubData)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create club');
+                }
+                
+                const club = await response.json();
+                console.log('Club created successfully:', club);
+                
+                // Store club ID for later
+                sessionStorage.setItem('clubId', club.id);
+                
+                // Redirect to Stripe setup
+                window.location.href = '/stripe-setup';
+                
+            } catch (error) {
+                console.error('Error creating club:', error);
+                alert('Failed to create club: ' + error.message + '\n\nPlease try again.');
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
+            }
         });
 
         function goBack() {

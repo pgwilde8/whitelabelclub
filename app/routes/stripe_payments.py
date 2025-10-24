@@ -94,7 +94,7 @@ async def create_service_checkout(body: ServiceCheckoutIn, db: AsyncSession = De
                 }
             },
             success_url=f"https://ezclub.app/booking/success?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"https://ezclub.app/club/{body.club_slug}/book",
+            cancel_url=f"https://ezclub.app/community/{body.club_slug}/book",
             metadata={
                 'club_slug': body.club_slug,
                 'service_id': str(body.service_id),

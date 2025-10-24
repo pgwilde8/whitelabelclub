@@ -453,31 +453,39 @@
                 // Get club owner's Stripe account ID (you'll need to pass this from the server)
                 const clubSlug = '{{ club.slug }}';
                 
+                // Format booking datetime as string
+                const bookingDatetimeStr = `${bookingData.datetime.date} ${bookingData.datetime.time}`;
+                
+                // Format customer name
+                const customerName = `${bookingData.contact.firstName || ''} ${bookingData.contact.lastName || ''}`.trim();
+                
                 // Create Stripe checkout session for the service
-                const response = await fetch(`/api/v1/stripe/checkout/service`, {
+                const response = await fetch(`/stripe/checkout/service`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         club_slug: clubSlug,
-                        service_id: bookingData.service.id,
+                        service_id: parseInt(bookingData.service.id),
                         service_name: bookingData.service.name,
                         price_cents: Math.round(bookingData.service.price * 100), // Convert to cents
                         customer_email: bookingData.contact.email,
-                        customer_name: bookingData.contact.name,
-                        booking_datetime: bookingData.datetime,
+                        customer_name: customerName,
+                        booking_datetime: bookingDatetimeStr,
                         notes: bookingData.contact.notes || '',
                         metadata: {
-                            service_id: bookingData.service.id,
-                            booking_datetime: bookingData.datetime,
+                            service_id: bookingData.service.id.toString(),
+                            booking_datetime: bookingDatetimeStr,
                             club_slug: clubSlug
                         }
                     })
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Failed to create payment session');
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                    throw new Error(errorData.detail || 'Failed to create payment session');
                 }
                 
                 const checkoutData = await response.json();

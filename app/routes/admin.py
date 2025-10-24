@@ -91,7 +91,7 @@ async def admin_create_club(request: Request, db: AsyncSession = Depends(get_db_
             "club": {
                 "name": club.name,
                 "slug": club.slug,
-                "url": f"/club/{club.slug}"
+                "url": f"/community/{club.slug}"
             }
         })
         

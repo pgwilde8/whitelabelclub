@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 import stripe
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.stripe_config import STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET
 from app.db.session import get_db_session
 from app.db.crud_platform_users import update_connect_status, get_user_by_stripe_account
+from app.models.club import Club
 
 router = APIRouter(prefix="/webhooks", tags=["stripe-webhooks"])
 
@@ -31,7 +33,7 @@ async def webhooks_core(request: Request, db: AsyncSession = Depends(get_db_sess
 
     return {"received": True}
 
-@router.post("/connect")
+@router.post("/stripe/connect")
 async def webhooks_connect(request: Request, db: AsyncSession = Depends(get_db_session)):
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
@@ -45,7 +47,7 @@ async def webhooks_connect(request: Request, db: AsyncSession = Depends(get_db_s
     data = event["data"]["object"]
 
     if et == "account.updated":
-        # Update Connect status for the owner
+        # Update Connect status for the owner (platform_users table)
         charges_enabled = data.get("charges_enabled")
         details_submitted = data.get("details_submitted")
         
@@ -61,6 +63,16 @@ async def webhooks_connect(request: Request, db: AsyncSession = Depends(get_db_s
             country=country,
             default_currency=default_currency,
         )
+        
+        # Also update club if this account is linked to a club
+        if account and details_submitted:
+            result = await db.execute(
+                select(Club).where(Club.stripe_account_id == account)
+            )
+            club = result.scalar_one_or_none()
+            if club:
+                club.stripe_onboarding_complete = True
+                await db.commit()
 
     if et == "application_fee.created":
         # Your platform fee recorded

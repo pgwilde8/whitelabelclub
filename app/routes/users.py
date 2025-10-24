@@ -151,7 +151,7 @@ async def update_user_settings(
         })
 
 # MEMBER ROUTES (Within clubs)
-@router.get("/club/{club_slug}/member/{member_id}", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/member/{member_id}", response_class=HTMLResponse)
 async def member_profile(request: Request, club_slug: str, member_id: str, db: AsyncSession = Depends(get_db_session)):
     """Dynamic member profile within a club - ONE route serves ALL members"""
     try:
@@ -188,7 +188,7 @@ async def member_profile(request: Request, club_slug: str, member_id: str, db: A
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading member profile: {str(e)}")
 
-@router.get("/club/{club_slug}/members", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/members", response_class=HTMLResponse)
 async def club_members_list(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """List all members of a club - ONE route serves ALL clubs"""
     try:

@@ -59,7 +59,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto px-4 py-12 main-content">
         <!-- Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -207,22 +207,20 @@
     </div>
 
     <!-- Success Modal -->
-    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg max-w-md w-full p-6">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-check text-green-500 text-2xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Stripe Connected!</h3>
-                    <p class="text-gray-600 mb-6">Your Stripe account has been successfully connected to your platform.</p>
-                    
-                    <button onclick="proceedToLaunch()" 
-                        class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
-                        Launch Your Platform
-                        <i class="fas fa-rocket ml-2"></i>
-                    </button>
+    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 m-4 shadow-2xl transform scale-100 transition-all">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                    <i class="fas fa-check-circle text-green-500 text-4xl"></i>
                 </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-3">🎉 Stripe Connected!</h3>
+                <p class="text-gray-600 mb-8 text-lg">Your Stripe account has been successfully connected. You're now ready to accept payments!</p>
+                
+                <button onclick="proceedToLaunch()" 
+                    class="w-full bg-gradient-to-r from-primary to-blue-600 text-white py-4 rounded-lg hover:from-blue-600 hover:to-primary transition duration-300 font-bold text-lg shadow-lg">
+                    Launch Your Platform
+                    <i class="fas fa-rocket ml-2"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -265,7 +263,8 @@
                         display_name: platformData.clubName || 'My Club',
                         owner_email: platformData.email || 'owner@example.com',
                         country: 'US',
-                        user_id: '{{ user_id }}'
+                        user_id: '{{ user_id }}',
+                        club_slug: platformData.clubSlug || null
                     })
                 });
                 
@@ -328,9 +327,18 @@
         }
 
         function showStripeConnected() {
-            // Hide the main content and show success state
-            document.querySelector('.main-content').style.display = 'none';
-            document.getElementById('successModal').classList.remove('hidden');
+            // Hide the main content
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.style.display = 'none';
+            }
+            
+            // Show success modal with flex display
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
         }
 
         function showStripeError() {

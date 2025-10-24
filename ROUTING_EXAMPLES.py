@@ -17,7 +17,7 @@ async def user_profile(request: Request, username: str, db: AsyncSession = Depen
     })
 
 # MEMBER ROUTES (Dynamic - scales infinitely)  
-@router.get("/club/{club_slug}/member/{member_id}", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/member/{member_id}", response_class=HTMLResponse)
 async def member_profile(request: Request, club_slug: str, member_id: str, db: AsyncSession = Depends(get_db_session)):
     """Dynamic member profile within a club - ONE route serves ALL members"""
     club = await ClubService.get_club_by_slug(db, club_slug)
@@ -50,7 +50,7 @@ async def owner_dashboard(request: Request, username: str, db: AsyncSession = De
     })
 
 # PUBLIC MEMBER DIRECTORY (Dynamic - scales infinitely)
-@router.get("/club/{club_slug}/members", response_class=HTMLResponse)
+@router.get("/community/{club_slug}/members", response_class=HTMLResponse)
 async def club_members(request: Request, club_slug: str, db: AsyncSession = Depends(get_db_session)):
     """List all members of a club - ONE route serves ALL clubs"""
     club = await ClubService.get_club_by_slug(db, club_slug)

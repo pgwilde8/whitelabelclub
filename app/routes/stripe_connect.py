@@ -4,6 +4,7 @@ import stripe
 from pydantic import BaseModel
 from urllib.parse import urlencode
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 import uuid
 
 from app.stripe_config import (
@@ -13,6 +14,7 @@ from app.stripe_config import (
 )
 from app.db.session import get_db_session
 from app.db.crud_platform_users import set_connect_account, get_user_by_stripe_account
+from app.models.club import Club
 
 router = APIRouter(prefix="/stripe", tags=["stripe-connect"])
 
@@ -22,19 +24,29 @@ class CreateExpressAccountIn(BaseModel):
     owner_email: str
     country: str = "US"
     user_id: str  # Platform user ID who owns this account
+    club_slug: Optional[str] = None  # Club slug to link Stripe account
 
 @router.post("/connect/express/accounts")
 async def create_express_account(body: CreateExpressAccountIn, db: AsyncSession = Depends(get_db_session)):
     try:
+        # Create Stripe Express account
         acct = stripe_client.accounts.create({
             "type": "express",
             "country": body.country.upper(),
             "email": body.owner_email,
         })
         
-        # Save account to platform user (for now, skip database save in test mode)
-        # user_id = uuid.UUID(body.user_id)
-        # await set_connect_account(db, user_id, acct["id"], "express")
+        # If club_slug provided, save to clubs table
+        if body.club_slug:
+            result = await db.execute(
+                select(Club).where(Club.slug == body.club_slug)
+            )
+            club = result.scalar_one_or_none()
+            
+            if club:
+                club.stripe_account_id = acct["id"]
+                await db.commit()
+                await db.refresh(club)
         
         return {"account_id": acct["id"]}
     except Exception as e:
