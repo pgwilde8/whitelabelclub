@@ -20,8 +20,8 @@ class Club(Base, BaseModel):
     custom_domain = Column(String(255), nullable=True)
     description = Column(Text, nullable=True)
     logo_url = Column(String(500), nullable=True)
-    primary_color = Column(String(7), default="#3B82F6")
-    secondary_color = Column(String(7), default="#1E40AF")
+    primary_color = Column(String(7), default="#0075c4")
+    secondary_color = Column(String(7), default="#0267C1")
     
     # Stripe Connect
     stripe_account_id = Column(String(255), nullable=True)

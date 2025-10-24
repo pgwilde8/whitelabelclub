@@ -8,8 +8,8 @@ class ClubBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     slug: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = None
-    primary_color: str = Field(default="#3B82F6")
-    secondary_color: str = Field(default="#1E40AF")
+    primary_color: str = Field(default="#0075c4")
+    secondary_color: str = Field(default="#0267C1")
     logo_url: Optional[str] = None
     custom_domain: Optional[str] = None
     features: Dict[str, Any] = Field(default_factory=dict)
@@ -43,8 +43,8 @@ class ClubResponse(ClubBase):
     updated_at: datetime
 
     # Override base class fields to allow None values for existing data
-    primary_color: str = "#3B82F6"  
-    secondary_color: str = "#1E40AF"
+    primary_color: str = "#0075c4"  
+    secondary_color: str = "#0267C1"
     features: Dict[str, Any] = Field(default_factory=dict)
 
     class Config:
@@ -58,8 +58,8 @@ class ClubResponse(ClubBase):
             name=obj.name,
             slug=obj.slug,
             description=obj.description,
-            primary_color=obj.primary_color or "#3B82F6",
-            secondary_color=obj.secondary_color or "#1E40AF", 
+            primary_color=obj.primary_color or "#0075c4",
+            secondary_color=obj.secondary_color or "#0267C1", 
             logo_url=obj.logo_url,
             custom_domain=obj.custom_domain,
             features=obj.features or {},

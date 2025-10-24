@@ -70,7 +70,9 @@ class Settings(BaseSettings):
     
     # Platform Settings
     PLATFORM_DOMAIN: str = "ezclub.app"
-    PLATFORM_NAME: str = "White Label Club Platform"
+    PLATFORM_NAME: str = "EZCLUB Platform"
+    DEFAULT_PRIMARY_COLOR: str = "#0075c4"
+    DEFAULT_SECONDARY_COLOR: str = "#0267C1"
     
     # Commission/Fee Settings
     PLATFORM_COMMISSION_PERCENT: float = 3.0  # 3% commission on service bookings

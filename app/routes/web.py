@@ -101,8 +101,8 @@ MOCK_CLUBS = {
     "aaaaaa": {
         "name": "Club Aaaaaa",
         "description": "A vibrant fitness community",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF"
+        "primary_color": "#0075c4",
+        "secondary_color": "#0267C1"
     }
 }
 
@@ -378,8 +378,8 @@ async def booking_management(request: Request, club_slug: str, db: AsyncSession 
             "name": club.name,
             "slug": club.slug,
             "description": club.description or "A vibrant community for passionate members",
-            "primary_color": club.primary_color or "#3B82F6",
-            "secondary_color": club.secondary_color or "#1E40AF",
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
             "logo_url": club.logo_url
         }
     
@@ -523,8 +523,8 @@ async def calendar_view(request: Request, club_slug: str):
         "name": f"Club {club_slug.title()}",
         "slug": club_slug,
         "description": "View all your bookings in calendar format",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
+        "primary_color": "#0075c4",
+        "secondary_color": "#0267C1",
         "logo_url": None
     }
     
@@ -548,8 +548,8 @@ async def club_settings(request: Request, club_slug: str, db: AsyncSession = Dep
             "name": club.name,
             "slug": club.slug,
             "description": club.description or "",
-            "primary_color": club.primary_color or "#3B82F6",
-            "secondary_color": club.secondary_color or "#1E40AF",
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
             "logo_url": club.logo_url,
             "features": {
                 "enable_bookings": club.features.get("enable_bookings", True),
@@ -574,8 +574,8 @@ async def chat_view(request: Request, club_slug: str):
         "name": f"Club {club_slug.title()}",
         "slug": club_slug,
         "description": "Connect and chat with your community",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
+        "primary_color": "#0075c4",
+        "secondary_color": "#0267C1",
         "logo_url": None
     }
     
@@ -615,8 +615,8 @@ async def ai_terminal_view(request: Request, club_slug: str):
         "name": f"Club {club_slug.title()}",
         "slug": club_slug,
         "description": "AI-powered club management and insights",
-        "primary_color": "#3B82F6",
-        "secondary_color": "#1E40AF",
+        "primary_color": "#0075c4",
+        "secondary_color": "#0267C1",
         "logo_url": None
     }
     
@@ -753,8 +753,8 @@ async def community_join(request: Request, club_slug: str, db: AsyncSession = De
             "name": club.name,
             "slug": club.slug,
             "description": club.description or "Join our amazing community!",
-            "primary_color": club.primary_color or "#3B82F6",
-            "secondary_color": club.secondary_color or "#1E40AF",
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
             "logo_url": club.logo_url,
             "features": {
                 "enable_bookings": club.features.get("enable_bookings", True),
@@ -797,8 +797,8 @@ async def public_booking(request: Request, club_slug: str, db: AsyncSession = De
             "name": club.name,
             "slug": club.slug,
             "description": club.description or "Book your appointment with us today!",
-            "primary_color": club.primary_color or "#3B82F6",
-            "secondary_color": club.secondary_color or "#1E40AF",
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
             "logo_url": club.logo_url
         }
         

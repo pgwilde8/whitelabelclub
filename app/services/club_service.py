@@ -90,8 +90,8 @@ class ClubService:
                 name=f"Club {club_slug.title()}",
                 slug=club_slug,
                 description="A vibrant community for passionate members",
-                primary_color="#3B82F6",
-                secondary_color="#1E40AF",
+                primary_color="#0075c4",
+                secondary_color="#0267C1",
                 features={
                     "enable_bookings": True,
                     "enable_chat": True,

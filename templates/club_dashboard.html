@@ -12,8 +12,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '{{ club.primary_color or "#3B82F6" }}',
-                        secondary: '{{ club.secondary_color or "#1E40AF" }}',
+                        primary: '{{ club.primary_color or "#0075c4" }}',
+                        secondary: '{{ club.secondary_color or "#0267C1" }}',
                     }
                 }
             }
@@ -21,8 +21,8 @@
     </script>
     <style>
         :root {
-            --club-primary: {{ club.primary_color or '#3B82F6' }};
-            --club-secondary: {{ club.secondary_color or '#1E40AF' }};
+            --club-primary: {{ club.primary_color or '#0075c4' }};
+            --club-secondary: {{ club.secondary_color or '#0267C1' }};
         }
         .progress-bar {
             background-color: var(--club-primary);

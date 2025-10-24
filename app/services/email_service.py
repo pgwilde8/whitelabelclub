@@ -30,14 +30,14 @@ class EmailService:
             <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <div style="background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); padding: 30px; border-radius: 10px 10px 0 0;">
+                    <div style="background: linear-gradient(135deg, #0075c4 0%, #0267C1 100%); padding: 30px; border-radius: 10px 10px 0 0;">
                         <h1 style="color: white; margin: 0; font-size: 24px;">
                             🚀 New Contact Form Submission
                         </h1>
                     </div>
                     
                     <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
-                        <h2 style="color: #3B82F6; margin-top: 0;">Contact Details</h2>
+                        <h2 style="color: #0075c4; margin-top: 0;">Contact Details</h2>
                         
                         <table style="width: 100%; border-collapse: collapse;">
                             <tr>
@@ -47,7 +47,7 @@ class EmailService:
                             <tr>
                                 <td style="padding: 10px; border-bottom: 1px solid #ddd; font-weight: bold;">Email:</td>
                                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-                                    <a href="mailto:{email}" style="color: #3B82F6;">{email}</a>
+                                    <a href="mailto:{email}" style="color: #0075c4;">{email}</a>
                                 </td>
                             </tr>
                             <tr>
@@ -56,8 +56,8 @@ class EmailService:
                             </tr>
                         </table>
                         
-                        <h3 style="color: #3B82F6; margin-top: 30px; margin-bottom: 15px;">Message:</h3>
-                        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3B82F6;">
+                        <h3 style="color: #0075c4; margin-top: 30px; margin-bottom: 15px;">Message:</h3>
+                        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #0075c4;">
                             {message.replace(chr(10), '<br>')}
                         </div>
                         
