@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Confirmed - ClubLaunch</title>
+    <title>Booking Confirmed - EZCLUB.APP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -11,8 +11,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3B82F6',
-                        secondary: '#1E40AF',
+                        primary: '#0075c4',
+                        secondary: '#0267C1',
+                        accent: '#efa00b',
                     }
                 }
             }
@@ -24,7 +25,7 @@
     <header class="bg-white shadow-sm">
         <div class="max-w-4xl mx-auto px-4 py-6">
             <div class="text-center">
-                <h1 class="text-2xl font-bold text-gray-900">ClubLaunch</h1>
+                <h1 class="text-2xl font-bold text-gray-900">🚀 EZCLUB.APP</h1>
             </div>
         </div>
     </header>
@@ -108,44 +109,55 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-4xl mx-auto px-4 py-8">
+    <footer id="contact" class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8">
-                <!-- Platform -->
                 <div>
-                    <h3 class="font-semibold text-gray-900 mb-4">Platform</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="/features" class="hover:text-primary">Features</a></li>
-                        <li><a href="/pricing" class="hover:text-primary">Pricing</a></li>
-                        <li><a href="/demo" class="hover:text-primary">Demo</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Legal -->
-                <div>
-                    <h3 class="font-semibold text-gray-900 mb-4">Legal</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="#" class="hover:text-primary">Terms</a></li>
-                        <li><a href="#" class="hover:text-primary">Privacy</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Support -->
-                <div>
-                    <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="/contact" class="hover:text-primary">Contact</a></li>
-                        <li><a href="/about" class="hover:text-primary">About</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Company -->
-                <div>
-                    <h3 class="font-semibold text-gray-900 mb-4">Company</h3>
-                    <p class="text-sm text-gray-600">
-                        © 2025 ClubLaunch. All rights reserved.
+                    <h3 class="text-2xl font-bold mb-4">🚀 EZCLUB.APP</h3>
+                    <p class="text-gray-400 mb-4">
+                        The easiest way to launch your own branded community platform.
                     </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
                 </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/login" class="hover:text-white">Dashboard</a></li>
+                        <li><a href="/sitemap" class="hover:text-white">Sitemap</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/terms" class="hover:text-white">Terms</a></li>
+                        <li><a href="/privacy" class="hover:text-white">Privacy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/contact" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 EZCLUB.APP. All rights reserved. Built for entrepreneurs who want to build communities.</p>
             </div>
         </div>
     </footer>
