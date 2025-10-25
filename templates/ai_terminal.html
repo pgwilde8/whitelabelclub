@@ -175,43 +175,26 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                <!-- Member Engagement -->
-                <div class="bg-gray-700 rounded-lg p-4">
+                <!-- Loading State -->
+                <div id="insightsLoading" class="bg-gray-700 rounded-lg p-4 text-center">
+                    <i class="fas fa-spinner fa-spin text-blue-400 text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-300">Loading real-time insights...</p>
+                </div>
+                
+                <!-- Real-Time Club Metrics -->
+                <div id="clubMetrics" class="bg-gray-700 rounded-lg p-4 hidden">
                     <div class="flex items-center space-x-2 mb-2">
-                        <i class="fas fa-users text-blue-400"></i>
-                        <h3 class="font-semibold">Member Engagement</h3>
+                        <i class="fas fa-chart-bar text-blue-400"></i>
+                        <h3 class="font-semibold">Live Club Metrics</h3>
                     </div>
-                    <div class="text-sm text-gray-300">
-                        <p>📈 Engagement up 23% this week</p>
-                        <p>🎯 Peak activity: 6-8 PM</p>
-                        <p>💡 Suggestion: Schedule more evening events</p>
+                    <div class="text-sm text-gray-300 space-y-1" id="metricsContent">
+                        <!-- Populated by JavaScript -->
                     </div>
                 </div>
 
-                <!-- Revenue Optimization -->
-                <div class="bg-gray-700 rounded-lg p-4">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <i class="fas fa-chart-line text-green-400"></i>
-                        <h3 class="font-semibold">Revenue Insights</h3>
-                    </div>
-                    <div class="text-sm text-gray-300">
-                        <p>💰 Avg booking value: $85</p>
-                        <p>📊 Conversion rate: 23.4%</p>
-                        <p>💡 Suggestion: Offer package deals</p>
-                    </div>
-                </div>
-
-                <!-- Content Suggestions -->
-                <div class="bg-gray-700 rounded-lg p-4">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <i class="fas fa-lightbulb text-yellow-400"></i>
-                        <h3 class="font-semibold">Content Ideas</h3>
-                    </div>
-                    <div class="text-sm text-gray-300">
-                        <p>📝 "5 Tips for Better Workouts"</p>
-                        <p>🎥 "Member Success Stories"</p>
-                        <p>📱 "Behind the Scenes" content</p>
-                    </div>
+                <!-- Dynamic AI Suggestions -->
+                <div id="aiSuggestions" class="space-y-4 hidden">
+                    <!-- Populated by JavaScript -->
                 </div>
 
                 <!-- AI Business Tools -->
@@ -753,10 +736,98 @@
             }
         }
 
+        // Load AI Insights from backend
+        async function loadAIInsights() {
+            const clubSlug = '{{ club.slug }}';
+            
+            try {
+                const response = await fetch(`/api/v1/ai/suggest/${clubSlug}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load insights');
+                }
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('insightsLoading').classList.add('hidden');
+                
+                // Show and populate metrics
+                const metricsDiv = document.getElementById('clubMetrics');
+                const metricsContent = document.getElementById('metricsContent');
+                metricsDiv.classList.remove('hidden');
+                
+                const metrics = data.club_metrics;
+                metricsContent.innerHTML = `
+                    <p>👥 <strong>${metrics.total_members}</strong> total members</p>
+                    <p>✅ <strong>${metrics.active_members}</strong> active members</p>
+                    <p>📊 <strong>${metrics.engagement_rate}%</strong> engagement rate</p>
+                    <p>💰 <strong>$${metrics.total_revenue.toFixed(2)}</strong> total revenue</p>
+                `;
+                
+                // Show and populate suggestions
+                const suggestionsDiv = document.getElementById('aiSuggestions');
+                suggestionsDiv.classList.remove('hidden');
+                
+                let suggestionsHTML = '';
+                data.suggestions.forEach((suggestion, index) => {
+                    const iconMap = {
+                        'revenue_optimization': 'fa-dollar-sign text-green-400',
+                        'member_retention': 'fa-users text-blue-400',
+                        'growth': 'fa-chart-line text-purple-400',
+                        'booking_optimization': 'fa-calendar-check text-yellow-400',
+                        'general': 'fa-lightbulb text-gray-400'
+                    };
+                    
+                    const priorityColors = {
+                        'high': 'text-red-400',
+                        'medium': 'text-yellow-400',
+                        'low': 'text-green-400'
+                    };
+                    
+                    const icon = iconMap[suggestion.type] || 'fa-info-circle text-gray-400';
+                    const priorityColor = priorityColors[suggestion.priority] || 'text-gray-400';
+                    
+                    suggestionsHTML += `
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas ${icon}"></i>
+                                    <h3 class="font-semibold">${suggestion.title}</h3>
+                                </div>
+                                <span class="text-xs ${priorityColor} font-semibold uppercase">${suggestion.priority}</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <p>${suggestion.description}</p>
+                                ${suggestion.impact ? `<p class="mt-2 text-green-300">💡 ${suggestion.impact}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                suggestionsDiv.innerHTML = suggestionsHTML;
+                
+            } catch (error) {
+                console.error('Error loading AI insights:', error);
+                
+                // Show error state
+                document.getElementById('insightsLoading').innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-yellow-400 text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-300">Unable to load insights</p>
+                    <button onclick="loadAIInsights()" class="mt-2 text-xs text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-redo mr-1"></i>Retry
+                    </button>
+                `;
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('terminalInput').focus();
             scrollToBottom();
+            
+            // Load AI insights
+            loadAIInsights();
             
             // Check for pre-filled command from URL
             const urlParams = new URLSearchParams(window.location.search);
