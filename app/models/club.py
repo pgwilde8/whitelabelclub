@@ -27,6 +27,10 @@ class Club(Base, BaseModel):
     stripe_account_id = Column(String(255), nullable=True)
     stripe_onboarding_complete = Column(Boolean, default=False)
     
+    # Welcome Email Tracking
+    welcome_email_sent = Column(Boolean, default=False)
+    welcome_email_sent_at = Column(DateTime, nullable=True)
+    
     # OpenAI Integration (encrypted)
     _openai_api_key_encrypted = Column("openai_api_key_encrypted", Text, nullable=True)
     ai_enabled = Column(Boolean, default=False)

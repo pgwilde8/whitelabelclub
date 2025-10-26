@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 EZCLUB Beta Tester Program - Membership Site / Club Platform - Get Lifetime Free Access</title>
+    <meta name="description" content="Join EZCLUB beta program and get lifetime free access to our membership site and club management platform. Perfect for coaches, studios, and communities.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0075c4',
+                        secondary: '#0267C1',
+                        accent: '#efa00b',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-subtle {
+            animation: pulse-subtle 2s infinite;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .slide-up {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #0075c4 0%, #efa00b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Top Banner - Urgency -->
+    <div class="bg-gradient-to-r from-red-600 to-orange-600 text-white py-3 text-center font-bold">
+        <div class="flex items-center justify-center gap-2">
+            <i class="fas fa-fire animate-bounce"></i>
+            <span id="spotsText">Only 10 Beta Spots Available</span>
+            <i class="fas fa-fire animate-bounce"></i>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">E</span>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-800">EZCLUB.APP</span>
+                </a>
+                <a href="/" class="text-gray-600 hover:text-primary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <!-- Beta Badge -->
+            <div class="inline-block bg-yellow-100 border-2 border-yellow-400 rounded-full px-6 py-2 mb-6 pulse-subtle">
+                <span class="text-yellow-900 font-bold text-sm uppercase tracking-wide">
+                    🌟 Exclusive Beta Tester Program
+                </span>
+            </div>
+
+            <!-- Main Headline -->
+            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 slide-up">
+                Get <span class="gradient-text">Lifetime Free Access</span> 
+                to EZCLUB.APP
+            </h1>
+
+            <p class="text-xl text-gray-600 mb-4 max-w-2xl mx-auto">
+                Join our exclusive beta program and help shape the future of membership site platforms. 
+                Your feedback will directly influence what we build next.
+            </p>
+
+            <!-- Clarification Badge -->
+            <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-6 py-3 mb-6">
+                <i class="fas fa-info-circle text-blue-600"></i>
+                <span class="text-blue-900 font-medium">
+                    Club = Membership Site • Same thing, different name
+                </span>
+            </div>
+
+            <!-- Spots Remaining Counter -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 mb-12 border-4 border-yellow-400">
+                <div class="flex items-center justify-center gap-8">
+                    <div class="text-center">
+                        <div class="text-6xl font-bold text-primary mb-2" id="spotsRemaining">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="text-gray-600 font-medium uppercase tracking-wide">
+                            Spots Remaining
+                        </div>
+                    </div>
+                    <div class="hidden md:block w-px h-20 bg-gray-300"></div>
+                    <div class="text-center">
+                        <div class="text-6xl font-bold text-gray-300 mb-2">10</div>
+                        <div class="text-gray-600 font-medium uppercase tracking-wide">
+                            Total Spots
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-green-500 to-yellow-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Video Demo Section -->
+    <section class="bg-white py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-4">
+                    <i class="fas fa-play-circle text-primary"></i>
+                    Watch the Demo (3 minutes)
+                </h2>
+                <p class="text-center text-gray-600 mb-8">
+                    See how EZCLUB.APP can transform your membership site / club management
+                </p>
+                
+                <!-- Video Embed Placeholder -->
+                <div class="aspect-video bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+                    <!-- Replace this div with your actual video embed -->
+                    <div id="videoPlaceholder" class="w-full h-full flex items-center justify-center text-white">
+                        <div class="text-center">
+                            <i class="fas fa-video text-6xl mb-4 opacity-50"></i>
+                            <p class="text-xl mb-4">Demo Video Coming Soon!</p>
+                            <p class="text-gray-400 text-sm">
+                                For now, you can <a href="#signup" class="text-primary hover:underline">skip to signup</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- UNCOMMENT AND ADD YOUR VIDEO LINK HERE -->
+                    <!-- 
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+                        title="EZCLUB Demo" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    -->
+                    
+                    <!-- OR USE LOOM -->
+                    <!--
+                    <iframe 
+                        src="https://www.loom.com/embed/YOUR_LOOM_ID" 
+                        frameborder="0" 
+                        webkitallowfullscreen 
+                        mozallowfullscreen 
+                        allowfullscreen 
+                        style="width: 100%; height: 100%;">
+                    </iframe>
+                    -->
+                </div>
+
+                <div class="mt-8 grid md:grid-cols-3 gap-4">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <i class="fas fa-users text-3xl text-primary mb-2"></i>
+                        <div class="font-bold">Member Management</div>
+                        <div class="text-sm text-gray-600">Track & engage members</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <i class="fas fa-calendar-check text-3xl text-primary mb-2"></i>
+                        <div class="font-bold">Booking System</div>
+                        <div class="text-sm text-gray-600">Accept online bookings</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <i class="fas fa-credit-card text-3xl text-primary mb-2"></i>
+                        <div class="font-bold">Stripe Payments</div>
+                        <div class="text-sm text-gray-600">Get paid automatically</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What You Get Section -->
+    <section class="py-16 bg-gradient-to-br from-primary to-secondary text-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">
+                    What You Get as a Beta Tester
+                </h2>
+                <p class="text-center text-blue-100 mb-12 text-lg">
+                    Exclusive benefits worth $588/year - completely free
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-infinity text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Lifetime Free Account</h3>
+                                <p class="text-blue-100">
+                                    No credit card required. No expiration. Free forever. (Normally $49/month)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-headset text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Priority Support</h3>
+                                <p class="text-blue-100">
+                                    Direct access to the founder. Your questions answered within 24 hours.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-magic text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Feature Requests</h3>
+                                <p class="text-blue-100">
+                                    Your ideas go to the top of the roadmap. Help shape the product.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-crown text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Beta Tester Badge</h3>
+                                <p class="text-blue-100">
+                                    Exclusive "Founding Member" badge in your account. Show off your early supporter status.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-gift text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Early Access</h3>
+                                <p class="text-blue-100">
+                                    Try new features before anyone else. Be the first to know what's coming.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/20">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/20 rounded-lg p-3 flex-shrink-0">
+                                <i class="fas fa-handshake text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2">Personalized Onboarding</h3>
+                                <p class="text-blue-100">
+                                    One-on-one setup call with the founder. We'll get you running in 15 minutes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Need Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">
+                    What We Need From You
+                </h2>
+                <p class="text-center text-gray-600 mb-12 text-lg">
+                    We're not looking for silent users - we want your honest input!
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                        <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-3xl text-primary"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2">15 Minutes</h3>
+                        <p class="text-gray-600">
+                            Test the signup flow, create your club/membership site, and use it. That's it!
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                        <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comments text-3xl text-primary"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2">Honest Feedback</h3>
+                        <p class="text-gray-600">
+                            Tell us what sucks, what's confusing, what you love.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                        <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-lightbulb text-3xl text-primary"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2">One Idea</h3>
+                        <p class="text-gray-600">
+                            One bug report OR one feature request. Your choice!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-12 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-6">
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-exclamation-triangle text-3xl text-yellow-600 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2 text-yellow-900">Beta = Work in Progress</h3>
+                            <p class="text-yellow-800">
+                                You might encounter bugs. Some features might be rough around the edges. 
+                                That's okay! That's exactly why we need your help. We're looking for pioneers, 
+                                not perfectionists.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-blue-50 border-2 border-blue-400 rounded-xl p-6">
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-flask text-3xl text-blue-600 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2 text-blue-900">🧪 Beta Testing Notice</h3>
+                            <p class="text-blue-800 mb-3">
+                                During beta, we're using Stripe's <strong>TEST mode</strong> for safety:
+                            </p>
+                            <ul class="text-blue-800 space-y-2 ml-4">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-blue-600 mt-1 flex-shrink-0"></i>
+                                    <span>You'll connect with <strong>test bank accounts</strong> (provided by Stripe)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-blue-600 mt-1 flex-shrink-0"></i>
+                                    <span>Customers can test bookings with <strong>test cards</strong> (4242 4242 4242 4242)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-blue-600 mt-1 flex-shrink-0"></i>
+                                    <span><strong>No real money</strong> will be processed during beta</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-blue-600 mt-1 flex-shrink-0"></i>
+                                    <span>You'll see <strong>exactly how the platform works</strong> without financial risk</span>
+                                </li>
+                            </ul>
+                            <div class="mt-4 pt-4 border-t border-blue-300">
+                                <p class="text-blue-800 text-sm">
+                                    <strong>When we launch (4-6 weeks)</strong>, we'll switch to LIVE mode and you can connect 
+                                    your real bank account, accept real payments, and run your actual business. 
+                                    Your <strong>lifetime free account</strong> will still be active!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-purple-50 border-2 border-purple-400 rounded-xl p-6">
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-percent text-3xl text-purple-600 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="font-bold text-xl mb-3 text-purple-900">💰 Lower Fees Than Patreon</h3>
+                            <p class="text-purple-800 mb-4">
+                                Keep more of your money. EZCLUB has <strong>significantly lower transaction fees</strong> than other platforms:
+                            </p>
+                            
+                            <div class="bg-white rounded-lg p-4 mb-4 border border-purple-200">
+                                <div class="font-bold text-lg text-purple-900 mb-3">Fee Breakdown Per Transaction</div>
+                                <div class="space-y-4">
+                                    <!-- EZCLUB -->
+                                    <div class="bg-green-50 rounded-lg p-4 border-2 border-green-400">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div class="font-bold text-green-900">EZCLUB</div>
+                                            <div class="text-2xl font-bold text-green-600">~6%</div>
+                                        </div>
+                                        <div class="text-sm text-green-800 space-y-1">
+                                            <div class="flex justify-between">
+                                                <span>• Stripe processing:</span>
+                                                <span>2.9% + $0.30</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>• EZCLUB platform fee:</span>
+                                                <span>3%</span>
+                                            </div>
+                                            <div class="pt-2 border-t border-green-300 flex justify-between font-semibold">
+                                                <span>Total:</span>
+                                                <span>~5.9% + $0.30</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Patreon -->
+                                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-300">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div class="font-bold text-gray-700">Patreon</div>
+                                            <div class="text-2xl font-bold text-red-600">~13%</div>
+                                        </div>
+                                        <div class="text-sm text-gray-700 space-y-1">
+                                            <div class="flex justify-between">
+                                                <span>• Patreon platform fee:</span>
+                                                <span>5-12%</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>• Payment processing:</span>
+                                                <span>2.9% + $0.30</span>
+                                            </div>
+                                            <div class="pt-2 border-t border-gray-300 flex justify-between font-semibold">
+                                                <span>Total:</span>
+                                                <span>~8-15% + $0.30</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-3">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-calculator text-green-600 text-xl mt-1"></i>
+                                    <div>
+                                        <div class="font-bold text-green-900 mb-2">💰 Real Money Example:</div>
+                                        <p class="text-green-800 text-sm mb-2">
+                                            If a member pays <strong>$100</strong> for your service:
+                                        </p>
+                                        <div class="bg-white rounded p-3 space-y-2 text-sm">
+                                            <div class="flex justify-between items-center py-1 border-b border-green-200">
+                                                <span class="font-semibold text-green-900">EZCLUB:</span>
+                                                <span class="text-green-700">You keep <strong class="text-green-900">~$94</strong></span>
+                                            </div>
+                                            <div class="flex justify-between items-center py-1">
+                                                <span class="font-semibold text-gray-700">Patreon:</span>
+                                                <span class="text-gray-600">You keep <strong class="text-red-600">~$85-$92</strong></span>
+                                            </div>
+                                        </div>
+                                        <p class="text-green-800 text-sm mt-3 font-semibold">
+                                            💵 That's <strong>$2-$9 more per $100 transaction</strong> with EZCLUB!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-purple-300 rounded-lg p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-trophy text-yellow-500 text-xl"></i>
+                                    <div class="font-semibold text-purple-900">Why Our Fees Are Lower</div>
+                                </div>
+                                <ul class="text-sm text-purple-700 space-y-1 ml-4">
+                                    <li>✓ Only <strong>3% platform fee</strong> (vs Patreon's 5-12%)</li>
+                                    <li>✓ Direct Stripe integration (you get paid directly)</li>
+                                    <li>✓ No hidden fees or surprise charges</li>
+                                    <li>✓ You own your customer data & relationships</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Signup Section -->
+    <section id="signup" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-2xl mx-auto">
+                
+                <div id="signupForm" class="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-2xl p-8 border border-gray-200">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold mb-2">🚀 Claim Your Beta Spot</h2>
+                        <p class="text-gray-600">Join the exclusive beta program now</p>
+                    </div>
+
+                    <div class="mb-6 p-4 bg-green-50 border-2 border-green-400 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                            <div>
+                                <div class="font-bold text-green-900">Your promo code: <span class="font-mono bg-green-200 px-2 py-1 rounded">REDDIT2025</span></div>
+                                <div class="text-sm text-green-700">This will be automatically applied at signup</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/onboarding?promo=REDDIT2025&beta=true" 
+                       class="block w-full bg-gradient-to-r from-primary to-secondary text-white text-center py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Start Free Beta Signup
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+
+                    <div class="mt-6 text-center text-sm text-gray-500">
+                        <i class="fas fa-lock mr-1"></i>
+                        No credit card required • 100% Free Forever
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-gray-200">
+                        <div class="text-center text-sm text-gray-600 mb-4">
+                            Already have feedback or questions?
+                        </div>
+                        <a href="/contact" 
+                           class="block w-full bg-white border-2 border-gray-300 text-gray-700 text-center py-3 rounded-xl font-medium hover:border-primary hover:text-primary transition-all">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Full Message -->
+                <div id="fullMessage" class="hidden bg-red-50 border-2 border-red-400 rounded-2xl shadow-2xl p-8 text-center">
+                    <i class="fas fa-times-circle text-6xl text-red-500 mb-4"></i>
+                    <h2 class="text-3xl font-bold mb-4 text-red-900">Beta Spots Are Full</h2>
+                    <p class="text-gray-700 mb-6">
+                        All 10 beta tester spots have been claimed. Thank you for your interest!
+                    </p>
+                    <div class="bg-white p-6 rounded-xl mb-6">
+                        <h3 class="font-bold mb-3">Get notified when we open more spots:</h3>
+                        <form class="flex gap-2">
+                            <input type="email" 
+                                   placeholder="your@email.com" 
+                                   class="flex-1 px-4 py-3 border border-gray-300 rounded-lg">
+                            <button type="submit" 
+                                    class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-secondary transition-colors">
+                                Notify Me
+                            </button>
+                        </form>
+                    </div>
+                    <a href="/" class="text-primary hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to home page
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-12">
+                    Frequently Asked Questions
+                </h2>
+
+                <div class="space-y-4">
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>❓ Is it really free forever?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            Yes! Beta testers get a lifetime free account - no credit card required, ever. 
+                            This is our way of saying thank you for helping us improve the platform.
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>⏰ How long does beta testing last?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            The beta period is approximately 4-6 weeks. After that, we'll officially launch, 
+                            but your free lifetime access continues forever!
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>🐛 What if I find bugs?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            That's exactly what we want! Report bugs directly to support@ezclub.app or 
+                            via the feedback button in your dashboard. You'll be helping us make the 
+                            product better for everyone.
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>💡 Can I really request features?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            Absolutely! Beta tester feature requests go to the top of our roadmap. 
+                            If multiple testers request the same feature, we'll prioritize building it.
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>🎯 Who is EZCLUB for?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            <strong>Perfect for membership sites, clubs, and communities:</strong> Fitness studios, 
+                            yoga studios, martial arts schools, dance studios, coaching programs, mastermind groups, 
+                            online courses with memberships, subscription communities - basically any membership site 
+                            that needs member management, booking systems, and payment processing.
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>🔒 Is my data safe?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            Yes! We use industry-standard encryption, secure databases, and Stripe for payment 
+                            processing (we never store credit card info). Your data is backed up daily.
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>📞 How do I get support?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            Beta testers get priority support! Email support@ezclub.app or use the feedback 
+                            button in your dashboard. We respond within 24 hours (usually much faster).
+                        </p>
+                    </details>
+
+                    <details class="bg-white rounded-xl shadow-md p-6 cursor-pointer group">
+                        <summary class="font-bold text-lg flex items-center justify-between">
+                            <span>🚀 When does beta start?</span>
+                            <i class="fas fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 text-gray-600 pl-6">
+                            Right now! As soon as you sign up, you can start building your club. 
+                            We're actively developing new features based on your feedback.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof / Testimonials (for later) -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-8">Early Beta Tester Feedback</h2>
+                
+                <!-- Placeholder for testimonials -->
+                <div class="text-gray-400">
+                    <i class="fas fa-comments text-6xl mb-4"></i>
+                    <p>Testimonials from beta testers will appear here soon!</p>
+                </div>
+
+                <!-- UNCOMMENT WHEN YOU HAVE TESTIMONIALS -->
+                <!--
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="text-yellow-400 mb-3">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 mb-4 italic">
+                            "Super easy to set up! Had my yoga studio running in 10 minutes."
+                        </p>
+                        <div class="font-bold">- Sarah, Yoga Studio Owner</div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="text-yellow-400 mb-3">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 mb-4 italic">
+                            "The booking system is exactly what I needed. Stripe integration works perfectly."
+                        </p>
+                        <div class="font-bold">- Mike, Martial Arts Instructor</div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="text-yellow-400 mb-3">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 mb-4 italic">
+                            "Finally! A platform that doesn't charge crazy monthly fees."
+                        </p>
+                        <div class="font-bold">- Jessica, Fitness Coach</div>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 bg-gradient-to-br from-primary to-secondary text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-4">Ready to Join?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Don't miss this opportunity to get lifetime free access and help build something amazing.
+            </p>
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="bg-white/20 rounded-lg px-6 py-4">
+                    <div class="text-3xl font-bold" id="spotsRemaining2">-</div>
+                    <div class="text-sm text-blue-100">Spots Left</div>
+                </div>
+            </div>
+            <a href="#signup" 
+               class="inline-block bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                <i class="fas fa-rocket mr-2"></i>
+                Claim Your Free Spot Now
+                <i class="fas fa-arrow-down ml-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">E</span>
+                    </div>
+                    <span class="text-2xl font-bold">EZCLUB.APP</span>
+                </div>
+                <p class="text-gray-400 mb-6">
+                    Launch your membership site or club. Manage members. Accept bookings. All in one place.
+                </p>
+                <div class="flex justify-center gap-6 mb-6">
+                    <a href="/" class="text-gray-400 hover:text-primary transition-colors">Home</a>
+                    <a href="/features" class="text-gray-400 hover:text-primary transition-colors">Features</a>
+                    <a href="/contact" class="text-gray-400 hover:text-primary transition-colors">Contact</a>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    &copy; 2025 EZCLUB.APP. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Fetch remaining beta spots
+        async function updateRemainingSpots() {
+            try {
+                const response = await fetch('/api/v1/beta/remaining-spots');
+                const data = await response.json();
+                
+                const remaining = data.remaining;
+                const limit = data.limit;
+                const percentage = ((limit - remaining) / limit) * 100;
+                
+                // Update all spots counters
+                document.getElementById('spotsRemaining').textContent = remaining;
+                document.getElementById('spotsRemaining2').textContent = remaining;
+                
+                // Update spots text
+                document.getElementById('spotsText').textContent = 
+                    remaining > 0 
+                        ? `Only ${remaining} Beta Spots Remaining!` 
+                        : '🔥 Beta Spots Are FULL!';
+                
+                // Update progress bar
+                document.getElementById('progressBar').style.width = `${percentage}%`;
+                
+                // Show/hide signup form based on availability
+                if (remaining === 0) {
+                    document.getElementById('signupForm').classList.add('hidden');
+                    document.getElementById('fullMessage').classList.remove('hidden');
+                }
+                
+                // Update color based on urgency
+                if (remaining <= 3) {
+                    document.getElementById('spotsRemaining').classList.add('text-red-600', 'animate-pulse');
+                }
+                
+            } catch (error) {
+                console.error('Error fetching spots:', error);
+                // Fallback to showing signup form
+                document.getElementById('spotsRemaining').textContent = '10';
+                document.getElementById('spotsRemaining2').textContent = '10';
+            }
+        }
+
+        // Update on page load
+        updateRemainingSpots();
+        
+        // Update every 30 seconds
+        setInterval(updateRemainingSpots, 30000);
+
+        // Smooth scroll to signup
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+

@@ -53,6 +53,45 @@ async def sitemap(request: Request):
     """HTML Sitemap page"""
     return templates.TemplateResponse("sitemap.html", {"request": request})
 
+@router.get("/beta", response_class=HTMLResponse)
+async def beta_signup_page(request: Request):
+    """Beta tester signup page"""
+    return templates.TemplateResponse("beta-signup.html", {"request": request})
+
+@router.get("/api/v1/beta/remaining-spots")
+async def get_remaining_beta_spots(db: AsyncSession = Depends(get_db_session)):
+    """API endpoint to check remaining beta tester spots"""
+    from sqlalchemy import select, func
+    from app.models.club import Club
+    from app.core.config import settings
+    
+    try:
+        # Count current beta testers
+        result = await db.execute(
+            select(func.count(Club.id)).where(Club.account_type == "lifetime_free")
+        )
+        current_count = result.scalar() or 0
+        
+        # Calculate remaining
+        limit = getattr(settings, 'BETA_TESTER_LIMIT', 10)
+        remaining = max(0, limit - current_count)
+        
+        return {
+            "limit": limit,
+            "current": current_count,
+            "remaining": remaining,
+            "is_full": remaining == 0
+        }
+    except Exception as e:
+        logger.error(f"Error fetching beta spots: {e}")
+        # Return default values on error
+        return {
+            "limit": 10,
+            "current": 0,
+            "remaining": 10,
+            "is_full": False
+        }
+
 @router.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
     """Login page"""

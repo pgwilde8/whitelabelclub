@@ -6,6 +6,9 @@ from app.stripe_config import STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECR
 from app.db.session import get_db_session
 from app.db.crud_platform_users import update_connect_status, get_user_by_stripe_account
 from app.models.club import Club
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/webhooks", tags=["stripe-webhooks"])
 
@@ -73,6 +76,32 @@ async def webhooks_connect(request: Request, db: AsyncSession = Depends(get_db_s
             if club:
                 club.stripe_onboarding_complete = True
                 await db.commit()
+                
+                # Send beta welcome email to beta testers (only once)
+                if club.account_type == "lifetime_free" and not club.welcome_email_sent:
+                    from app.services.email_service import EmailService
+                    from sqlalchemy import func
+                    
+                    # Count beta testers to get their number
+                    count_result = await db.execute(
+                        select(func.count(Club.id)).where(Club.account_type == "lifetime_free")
+                    )
+                    beta_number = count_result.scalar() or 1
+                    
+                    # Send welcome email
+                    email_sent = EmailService.send_beta_welcome_email(
+                        club_name=club.name,
+                        club_slug=club.slug,
+                        owner_email=club.owner_email,
+                        beta_number=beta_number
+                    )
+                    
+                    if email_sent:
+                        from datetime import datetime
+                        club.welcome_email_sent = True
+                        club.welcome_email_sent_at = datetime.utcnow()
+                        await db.commit()
+                        logger.info(f"Beta welcome email sent to {club.owner_email} for club {club.slug}")
 
     if et == "application_fee.created":
         # Your platform fee recorded
