@@ -362,11 +362,16 @@
                 // Store in sessionStorage for Stripe setup
                 sessionStorage.setItem('platformData', JSON.stringify(data));
                 
+                // Get promo code from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const promoCode = urlParams.get('promo');
+                
                 // Create club via API
                 const clubData = {
                     name: data.clubName,
                     slug: data.clubSlug,
                     description: data.clubDescription || 'A vibrant community for passionate members',
+                    owner_email: data.ownerEmail,  // Include owner email
                     primary_color: data.primaryColor || '#0075c4',
                     secondary_color: data.secondaryColor || '#0267C1',
                     features: {
@@ -376,6 +381,12 @@
                         enable_donations: data.enableDonations === 'on'
                     }
                 };
+                
+                // Add promo code if present (for beta testers)
+                if (promoCode) {
+                    clubData.promo_code = promoCode;
+                    console.log('Using promo code:', promoCode);
+                }
                 
                 console.log('Creating club:', clubData);
                 

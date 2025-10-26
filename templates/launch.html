@@ -374,6 +374,20 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             populatePlatformDetails();
+            
+            // Trigger welcome email for beta testers
+            const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+            if (platformData.clubSlug) {
+                fetch(`/api/v1/clubs/${platformData.clubSlug}/send-welcome-email`, {
+                    method: 'POST'
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('Welcome email triggered successfully');
+                    }
+                }).catch(error => {
+                    console.log('Welcome email trigger failed (might have been sent already):', error);
+                });
+            }
         });
     </script>
 </body>

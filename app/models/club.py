@@ -31,6 +31,11 @@ class Club(Base, BaseModel):
     welcome_email_sent = Column(Boolean, default=False)
     welcome_email_sent_at = Column(DateTime, nullable=True)
     
+    # Beta Tester / Account Type
+    account_type = Column(String(50), default="trial")  # trial, paid, lifetime_free
+    promo_code_used = Column(String(50), nullable=True)  # e.g., REDDIT2025
+    owner_email = Column(String(255), nullable=True)  # Owner's email for notifications
+    
     # OpenAI Integration (encrypted)
     _openai_api_key_encrypted = Column("openai_api_key_encrypted", Text, nullable=True)
     ai_enabled = Column(Boolean, default=False)

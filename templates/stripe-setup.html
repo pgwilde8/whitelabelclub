@@ -323,8 +323,16 @@
             // Hide modal
             document.getElementById('successModal').classList.add('hidden');
             
-            // Redirect to launch page
-            window.location.href = '/launch';
+            // Get club slug from sessionStorage
+            const platformData = JSON.parse(sessionStorage.getItem('platformData') || '{}');
+            const clubSlug = platformData.clubSlug;
+            
+            // Redirect to launch page with club slug (for email trigger)
+            if (clubSlug) {
+                window.location.href = `/launch?club_slug=${clubSlug}`;
+            } else {
+                window.location.href = '/launch';
+            }
         }
 
         function showStripeConnected() {

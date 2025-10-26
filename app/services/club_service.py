@@ -56,6 +56,7 @@ class ClubService:
             custom_domain=club_data.custom_domain,
             features=club_data.features or {},
             stripe_account_id=club_data.stripe_account_id,
+            owner_email=club_data.owner_email,  # Save owner email for notifications
         )
         
         # Set OpenAI API key if provided (will be encrypted automatically)

@@ -123,8 +123,54 @@ async def stripe_setup(request: Request):
     })
 
 @router.get("/launch", response_class=HTMLResponse)
-async def launch(request: Request):
-    """Launch page"""
+async def launch(request: Request, db: AsyncSession = Depends(get_db_session)):
+    """Launch page - shown after Stripe onboarding complete"""
+    
+    # Try to send welcome email to beta testers if not sent yet
+    try:
+        # Get club slug from sessionStorage (will be sent via query param)
+        club_slug = request.query_params.get('club_slug')
+        
+        if club_slug:
+            from sqlalchemy import select, func
+            from app.models.club import Club
+            from app.services.email_service import EmailService
+            
+            result = await db.execute(select(Club).where(Club.slug == club_slug))
+            club = result.scalar_one_or_none()
+            
+            # Send welcome email to beta testers who haven't received it
+            if club and club.account_type == "lifetime_free" and not club.welcome_email_sent and club.owner_email:
+                logger.info(f"Launch page: Sending welcome email to beta tester {club.slug}...")
+                
+                # Mark Stripe as complete
+                club.stripe_onboarding_complete = True
+                
+                # Count beta testers to get number
+                count_result = await db.execute(
+                    select(func.count(Club.id)).where(Club.account_type == "lifetime_free")
+                )
+                beta_number = count_result.scalar() or 1
+                
+                # Send email
+                email_sent = EmailService.send_beta_welcome_email(
+                    club_name=club.name,
+                    club_slug=club.slug,
+                    owner_email=club.owner_email,
+                    beta_number=beta_number
+                )
+                
+                if email_sent:
+                    from datetime import datetime
+                    club.welcome_email_sent = True
+                    club.welcome_email_sent_at = datetime.utcnow()
+                    logger.info(f"✅ Welcome email sent to {club.owner_email} on launch page")
+                
+                await db.commit()
+                
+    except Exception as e:
+        logger.error(f"Error sending welcome email on launch: {str(e)}")
+    
     return templates.TemplateResponse("launch.html", {"request": request})
 
 @router.get("/create-community", response_class=HTMLResponse)

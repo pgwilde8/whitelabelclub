@@ -18,6 +18,8 @@ class ClubBase(BaseModel):
 class ClubCreate(ClubBase):
     openai_api_key: Optional[str] = None
     stripe_account_id: Optional[str] = None
+    promo_code: Optional[str] = None  # For beta tester promo codes
+    owner_email: Optional[str] = None  # Owner's email for notifications
 
 
 class ClubUpdate(BaseModel):

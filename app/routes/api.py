@@ -25,7 +25,39 @@ async def create_club(
 ):
     """Create a new club"""
     try:
+        from app.core.config import settings
+        from sqlalchemy import select, func
+        from app.models.club import Club
+        
+        # Check if promo code is valid for beta program
+        promo_code = club_data.promo_code
+        is_beta_tester = False
+        
+        if promo_code and promo_code in settings.BETA_PROMO_CODES:
+            # Check beta tester limit
+            result = await db.execute(
+                select(func.count(Club.id)).where(Club.account_type == "lifetime_free")
+            )
+            beta_count = result.scalar() or 0
+            
+            if beta_count >= settings.BETA_TESTER_LIMIT:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Beta tester limit reached ({settings.BETA_TESTER_LIMIT} spots). Try again later!"
+                )
+            
+            is_beta_tester = True
+        
+        # Create the club
         club = await ClubService.create_club(db, club_data)
+        
+        # Set beta tester status if promo code was valid
+        if is_beta_tester:
+            club.account_type = "lifetime_free"
+            club.promo_code_used = promo_code
+            await db.commit()
+            await db.refresh(club)
+        
         return ClubResponse.from_orm(club)
     except ValueError as e:
         raise HTTPException(
@@ -36,6 +68,74 @@ async def create_club(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create club: {str(e)}"
+        )
+
+@router.post("/clubs/{club_slug}/send-welcome-email")
+async def send_welcome_email(club_slug: str, db: AsyncSession = Depends(get_db_session)):
+    """Send beta welcome email to club owner (triggered from launch page)"""
+    try:
+        from sqlalchemy import select, func
+        from app.models.club import Club
+        from app.services.email_service import EmailService
+        import logging
+        
+        logger = logging.getLogger(__name__)
+        
+        # Get the club
+        result = await db.execute(select(Club).where(Club.slug == club_slug))
+        club = result.scalar_one_or_none()
+        
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Only send to beta testers who haven't received email yet
+        if club.account_type != "lifetime_free":
+            return {"message": "Not a beta tester, email not sent"}
+        
+        if club.welcome_email_sent:
+            return {"message": "Welcome email already sent"}
+        
+        if not club.owner_email:
+            logger.warning(f"Cannot send welcome email to {club.slug} - no owner_email")
+            raise HTTPException(status_code=400, detail="No owner email on file")
+        
+        # Mark Stripe as complete
+        club.stripe_onboarding_complete = True
+        
+        # Count beta testers to get their number
+        count_result = await db.execute(
+            select(func.count(Club.id)).where(Club.account_type == "lifetime_free")
+        )
+        beta_number = count_result.scalar() or 1
+        
+        logger.info(f"API: Sending welcome email to {club.owner_email} (Beta Tester #{beta_number})...")
+        
+        # Send email
+        email_sent = EmailService.send_beta_welcome_email(
+            club_name=club.name,
+            club_slug=club.slug,
+            owner_email=club.owner_email,
+            beta_number=beta_number
+        )
+        
+        if email_sent:
+            from datetime import datetime
+            club.welcome_email_sent = True
+            club.welcome_email_sent_at = datetime.utcnow()
+            await db.commit()
+            logger.info(f"✅ Welcome email sent to {club.owner_email}")
+            return {"message": "Welcome email sent successfully"}
+        else:
+            logger.error(f"❌ Failed to send welcome email to {club.owner_email}")
+            raise HTTPException(status_code=500, detail="Failed to send email")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in send_welcome_email: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send welcome email: {str(e)}"
         )
 
 @router.get("/clubs", response_model=List[ClubResponse])
