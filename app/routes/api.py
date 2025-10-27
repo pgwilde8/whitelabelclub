@@ -237,7 +237,6 @@ async def join_community(
     """Create a new community member"""
     try:
         from app.models.user import ClubMember
-        from app.core.security import get_password_hash
         import uuid
         
         # Get club
@@ -249,19 +248,20 @@ async def join_community(
                 detail=f"Community '{club_slug}' not found"
             )
         
-        # Create new member
+        # Build display name from first_name + last_name
+        first_name = request.get("first_name", "")
+        last_name = request.get("last_name", "")
+        display_name = f"{first_name} {last_name}".strip() or request.get("username", "Member")
+        
+        # Create new member (using only fields that exist in ClubMember model)
         new_member = ClubMember(
             id=uuid.uuid4(),
             club_id=club.id,
-            username=request.get("username"),
             email=request.get("email"),
-            password_hash=get_password_hash(request.get("password")),
-            first_name=request.get("first_name"),
-            last_name=request.get("last_name"),
+            display_name=display_name,
             phone=request.get("phone"),
-            role="member",
-            subscription_status="active",
-            subscription_tier="free"
+            member_tier="free",  # Default to free tier
+            status="active"  # Default to active status
         )
         
         db.add(new_member)
@@ -272,14 +272,15 @@ async def join_community(
             "success": True,
             "message": "Member created successfully",
             "member_id": str(new_member.id),
-            "username": new_member.username
+            "display_name": new_member.display_name,
+            "email": new_member.email
         }
         
     except IntegrityError as e:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username or email already exists"
+            detail="Email already exists in this community"
         )
     except Exception as e:
         await db.rollback()

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ member.display_name }} - {{ club.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ club.primary_color or "#0075c4" }}',
+                        secondary: '{{ club.secondary_color or "#0267C1" }}',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --club-primary: {{ club.primary_color or '#0075c4' }};
+            --club-secondary: {{ club.secondary_color or '#0267C1' }};
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    {% if club.logo_url %}
+                    <img src="{{ club.logo_url }}" alt="{{ club.name }}" class="h-8 w-auto mr-3" onerror="this.style.display='none'">
+                    {% endif %}
+                    <span class="text-xl font-bold text-primary">{{ club.name }}</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/community/{{ club.slug }}/member/dashboard" class="text-primary px-3 py-2 rounded-md text-sm font-medium border-b-2 border-primary">
+                        <i class="fas fa-home mr-1"></i> Dashboard
+                    </a>
+                    {% if club.features.enable_bookings %}
+                    <a href="/community/{{ club.slug }}/book" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-calendar mr-1"></i> Book Service
+                    </a>
+                    {% endif %}
+                    {% if club.features.enable_chat %}
+                    <a href="/community/{{ club.slug }}/chat" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-comments mr-1"></i> Chat
+                    </a>
+                    {% endif %}
+                    <a href="/community/{{ club.slug }}/member/profile" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-user mr-1"></i> Profile
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-primary">
+                        <div class="h-8 w-8 bg-primary text-white rounded-full flex items-center justify-center font-semibold">
+                            {{ member.display_name[0]|upper if member.display_name else 'M' }}
+                        </div>
+                        <span class="hidden md:block">{{ member.display_name }}</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <!-- User Dropdown -->
+                    <div id="userMenu" class="hidden absolute right-4 top-16 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <a href="/community/{{ club.slug }}/member/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-user mr-2"></i> My Profile
+                        </a>
+                        <a href="/community/{{ club.slug }}/member/bookings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-calendar-check mr-2"></i> My Bookings
+                        </a>
+                        <hr class="my-1">
+                        <a href="/community/{{ club.slug }}/join" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg p-8 text-white mb-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h1 class="text-3xl font-bold mb-2">Welcome back, {{ member.display_name }}! 👋</h1>
+                    <p class="text-blue-100">{{ club.description or "Great to see you in the community!" }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center backdrop-blur">
+                    <div class="text-sm text-blue-100 mb-1">Your Membership</div>
+                    <div class="text-2xl font-bold">{{ member.member_tier|upper }}</div>
+                    <div class="text-xs text-blue-200 mt-1">Status: {{ member.status|title }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Book a Service -->
+            {% if club.features.enable_bookings %}
+            <a href="/community/{{ club.slug }}/book" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-primary transition duration-300">
+                        <i class="fas fa-calendar-plus text-2xl text-primary group-hover:text-white"></i>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-400 group-hover:text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Book a Service</h3>
+                <p class="text-gray-600 text-sm">Schedule your next appointment or session</p>
+            </a>
+            {% endif %}
+
+            <!-- Community Chat -->
+            {% if club.features.enable_chat %}
+            <a href="/community/{{ club.slug }}/chat" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-primary transition duration-300">
+                        <i class="fas fa-comments text-2xl text-green-600 group-hover:text-white"></i>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-400 group-hover:text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Community Chat</h3>
+                <p class="text-gray-600 text-sm">Connect with other members</p>
+            </a>
+            {% endif %}
+
+            <!-- My Profile -->
+            <a href="/community/{{ club.slug }}/member/profile" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-primary transition duration-300">
+                        <i class="fas fa-user-edit text-2xl text-purple-600 group-hover:text-white"></i>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-400 group-hover:text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">My Profile</h3>
+                <p class="text-gray-600 text-sm">Update your information</p>
+            </a>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Upcoming Bookings -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-900">
+                            <i class="fas fa-calendar-check text-primary mr-2"></i>
+                            My Upcoming Bookings
+                        </h2>
+                        <a href="/community/{{ club.slug }}/book" class="text-primary hover:text-secondary font-medium text-sm">
+                            + Book New
+                        </a>
+                    </div>
+                    
+                    {% if upcoming_bookings %}
+                    <div class="space-y-4">
+                        {% for booking in upcoming_bookings %}
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-clock text-primary text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">{{ booking.service_name }}</h3>
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            <i class="fas fa-calendar mr-1"></i> {{ booking.date_time }}
+                                        </p>
+                                        {% if booking.notes %}
+                                        <p class="text-xs text-gray-500 mt-1">{{ booking.notes }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
+                                        {% if booking.status == 'confirmed' %}bg-green-100 text-green-800
+                                        {% elif booking.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                    <p class="text-lg font-bold text-gray-900 mt-2">${{ booking.amount }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-times text-3xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No Upcoming Bookings</h3>
+                        <p class="text-gray-600 mb-4">You don't have any scheduled appointments yet.</p>
+                        <a href="/community/{{ club.slug }}/book" class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold">
+                            <i class="fas fa-calendar-plus mr-2"></i>
+                            Book Your First Service
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Membership Benefits -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-star text-primary mr-2"></i>
+                        Your Membership Benefits
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Exclusive Access</h4>
+                                <p class="text-sm text-gray-600">Full community features</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Priority Booking</h4>
+                                <p class="text-sm text-gray-600">Book services anytime</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Community Chat</h4>
+                                <p class="text-sm text-gray-600">Connect with members</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Member Support</h4>
+                                <p class="text-sm text-gray-600">Get help when you need it</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if member.member_tier == 'free' %}
+                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-1">✨ Upgrade Your Membership</h4>
+                                <p class="text-sm text-gray-600">Get access to premium features and exclusive content</p>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition duration-300 text-sm font-semibold whitespace-nowrap">
+                                Upgrade Now
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column - Member Info & Stats -->
+            <div class="space-y-6">
+                <!-- Member Info Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center mx-auto mb-3 text-3xl font-bold">
+                            {{ member.display_name[0]|upper if member.display_name else 'M' }}
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900">{{ member.display_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ member.email }}</p>
+                        {% if member.phone %}
+                        <p class="text-sm text-gray-600">{{ member.phone }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="space-y-3 border-t border-gray-200 pt-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 text-sm">Member Since</span>
+                            <span class="font-semibold text-gray-900">{{ member_since }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 text-sm">Membership Tier</span>
+                            <span class="px-3 py-1 bg-blue-100 text-primary rounded-full text-xs font-semibold">
+                                {{ member.member_tier|upper }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 text-sm">Status</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                {{ member.status|title }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <a href="/community/{{ club.slug }}/member/profile" class="mt-4 block w-full bg-gray-100 hover:bg-gray-200 text-gray-900 text-center py-2 rounded-lg transition duration-300 font-medium">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Profile
+                    </a>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-chart-line text-primary mr-2"></i>
+                        Your Activity
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-calendar-check text-primary text-lg"></i>
+                                <span class="text-gray-700 text-sm">Total Bookings</span>
+                            </div>
+                            <span class="font-bold text-gray-900">{{ total_bookings }}</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-clock text-green-600 text-lg"></i>
+                                <span class="text-gray-700 text-sm">Upcoming</span>
+                            </div>
+                            <span class="font-bold text-gray-900">{{ upcoming_bookings|length }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Need Help? -->
+                <div class="bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg p-6 text-white">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-question-circle mr-2"></i>
+                        Need Help?
+                    </h3>
+                    <p class="text-blue-100 text-sm mb-4">Our support team is here to assist you.</p>
+                    <button class="w-full bg-white text-primary px-4 py-2 rounded-lg hover:bg-blue-50 transition duration-300 font-semibold">
+                        <i class="fas fa-headset mr-2"></i>
+                        Contact Support
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="text-gray-600 text-sm mb-4 md:mb-0">
+                    © 2025 {{ club.name }}. All rights reserved.
+                </div>
+                <div class="flex space-x-6 text-sm text-gray-600">
+                    <a href="#" class="hover:text-primary">Terms</a>
+                    <a href="#" class="hover:text-primary">Privacy</a>
+                    <a href="#" class="hover:text-primary">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const isClickInside = event.target.closest('button[onclick="toggleUserMenu()"]') || event.target.closest('#userMenu');
+            
+            if (!isClickInside && !userMenu.classList.contains('hidden')) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
+

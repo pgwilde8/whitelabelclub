@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.db.session import get_db_session
 from app.services.club_service import ClubService
 from app.schemas.club import ClubCreate
@@ -426,9 +427,169 @@ async def club_members_list(request: Request, club_slug: str, db: AsyncSession =
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading members: {str(e)}")
 
+# Member-specific routes (MUST come before the generic {member_id} route)
+@router.get("/community/{club_slug}/member/dashboard", response_class=HTMLResponse)
+async def member_dashboard(request: Request, club_slug: str, member_id: str = None, db: AsyncSession = Depends(get_db_session)):
+    """Member dashboard - personalized view for community members"""
+    try:
+        from app.models.user import ClubMember
+        from app.models.booking import Booking
+        from datetime import datetime
+        
+        # Get club
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Community not found")
+        
+        # Get member - for now using member_id from query param or session
+        # Later: Get from authentication session
+        if not member_id:
+            member_id = request.query_params.get('member_id')
+        
+        if not member_id:
+            # Redirect to join page if no member_id
+            return RedirectResponse(url=f"/community/{club_slug}/join")
+        
+        # Get member from database
+        result = await db.execute(
+            select(ClubMember).where(
+                ClubMember.id == member_id,
+                ClubMember.club_id == club.id
+            )
+        )
+        member = result.scalar_one_or_none()
+        
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found")
+        
+        # Get member's bookings
+        bookings_result = await db.execute(
+            select(Booking).where(
+                Booking.member_id == member.id,
+                Booking.club_id == club.id
+            ).order_by(Booking.created_at.desc())
+        )
+        all_bookings = bookings_result.scalars().all()
+        
+        # Filter upcoming bookings (for now, show all confirmed bookings as "upcoming")
+        upcoming_bookings = [
+            {
+                "id": str(booking.id),
+                "service_name": "Service Booking",  # TODO: Join with service name
+                "date_time": booking.created_at.strftime("%B %d, %Y at %I:%M %p"),
+                "status": booking.status,
+                "amount": float(booking.amount),
+                "notes": booking.notes
+            }
+            for booking in all_bookings if booking.status in ['confirmed', 'pending']
+        ]
+        
+        # Club data
+        club_data = {
+            "id": str(club.id),
+            "name": club.name,
+            "slug": club.slug,
+            "description": club.description or "Welcome to our community!",
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
+            "logo_url": club.logo_url,
+            "features": {
+                "enable_bookings": club.features.get("enable_bookings", True),
+                "enable_chat": club.features.get("enable_chat", True),
+                "enable_donations": club.features.get("enable_donations", True)
+            }
+        }
+        
+        # Member data
+        member_data = {
+            "id": str(member.id),
+            "display_name": member.display_name or "Member",
+            "email": member.email,
+            "phone": member.phone,
+            "member_tier": member.member_tier,
+            "status": member.status
+        }
+        
+        return templates.TemplateResponse("member_dashboard.html", {
+            "request": request,
+            "club": club_data,
+            "member": member_data,
+            "upcoming_bookings": upcoming_bookings,
+            "total_bookings": len(all_bookings),
+            "member_since": member.created_at.strftime("%B %Y")
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error loading member dashboard for {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error loading dashboard")
+
+@router.get("/community/{club_slug}/member/profile", response_class=HTMLResponse)
+async def member_profile_edit(request: Request, club_slug: str, member_id: str = None, db: AsyncSession = Depends(get_db_session)):
+    """Member profile edit page"""
+    try:
+        from app.models.user import ClubMember
+        
+        # Get club
+        club = await ClubService.get_club_by_slug(db, club_slug)
+        if not club:
+            raise HTTPException(status_code=404, detail="Community not found")
+        
+        # Get member_id from query param
+        if not member_id:
+            member_id = request.query_params.get('member_id')
+        
+        if not member_id:
+            return RedirectResponse(url=f"/community/{club_slug}/join")
+        
+        # Get member from database
+        result = await db.execute(
+            select(ClubMember).where(
+                ClubMember.id == member_id,
+                ClubMember.club_id == club.id
+            )
+        )
+        member = result.scalar_one_or_none()
+        
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found")
+        
+        # Club data
+        club_data = {
+            "name": club.name,
+            "slug": club.slug,
+            "primary_color": club.primary_color or "#0075c4",
+            "secondary_color": club.secondary_color or "#0267C1",
+            "logo_url": club.logo_url
+        }
+        
+        # Member data
+        member_data = {
+            "id": str(member.id),
+            "display_name": member.display_name or "Member",
+            "email": member.email,
+            "phone": member.phone,
+            "member_tier": member.member_tier,
+            "status": member.status
+        }
+        
+        return templates.TemplateResponse("member_profile.html", {
+            "request": request,
+            "club": club_data,
+            "member": member_data,
+            "member_since": member.created_at.strftime("%B %Y")
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error loading member profile edit for {club_slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error loading profile page")
+
 @router.get("/community/{club_slug}/member/{member_id}", response_class=HTMLResponse)
 async def club_member_profile(request: Request, club_slug: str, member_id: str, db: AsyncSession = Depends(get_db_session)):
-    """Individual member profile within a club"""
+    """Individual member profile within a club (for owner viewing member details)"""
     try:
         # Get club
         club = await ClubService.get_club_by_slug(db, club_slug)

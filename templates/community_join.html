@@ -308,8 +308,8 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    // Show success message
-                    showSuccess();
+                    // Show success message and redirect to member dashboard
+                    showSuccess(result.member_id);
                 } else {
                     throw new Error(result.detail || 'Failed to create account');
                 }
@@ -321,7 +321,7 @@
             }
         });
 
-        function showSuccess() {
+        function showSuccess(memberId) {
             document.body.innerHTML = `
                 <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
                     <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-8 text-center">
@@ -329,11 +329,11 @@
                             <i class="fas fa-check-circle text-5xl" style="color: {{ club.primary_color }}"></i>
                         </div>
                         <h2 class="text-3xl font-bold text-gray-900 mb-4">Welcome to {{ club.name }}!</h2>
-                        <p class="text-gray-600 mb-8">Your account has been created successfully. Check your email for verification.</p>
-                        <a href="/community/{{ club.slug }}/" 
+                        <p class="text-gray-600 mb-8">Your account has been created successfully. Get started exploring your member dashboard!</p>
+                        <a href="/community/{{ club.slug }}/member/dashboard?member_id=${memberId}" 
                            class="inline-block w-full py-3 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition duration-300"
                            style="background-color: {{ club.primary_color }}">
-                            Go to Community Dashboard
+                            Go to My Dashboard
                         </a>
                     </div>
                 </div>
